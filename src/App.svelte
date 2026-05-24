@@ -1,128 +1,173 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { axisBottom, easeLinear, scaleLinear, select, transition } from "d3";
+  import Path from "./lib/Path.svelte";
 
   const startYear = 1583;
   const endYear = 2026;
   const stepYears = 10;
+  const pauseYears = [1726, 1867, 1869];
   const pauseDurationMs = 3000;
-  const pauseYears = new Set<number>([1867, 1880]);
-
-  const pausedYears = new Set<number>();
-  let pausedUntil = 0;
+  const margin = { top: 20, right: 40, bottom: 30, left: 40 };
+  const tickLength = 5;
+  const totalRange = endYear - startYear;
 
   let height = 0;
   let width = 0;
   let currentYear = startYear;
-  let displayYear = startYear;
-  let axisGroupEl: SVGGElement | null = null;
+  let animationStartMs = 0;
+  let animationFrameId: number | null = null;
+  let nextPauseIndex = 0;
+  let pausedAtYear: number | null = null;
+  let pauseStartMs: number | null = null;
 
-  $: sidePadding = Math.max(24, width * 0.08);
-  $: maxSpan = Math.max(0, width - sidePadding * 2);
-  $: labelProgress = (displayYear - startYear) / (endYear - startYear);
-  $: labelX = sidePadding + maxSpan * labelProgress;
-  $: labelY = Math.max(0, height - 80);
-  
+  $: maxSpan = Math.max(0, width - margin.left - margin.right);
+  $: timelineY = Math.max(margin.top, height - margin.bottom);
+
+  $: axisStart = margin.left;
+  $: progressTarget =
+    totalRange > 0 ? (currentYear - startYear) / totalRange : 0;
+  $: clampedProgress = Math.min(1, Math.max(0, progressTarget));
+  $: span = maxSpan * clampedProgress;
+  $: axisEnd = axisStart + span;
 
   // adding ticks
   const buildTickValues = (maxYear: number) => {
     const values = [startYear];
-    for (let year = startYear + 20; year <= maxYear; year += 20) {
+    for (let year = 1600; year <= maxYear; year += 20) {
       values.push(year);
     }
     return values;
   };
 
-  // redrawing timeline every second
-  const drawTimeline = () => {
-    if (!axisGroupEl || width <= 0 || height <= 0) return;
-
-    const y = Math.max(0, height - 40);
-    const progress = (currentYear - startYear) / (endYear - startYear);
-    const span = maxSpan * progress;
-    const xStart = sidePadding;
-    const xEnd = xStart + span;
-
-    const axisGroup = select(axisGroupEl).attr(
-      "transform",
-      `translate(0, ${y})`,
-    );
-
-    const xScale = scaleLinear()
-      .domain([startYear, currentYear])
-      .range([xStart, xEnd]);
-
-    const xAxis = axisBottom(xScale)
-      .tickValues(buildTickValues(currentYear))
-      .tickFormat((d: number) => `${d}`);
-
-    const t = transition().duration(1000).ease(easeLinear);
-    axisGroup.transition(t).call(xAxis);
-
-    axisGroup.selectAll(".domain").attr("stroke", "#ffffff");
-    axisGroup.selectAll(".tick line").attr("stroke", "#ffffff");
-    axisGroup
-      .selectAll(".tick text")
-      .attr("fill", "#ffffff")
-      .attr("font-size", "12px")
-      .attr("font-family", "Montserrat");
+  // calculating x position for a given year
+  $: yearToX = (year: number) => {
+    const currentRange = currentYear - startYear;
+    if (currentRange <= 0) return axisStart;
+    const yearProgress = (year - startYear) / currentRange;
+    return axisStart + yearProgress * span;
   };
 
-  const isPaused = () => Date.now() < pausedUntil;
-
-  const maybePauseAtYear = (year: number) => {
-    if (pauseYears.has(year) && !pausedYears.has(year)) {
-      pausedYears.add(year);
-      pausedUntil = Date.now() + pauseDurationMs;
-    }
-  };
+  $: tickValues = width > 0 && height > 0 ? buildTickValues(currentYear) : [];
+  $: displayYear = Math.floor(currentYear);
 
   onMount(() => {
-    const decadeTimer = setInterval(() => {
-      if (currentYear >= endYear) {
-        clearInterval(decadeTimer);
+    const updateYearFromClock = () => {
+      if (pauseStartMs !== null && pausedAtYear !== null) {
+        const pausedMs = Date.now() - pauseStartMs;
+        currentYear = pausedAtYear;
+
+        if (pausedMs >= pauseDurationMs) {
+          animationStartMs += pauseDurationMs;
+          pauseStartMs = null;
+          pausedAtYear = null;
+          nextPauseIndex += 1;
+        }
+
         return;
       }
 
-      if (isPaused()) {
-        return;
-      }
+      const elapsedSeconds = (Date.now() - animationStartMs) / 500;
+      const yearsElapsed = elapsedSeconds * stepYears;
+      currentYear = Math.min(startYear + yearsElapsed, endYear);
 
-      currentYear = Math.min(currentYear + stepYears, endYear);
-    }, 1000);
-
-    const yearDisplayTimer = setInterval(() => {
-      if (displayYear >= endYear) {
-        clearInterval(yearDisplayTimer);
-        return;
+      const nextPauseYear = pauseYears[nextPauseIndex];
+      if (nextPauseYear !== undefined && currentYear >= nextPauseYear) {
+        currentYear = nextPauseYear;
+        pausedAtYear = nextPauseYear;
+        pauseStartMs = Date.now();
       }
+    };
 
-      if (isPaused()) {
-        return;
-      }
+    animationStartMs = Date.now();
 
-      if (displayYear < currentYear) {
-        displayYear = Math.min(displayYear + 1, currentYear, endYear);
-        maybePauseAtYear(displayYear);
+    const animate = () => {
+      updateYearFromClock();
+      if (currentYear < endYear) {
+        animationFrameId = requestAnimationFrame(animate);
       }
-    }, 100);
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
+
+    const handleVisibilityChange = () => {
+      updateYearFromClock();
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      clearInterval(decadeTimer);
-      clearInterval(yearDisplayTimer);
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+      }
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   });
-
-  $: if (axisGroupEl && width > 0 && height > 0 && currentYear >= startYear) {
-    drawTimeline();
-  }
 </script>
 
 <main bind:clientWidth={width} bind:clientHeight={height}>
   <h1>Women in Medicine</h1>
-  <h2 style:left={`${labelX}px`} style:top={`${labelY}px`}>{displayYear}</h2>
   <svg {width} {height}>
-    <g bind:this={axisGroupEl}></g>
+    {#if width > 0 && height > 0}
+      <line
+        class="domain"
+        x1={axisStart}
+        y1={timelineY}
+        x2={axisEnd}
+        y2={timelineY}
+      ></line>
+      <text
+        x={yearToX(displayYear)}
+        y={timelineY - 10}
+        text-anchor="middle"
+        fill="#fff"
+        font-size="18px"
+      >
+        {displayYear}
+      </text>
+      {#if displayYear == 1726}
+        <text
+          x={yearToX(displayYear)}
+          y={timelineY - 30}
+          text-anchor="middle"
+          fill="#fff"
+          font-size="14px"
+        >
+          School of Medicine
+        </text>
+      {/if}
+      {#if displayYear == 1867}
+        <text
+          x={yearToX(displayYear)}
+          y={timelineY - 30}
+          text-anchor="middle"
+          fill="#fff"
+          font-size="14px"
+        >
+          First female students
+        </text>
+      {/if}
+      {#if displayYear == 1869}
+        <text
+          x={yearToX(displayYear)}
+          y={timelineY - 30}
+          text-anchor="middle"
+          fill="#fff"
+          font-size="14px"
+        >
+          Edinburgh Seven
+        </text>
+      {/if}
+      {#each pauseYears.filter((year) => displayYear >= year) as year (year)}
+        <Path x={yearToX(year)} {height} />
+      {/each}
+      {#each tickValues as year}
+        <g class="tick" transform={`translate(${yearToX(year)}, ${timelineY})`}>
+          <line x1="0" y1="0" x2="0" y2={tickLength}></line>
+          <text x="0" y={tickLength + 12} text-anchor="middle">{year}</text>
+        </g>
+      {/each}
+      <circle cx={axisEnd} cy={timelineY} r="3" fill="#fff"></circle>
+    {/if}
   </svg>
 </main>
 
@@ -140,12 +185,18 @@
     margin: 5px;
   }
 
-  h2 {
-    position: absolute;
-    transform: translateX(-50%);
-    margin: 0;
-    color: rgb(253, 250, 245);
-    font-size: 2rem;
+  .domain {
+    stroke: gray;
+    stroke-width: 2px;
+  }
+
+  .tick line {
+    stroke: #fff;
+  }
+
+  .tick text {
+    fill: #fff;
+    font-size: 12px;
     font-family: Montserrat;
   }
 </style>
