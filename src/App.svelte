@@ -1,11 +1,22 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import Path from "./lib/Path.svelte";
+  import Events from "./lib/Events.svelte";
+  import { historicalEvents } from "./datastore";
+
+  console.log(historicalEvents);
 
   const startYear = 1583;
   const endYear = 2026;
   const stepYears = 10;
-  const pauseYears = [1726, 1867, 1869];
+  const pauseYears = [1583, 1726, 1867, 1869, 1892];
+  const milestoneLabels = new Map<number, string>([
+    [1583, "University of Edinburgh founded"],
+    [1726, "School of Medicine"],
+    [1867, "First female students"],
+    [1869, "Edinburgh Seven"],
+    [1892, "Women admitted to universities"],
+  ]);
   const pauseDurationMs = 3000;
   const margin = { top: 20, right: 40, bottom: 30, left: 40 };
   const tickLength = 5;
@@ -108,6 +119,13 @@
   <h1>Women in Medicine</h1>
   <svg {width} {height}>
     {#if width > 0 && height > 0}
+      <Events
+        events={historicalEvents}
+        {currentYear}
+        {startYear}
+        {timelineY}
+        {yearToX}
+      />
       <line
         class="domain"
         x1={axisStart}
@@ -124,41 +142,12 @@
       >
         {displayYear}
       </text>
-      {#if displayYear == 1726}
-        <text
-          x={yearToX(displayYear)}
-          y={timelineY - 30}
-          text-anchor="middle"
-          fill="#fff"
-          font-size="14px"
-        >
-          School of Medicine
-        </text>
-      {/if}
-      {#if displayYear == 1867}
-        <text
-          x={yearToX(displayYear)}
-          y={timelineY - 30}
-          text-anchor="middle"
-          fill="#fff"
-          font-size="14px"
-        >
-          First female students
-        </text>
-      {/if}
-      {#if displayYear == 1869}
-        <text
-          x={yearToX(displayYear)}
-          y={timelineY - 30}
-          text-anchor="middle"
-          fill="#fff"
-          font-size="14px"
-        >
-          Edinburgh Seven
-        </text>
-      {/if}
       {#each pauseYears.filter((year) => displayYear >= year) as year (year)}
-        <Path x={yearToX(year)} {height} />
+        <Path
+          x={yearToX(year)}
+          {height}
+          label={milestoneLabels.get(year) ?? ""}
+        />
       {/each}
       {#each tickValues as year}
         <g class="tick" transform={`translate(${yearToX(year)}, ${timelineY})`}>

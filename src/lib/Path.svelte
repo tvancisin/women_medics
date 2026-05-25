@@ -5,6 +5,7 @@
 
 	export let x = 0;
 	export let height = 0;
+	export let label = "";
 
 	const shortLengthPx = 50;
 	let shrinkStarted = false;
@@ -58,12 +59,28 @@
 	stroke-dasharray="1"
 	stroke-dashoffset={dashOffset}
 />
+<circle cx={x} cy={endY} r="4" fill="gray" />
+{#if label}
+	<text
+		class="event-label"
+		x={x + 5}
+		y={endY - 8}
+		text-anchor="start"
+		transform={`rotate(-45 ${x + 10} ${endY - 10})`}
+	>{label}</text>
+{/if}
 
 <style>
 	.event-path {
 		stroke: gray;
 		stroke-width: 1;
 		stroke-linecap: round;
+		pointer-events: none;
+	}
+
+	.event-label {
+		fill: #fff;
+		font-size: 12px;
 		pointer-events: none;
 	}
 </style>
