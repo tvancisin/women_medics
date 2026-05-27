@@ -1,17 +1,23 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { historicalEvents } from "./datastore";
   import Path from "./lib/Path.svelte";
   import Events from "./lib/Events.svelte";
-  import { historicalEvents } from "./datastore";
 
   const startYear = 1583;
   const endYear = 2026;
   const stepYears = 10;
+  const margin = { top: 20, right: 40, bottom: 30, left: 40 };
+  const tickLength = 5;
+  const totalRange = endYear - startYear;
+  // amking sure divs with details fit within the screen
+  const clampedLeft = (x: number) =>
+    Math.min(Math.max(10, x - 500), width - 1010);
 
   // Dev-only: set to false or remove this flag and the related blocks below to restore auto-resume.
-  const devRequireClickToResume = false;
+  const devRequireClickToResume = true;
 
-  const pauseYears = [1583, 1726, 1867, 1869, 1875, 1892];
+  const pauseYears = [1583, 1726, 1867, 1869, 1875, 1892, 1990];
   const milestoneLabels = new Map<number, string>([
     [1583, "University of Edinburgh founded"],
     [1726, "School of Medicine"],
@@ -19,11 +25,9 @@
     [1869, "Edinburgh Seven"],
     [1875, "First physiology course for women"],
     [1892, "Women admitted to universities"],
+    [1990, "hovno"],
   ]);
-  const pauseDurationMs = 3000;
-  const margin = { top: 20, right: 40, bottom: 30, left: 40 };
-  const tickLength = 5;
-  const totalRange = endYear - startYear;
+  const pauseDurationMs = 1000;
 
   let height = 0;
   let width = 0;
@@ -91,10 +95,10 @@
         // 2) After pauseDurationMs, resume progression and trigger path shrink for that milestone.
         if (pausedMs >= pauseDurationMs) {
           // Dev-only: this gate keeps the existing timed pause, but requires a click before resuming.
-          // if (devRequireClickToResume && !resumeRequested) {
-          //   awaitingResumeClick = true;
-          //   return;
-          // }
+          if (devRequireClickToResume && !resumeRequested) {
+            awaitingResumeClick = true;
+            return;
+          }
 
           // Trigger path shrink for the milestone we're leaving — works
           // whether the button triggered this or the timer fired automatically.
@@ -164,11 +168,11 @@
 
 <main bind:clientWidth={width} bind:clientHeight={height}>
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
-  <!-- {#if devRequireClickToResume && awaitingResumeClick}
+  {#if devRequireClickToResume && awaitingResumeClick}
     <button class="resume-button" type="button" on:click={handleResumeClick}>
       Continue
     </button>
-  {/if} -->
+  {/if}
   <!-- <h1>Women in Medicine</h1> -->
   <svg {width} {height}>
     {#if width > 0 && height > 0}
@@ -213,6 +217,15 @@
       <circle cx={axisEnd} cy={timelineY} r="3" fill="#fff"></circle>
     {/if}
   </svg>
+  {#each pauseYears as year (year)}
+    <div
+      class="milestone-card"
+      class:is-visible={pausedAtYear === year}
+      style="left: {clampedLeft(yearToX(year))}px;"
+    >
+      {milestoneLabels.get(year) ?? ""}
+    </div>
+  {/each}
 </main>
 
 <style>
@@ -220,6 +233,29 @@
     width: 100%;
     height: 100vh;
     position: relative;
+  }
+
+  .milestone-card {
+    position: absolute;
+    top: 15vh;
+    width: 1000px;
+    height: 60vh;
+    color: white;
+    font-size: 10px;
+    border-radius: 4px;
+    background-color: rgb(46, 46, 46);
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+    transition:
+      opacity 260ms ease,
+      transform 260ms ease;
+    pointer-events: none;
+  }
+
+  .milestone-card.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
   }
 
   /* Dev-only: remove this style block with the Continue button markup. */

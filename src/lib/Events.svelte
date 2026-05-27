@@ -57,11 +57,11 @@
 <style>
 	.historical-event {
 		fill: #ffffff;
-		opacity: 0.08;
+		opacity: 0.05;
 		pointer-events: none;
 	}
     .event-label {
-        fill: #fff;
+        fill: gray;
         font-size: 12px;
         pointer-events: none;
     }

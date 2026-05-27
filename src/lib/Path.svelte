@@ -14,7 +14,7 @@
   });
 
   $: startY = height - 30;
-  $: middleY = height / 2;
+  $: middleY = height - 200;
   $: fullLength = Math.max(0, startY - middleY);
 
   // Tip of the path rises from startY toward middleY as pathLengthPx grows.
