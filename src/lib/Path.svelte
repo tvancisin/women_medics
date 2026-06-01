@@ -30,11 +30,7 @@
   }
 </script>
 
-<path
-  class="event-path"
-  d={pathD}
-  fill="none"
-/>
+<path class="event-path" d={pathD} fill="none" />
 <rect
   class="event-marker"
   x={x - 2.5}
@@ -44,7 +40,7 @@
   fill="orange"
   rx="2"
 />
-{#if label}
+{#if label && shrink}
   <text
     class="event-label"
     x={x + 5}

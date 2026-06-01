@@ -1,12 +1,14 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { historicalEvents } from "./datastore";
+  import { getIndividualCSV, historicalEvents } from "./datastore";
   import Path from "./lib/Path.svelte";
   import Events from "./lib/Events.svelte";
+  import Linechart from "./lib/Linechart.svelte";
+  import MapView from "./lib/MapView.svelte";
 
   const startYear = 1583;
   const endYear = 2026;
-  const stepYears = 10;
+  const stepYears = 20;
   const margin = { top: 20, right: 40, bottom: 30, left: 40 };
   const tickLength = 5;
   const totalRange = endYear - startYear;
@@ -17,15 +19,15 @@
   // Dev-only: set to false or remove this flag and the related blocks below to restore auto-resume.
   const devRequireClickToResume = true;
 
-  const pauseYears = [1583, 1726, 1867, 1869, 1875, 1892, 1990];
+  const pauseYears = [1583, 1726, 1862, 1867, 1869, 1875, 1892];
   const milestoneLabels = new Map<number, string>([
     [1583, "University of Edinburgh founded"],
     [1726, "School of Medicine"],
+    [1862, "Elizabeth Garrett refusal"],
     [1867, "First female students"],
     [1869, "Edinburgh Seven"],
     [1875, "First physiology course for women"],
     [1892, "Women admitted to universities"],
-    [1990, "hovno"],
   ]);
   const pauseDurationMs = 1000;
 
@@ -38,6 +40,7 @@
   let pausedAtYear: number | null = null;
   let pauseStartMs: number | null = null;
   let shrinkEnabledYears = new Set<number>();
+  let womenMedicsData: Array<{ year: number; number: number }> = [];
 
   // Dev-only: remove these two variables with the click-to-resume behavior.
   let awaitingResumeClick = false;
@@ -85,6 +88,29 @@
   };
 
   onMount(() => {
+    const loadWomenMedicsData = async () => {
+      try {
+        const rawWomenMedicsData = (await getIndividualCSV(
+          "/data/women_medics_1914_1966.csv"
+        )) as Array<{ year?: string; number?: string }>;
+        womenMedicsData = rawWomenMedicsData
+          .map((row: { year?: string; number?: string }) => {
+            const firstYear = Number(String(row.year ?? "").split("-")[0]);
+            const total = Number(row.number);
+            return { year: firstYear, number: total };
+          })
+          .filter(
+            (row: { year: number; number: number }) =>
+              Number.isFinite(row.year) && Number.isFinite(row.number)
+          );
+      } catch (error: unknown) {
+        console.error("Failed to load women_medics_1914_1966.csv", error);
+      }
+    };
+
+    loadWomenMedicsData();
+    
+
     // Runs once per animation frame and updates timeline state from wall-clock time.
     const updateYearFromClock = () => {
       // 1) Pause branch: when a milestone pause is active, keep the year frozen.
@@ -164,6 +190,9 @@
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   });
+
+  $: console.log(womenMedicsData);
+  
 </script>
 
 <main bind:clientWidth={width} bind:clientHeight={height}>
@@ -215,15 +244,24 @@
         </g>
       {/each}
       <circle cx={axisEnd} cy={timelineY} r="3" fill="#fff"></circle>
+      <Linechart {currentYear} {timelineY} {yearToX} {womenMedicsData} />
     {/if}
   </svg>
   {#each pauseYears as year (year)}
     <div
       class="milestone-card"
+      class:is-garrett={year === 1862}
       class:is-visible={pausedAtYear === year}
       style="left: {clampedLeft(yearToX(year))}px;"
     >
-      {milestoneLabels.get(year) ?? ""}
+      {#if year === 1862}
+        <div class="milestone-text">{milestoneLabels.get(year) ?? ""}</div>
+        <img class="milestone-image" src="/img/garrett.png" alt="Elizabeth Garrett" />
+      {:else if year === 1875}
+      <MapView />
+      {:else}
+        {milestoneLabels.get(year) ?? ""}
+      {/if}
     </div>
   {/each}
 </main>
@@ -240,6 +278,9 @@
     top: 15vh;
     width: 1000px;
     height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: white;
     font-size: 10px;
     border-radius: 4px;
@@ -256,6 +297,27 @@
     opacity: 1;
     transform: translateY(0) scale(1);
     pointer-events: auto;
+  }
+
+  .milestone-card.is-garrett {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1rem;
+    padding-top: 1rem;
+    text-align: center;
+  }
+
+  .milestone-text {
+    width: 100%;
+  }
+
+  .milestone-image {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100% - 2rem);
+    object-fit: contain;
+    display: block;
   }
 
   /* Dev-only: remove this style block with the Continue button markup. */
