@@ -1,32 +1,53 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { getIndividualCSV, historicalEvents } from "./datastore";
+  import {
+    getCSV,
+    getIndividualCSV,
+    getIndividualJSON,
+    historicalEvents,
+  } from "./datastore";
   import Path from "./lib/Path.svelte";
   import Events from "./lib/Events.svelte";
   import Linechart from "./lib/Linechart.svelte";
   import MapView from "./lib/MapView.svelte";
+  import Bar from "./lib/Bar.svelte";
 
   const startYear = 1583;
   const endYear = 2026;
-  const stepYears = 20;
-  const margin = { top: 20, right: 40, bottom: 30, left: 40 };
+  const stepYears = 100;
+  const margin = { top: 20, right: 40, bottom: 100, left: 40 };
   const tickLength = 5;
   const totalRange = endYear - startYear;
-  // amking sure divs with details fit within the screen
-  const clampedLeft = (x: number) =>
-    Math.min(Math.max(10, x - 500), width - 1010);
+
+  // keeping the detail div inside screen
+  const milestoneCardWidth = 1000;
+  const milestoneSideGap = 10;
+  // Keep cards within viewport bounds with at least a 10px side gap when space allows.
+  const clampedLeft = (x: number) => {
+    const minLeft = milestoneSideGap;
+    const maxLeft = width - milestoneCardWidth - milestoneSideGap;
+
+    // If viewport is narrower than card + gaps, pin to left gap as best effort.
+    if (maxLeft < minLeft) {
+      return minLeft;
+    }
+
+    const centeredLeft = x - milestoneCardWidth / 2;
+    return Math.min(Math.max(minLeft, centeredLeft), maxLeft);
+  };
 
   // Dev-only: set to false or remove this flag and the related blocks below to restore auto-resume.
   const devRequireClickToResume = true;
 
-  const pauseYears = [1583, 1726, 1862, 1867, 1869, 1875, 1892];
+  const pauseYears = [1583, 1726, 1862, 1867, 1869, 1875, 1889, 1892];
   const milestoneLabels = new Map<number, string>([
-    [1583, "University of Edinburgh founded"],
+    [1583, "University Founded"],
     [1726, "School of Medicine"],
     [1862, "Elizabeth Garrett refusal"],
     [1867, "First female students"],
     [1869, "Edinburgh Seven"],
     [1875, "First physiology course for women"],
+    [1889, "Universities Scotland Act 1889"],
     [1892, "Women admitted to universities"],
   ]);
   const pauseDurationMs = 1000;
@@ -41,6 +62,8 @@
   let pauseStartMs: number | null = null;
   let shrinkEnabledYears = new Set<number>();
   let womenMedicsData: Array<{ year: number; number: number }> = [];
+  let edinburghSevenData: Array<Record<string, string>> = [];
+  let womenPhysiologyGeoData: unknown = null;
 
   // Dev-only: remove these two variables with the click-to-resume behavior.
   let awaitingResumeClick = false;
@@ -88,11 +111,16 @@
   };
 
   onMount(() => {
-    const loadWomenMedicsData = async () => {
+    const loadCsvData = async () => {
       try {
-        const rawWomenMedicsData = (await getIndividualCSV(
-          "/data/women_medics_1914_1966.csv"
-        )) as Array<{ year?: string; number?: string }>;
+        const [rawWomenMedicsData, rawEdinburghSevenData] = (await getCSV([
+          "/data/women_medics_1914_1966.csv",
+          "/data/edinburgh_seven.csv",
+        ])) as [
+          Array<{ year?: string; number?: string }>,
+          Array<Record<string, string>>,
+        ];
+
         womenMedicsData = rawWomenMedicsData
           .map((row: { year?: string; number?: string }) => {
             const firstYear = Number(String(row.year ?? "").split("-")[0]);
@@ -101,15 +129,30 @@
           })
           .filter(
             (row: { year: number; number: number }) =>
-              Number.isFinite(row.year) && Number.isFinite(row.number)
+              Number.isFinite(row.year) && Number.isFinite(row.number),
           );
+
+        edinburghSevenData = rawEdinburghSevenData;
       } catch (error: unknown) {
-        console.error("Failed to load women_medics_1914_1966.csv", error);
+        console.error(
+          "Failed to load women_medics_1914_1966.csv and/or edinburgh_seven.csv",
+          error,
+        );
       }
     };
 
-    loadWomenMedicsData();
-    
+    const loadWomenPhysiologyGeoData = async () => {
+      try {
+        womenPhysiologyGeoData = await getIndividualJSON(
+          "/data/women_physiology_geo.json",
+        );
+      } catch (error: unknown) {
+        console.error("Failed to load women_physiology_geo.json", error);
+      }
+    };
+
+    loadCsvData();
+    loadWomenPhysiologyGeoData();
 
     // Runs once per animation frame and updates timeline state from wall-clock time.
     const updateYearFromClock = () => {
@@ -190,9 +233,6 @@
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   });
-
-  $: console.log(womenMedicsData);
-  
 </script>
 
 <main bind:clientWidth={width} bind:clientHeight={height}>
@@ -202,7 +242,6 @@
       Continue
     </button>
   {/if}
-  <!-- <h1>Women in Medicine</h1> -->
   <svg {width} {height}>
     {#if width > 0 && height > 0}
       <Events
@@ -219,7 +258,7 @@
         x2={axisEnd}
         y2={timelineY}
       ></line>
-      <text
+      <!-- <text
         x={yearToX(displayYear)}
         y={timelineY - 10}
         text-anchor="middle"
@@ -227,16 +266,21 @@
         font-size="18px"
       >
         {displayYear}
-      </text>
+      </text> -->
+
       <!-- when the current year reaches each milestone in pauseYears, a Path component is rendered for it -->
-      {#each pauseYears.filter((year) => displayYear >= year) as year (year)}
+      {#each pauseYears.filter((year) => displayYear >= year) as year, index (year)}
         <Path
           x={yearToX(year)}
           {height}
           label={milestoneLabels.get(year) ?? ""}
+          labelIndex={index + 1}
           shrink={shrinkEnabledYears.has(year)}
         />
       {/each}
+      {#if displayYear >= 1869}
+        <Bar x={yearToX(1869)} {height} {edinburghSevenData} />
+      {/if}
       {#each tickValues as year}
         <g class="tick" transform={`translate(${yearToX(year)}, ${timelineY})`}>
           <line x1="0" y1="0" x2="0" y2={tickLength}></line>
@@ -251,14 +295,33 @@
     <div
       class="milestone-card"
       class:is-garrett={year === 1862}
+      class:has-image={year === 1862 || year === 1889 || year === 1892}
       class:is-visible={pausedAtYear === year}
       style="left: {clampedLeft(yearToX(year))}px;"
     >
       {#if year === 1862}
         <div class="milestone-text">{milestoneLabels.get(year) ?? ""}</div>
-        <img class="milestone-image" src="/img/garrett.png" alt="Elizabeth Garrett" />
+        <img
+          class="milestone-image"
+          src="/img/garrett.png"
+          alt="Elizabeth Garrett"
+        />
       {:else if year === 1875}
-      <MapView />
+        <MapView {womenPhysiologyGeoData} />
+      {:else if year === 1889}
+        <div class="milestone-text">{milestoneLabels.get(year) ?? ""}</div>
+        <img
+          class="milestone-image"
+          src="/img/act_1889.png"
+          alt="Universities Scotland Act 1889 excerpt"
+        />
+      {:else if year === 1892}
+        <div class="milestone-text">{milestoneLabels.get(year) ?? ""}</div>
+        <img
+          class="milestone-image"
+          src="/img/ordinance_1892.png"
+          alt="Women Admitted to Universities"
+        />
       {:else}
         {milestoneLabels.get(year) ?? ""}
       {/if}
@@ -277,6 +340,7 @@
     position: absolute;
     top: 15vh;
     width: 1000px;
+    box-sizing: border-box;
     height: 60vh;
     display: flex;
     align-items: center;
@@ -291,33 +355,39 @@
       opacity 260ms ease,
       transform 260ms ease;
     pointer-events: none;
+    overflow: hidden;
   }
 
   .milestone-card.is-visible {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(8px) scale(1);
     pointer-events: auto;
   }
 
-  .milestone-card.is-garrett {
+  .milestone-card.is-garrett,
+  .milestone-card.has-image {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
     gap: 1rem;
     padding-top: 1rem;
+    padding-inline: 1rem;
     text-align: center;
   }
 
   .milestone-text {
     width: 100%;
+    flex: 0 0 auto;
   }
 
   .milestone-image {
-    width: 100%;
+    width: auto;
     max-width: 100%;
-    max-height: calc(100% - 2rem);
+    max-height: calc(100% - 5rem);
     object-fit: contain;
     display: block;
+    flex: 1 1 auto;
+    min-height: 0;
   }
 
   /* Dev-only: remove this style block with the Continue button markup. */
@@ -336,7 +406,7 @@
 
   .domain {
     stroke: gray;
-    stroke-width: 2px;
+    stroke-width: 1px;
   }
 
   .tick line {

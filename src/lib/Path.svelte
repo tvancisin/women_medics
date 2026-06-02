@@ -6,6 +6,7 @@
   export let x = 0;
   export let height = 0;
   export let label = "";
+  export let labelIndex = 1;
   export let shrink = false;
 
   const pathLengthPx = tweened(0, {
@@ -13,28 +14,33 @@
     easing: cubicOut,
   });
 
-  $: startY = height - 30;
+  $: startY = height - 100;
   $: middleY = height - 200;
   $: fullLength = Math.max(0, startY - middleY);
-
-  // Tip of the path rises from startY toward middleY as pathLengthPx grows.
-  $: endY = startY - $pathLengthPx;
-  $: pathD = `M ${x} ${startY} L ${x} ${endY}`;
 
   onMount(() => {
     pathLengthPx.set(fullLength);
   });
 
+  // path rises
+  $: endY = startY - $pathLengthPx;
+
   $: if (shrink) {
-    pathLengthPx.set(50);
+    pathLengthPx.set(-40);
   }
+
+  $: labelYOffset =
+    labelIndex >= 4 ? -4 + (labelIndex - 3) * 12 : -4;
+  $: markerY = shrink ? endY + labelYOffset : endY;
+  $: labelY = markerY;
+  $: pathD = `M ${x} ${startY} L ${x} ${markerY}`;
 </script>
 
 <path class="event-path" d={pathD} fill="none" />
 <rect
   class="event-marker"
   x={x - 2.5}
-  y={endY - 5}
+  y={markerY - 5}
   width="5"
   height="5"
   fill="orange"
@@ -44,10 +50,8 @@
   <text
     class="event-label"
     x={x + 5}
-    y={endY - 4}
-    text-anchor="start"
-    transform={`rotate(-45 ${x + 5} ${endY - 4})`}>{label}</text
-  >
+    y={labelY}
+    text-anchor="start">{label}</text>
 {/if}
 
 <style>
