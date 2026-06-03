@@ -7,48 +7,44 @@
     historicalEvents,
   } from "./datastore";
   import Path from "./lib/Path.svelte";
-  import Events from "./lib/Events.svelte";
+  import HistoricalEvents from "./lib/HistoricalEvents.svelte";
   import Linechart from "./lib/Linechart.svelte";
   import MapView from "./lib/MapView.svelte";
   import Bar from "./lib/Bar.svelte";
 
-  const startYear = 1583;
+  const startYear = 1582;
   const endYear = 2026;
-  const stepYears = 100;
-  const margin = { top: 20, right: 40, bottom: 100, left: 40 };
+  const stepYears = 50;
+  const margin = { top: 20, right: 40, bottom: 30, left: 40 };
   const tickLength = 5;
   const totalRange = endYear - startYear;
 
   // keeping the detail div inside screen
-  const milestoneCardWidth = 1000;
-  const milestoneSideGap = 10;
-  // Keep cards within viewport bounds with at least a 10px side gap when space allows.
+  const milestoneCardWidth = 800;
+  const milestoneMarkerSize = 20;
+  const collapsedMarkerDefaultOffset = 180;
+  const collapsedMarkerOverlapOffset = 210;
+  const collapsedMarkerOverlapThresholdPx = milestoneMarkerSize + 6;
+  // Anchor cards differently depending on whether the milestone is left or right of center.
   const clampedLeft = (x: number) => {
-    const minLeft = milestoneSideGap;
-    const maxLeft = width - milestoneCardWidth - milestoneSideGap;
-
-    // If viewport is narrower than card + gaps, pin to left gap as best effort.
-    if (maxLeft < minLeft) {
-      return minLeft;
-    }
-
-    const centeredLeft = x - milestoneCardWidth / 2;
-    return Math.min(Math.max(minLeft, centeredLeft), maxLeft);
+    return x < width / 2 ? x + 5 : x - milestoneCardWidth - 5;
   };
+  const centeredMarkerLeft = (x: number) => x - milestoneMarkerSize / 2;
 
   // Dev-only: set to false or remove this flag and the related blocks below to restore auto-resume.
   const devRequireClickToResume = true;
 
-  const pauseYears = [1583, 1726, 1862, 1867, 1869, 1875, 1889, 1892];
+  const pauseYears = [1862, 1867, 1869, 1875];
   const milestoneLabels = new Map<number, string>([
-    [1583, "University Founded"],
-    [1726, "School of Medicine"],
+    // [1583, "University Founded"],
+    // [1726, "School of Medicine"],
     [1862, "Elizabeth Garrett refusal"],
     [1867, "First female students"],
     [1869, "Edinburgh Seven"],
-    [1875, "First physiology course for women"],
-    [1889, "Universities Scotland Act 1889"],
-    [1892, "Women admitted to universities"],
+    [1875, "Physiology students"],
+    // [1889, "Universities Scotland Act 1889"],
+    // [1892, "Women admitted to universities"],
+    // [1914, "Official female medics"],
   ]);
   const pauseDurationMs = 1000;
 
@@ -63,7 +59,12 @@
   let shrinkEnabledYears = new Set<number>();
   let womenMedicsData: Array<{ year: number; number: number }> = [];
   let edinburghSevenData: Array<Record<string, string>> = [];
-  let womenPhysiologyGeoData: unknown = null;
+  type PhysiologyGeoDatum = {
+    source_data?: {
+      entry_year?: number | string;
+    };
+  };
+  let womenPhysiologyGeoData: PhysiologyGeoDatum[] = [];
 
   // Dev-only: remove these two variables with the click-to-resume behavior.
   let awaitingResumeClick = false;
@@ -98,6 +99,44 @@
 
   $: tickValues = width > 0 && height > 0 ? buildTickValues(currentYear) : [];
   $: displayYear = Math.floor(currentYear);
+  let topByYear: Map<number, number> = new Map();
+  $: collapsedMarkerTopByYear = (() => {
+    topByYear = new Map<number, number>();
+    let previousCollapsedYear: number | null = null;
+
+    for (const year of pauseYears) {
+      if (!shrinkEnabledYears.has(year)) {
+        continue;
+      }
+
+      const defaultTop = height - collapsedMarkerDefaultOffset;
+      const overlapTop = height - collapsedMarkerOverlapOffset;
+
+      if (previousCollapsedYear === null) {
+        topByYear.set(year, defaultTop);
+        previousCollapsedYear = year;
+        continue;
+      }
+
+      const markerX = centeredMarkerLeft(yearToX(year));
+      const previousX = centeredMarkerLeft(yearToX(previousCollapsedYear));
+      const previousTop = topByYear.get(previousCollapsedYear) ?? defaultTop;
+      const isClose =
+        Math.abs(markerX - previousX) < collapsedMarkerOverlapThresholdPx;
+
+      if (isClose) {
+        topByYear.set(
+          year,
+          previousTop === overlapTop ? defaultTop : overlapTop,
+        );
+      } else {
+        topByYear.set(year, defaultTop);
+      }
+
+      previousCollapsedYear = year;
+    }
+    return topByYear;
+  })();
 
   // Dev-only: remove this handler together with the Continue button markup.
   const handleResumeClick = () => {
@@ -109,6 +148,11 @@
     resumeRequested = true;
     awaitingResumeClick = false;
   };
+
+  const getPhysiologyDataForYear = (year: number) =>
+    womenPhysiologyGeoData.filter(
+      (d) => Number(d.source_data?.entry_year) === year,
+    );
 
   onMount(() => {
     const loadCsvData = async () => {
@@ -141,18 +185,21 @@
       }
     };
 
-    const loadWomenPhysiologyGeoData = async () => {
+    const loadJsonData = async () => {
       try {
-        womenPhysiologyGeoData = await getIndividualJSON(
+        const rawWomenPhysiologyGeoData = await getIndividualJSON(
           "/data/women_physiology_geo.json",
         );
+        womenPhysiologyGeoData = Array.isArray(rawWomenPhysiologyGeoData)
+          ? (rawWomenPhysiologyGeoData as PhysiologyGeoDatum[])
+          : [];
       } catch (error: unknown) {
         console.error("Failed to load women_physiology_geo.json", error);
       }
     };
 
     loadCsvData();
-    loadWomenPhysiologyGeoData();
+    loadJsonData();
 
     // Runs once per animation frame and updates timeline state from wall-clock time.
     const updateYearFromClock = () => {
@@ -237,6 +284,7 @@
 
 <main bind:clientWidth={width} bind:clientHeight={height}>
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
+  <h1>Women in Medicine Timeline</h1>
   {#if devRequireClickToResume && awaitingResumeClick}
     <button class="resume-button" type="button" on:click={handleResumeClick}>
       Continue
@@ -244,7 +292,7 @@
   {/if}
   <svg {width} {height}>
     {#if width > 0 && height > 0}
-      <Events
+      <HistoricalEvents
         events={historicalEvents}
         {currentYear}
         {startYear}
@@ -269,18 +317,35 @@
       </text> -->
 
       <!-- when the current year reaches each milestone in pauseYears, a Path component is rendered for it -->
-      {#each pauseYears.filter((year) => displayYear >= year) as year, index (year)}
+      {#each pauseYears.filter((year) => displayYear >= year && milestoneLabels.has(year)) as year, index (year)}
         <Path
           x={yearToX(year)}
+          {year}
           {height}
           label={milestoneLabels.get(year) ?? ""}
           labelIndex={index + 1}
           shrink={shrinkEnabledYears.has(year)}
+          {topByYear}
         />
       {/each}
-      {#if displayYear >= 1869}
-        <Bar x={yearToX(1869)} {height} {edinburghSevenData} />
+      <!-- {#if displayYear >= 1869}
+        <Bar x={yearToX(1869)} {height} data={edinburghSevenData} />
       {/if}
+      {#if displayYear >= 1875}
+        <Bar x={yearToX(1875)} {height} data={getPhysiologyDataForYear(1875)} />
+      {/if}
+      {#if displayYear >= 1878}
+        <Bar x={yearToX(1878)} {height} data={getPhysiologyDataForYear(1878)} />
+      {/if}
+      {#if displayYear >= 1883}
+        <Bar x={yearToX(1883)} {height} data={getPhysiologyDataForYear(1883)} />
+      {/if}
+      {#if displayYear >= 1886}
+        <Bar x={yearToX(1886)} {height} data={getPhysiologyDataForYear(1886)} />
+      {/if}
+      {#if displayYear >= 1891}
+        <Bar x={yearToX(1891)} {height} data={getPhysiologyDataForYear(1891)} />
+      {/if} -->
       {#each tickValues as year}
         <g class="tick" transform={`translate(${yearToX(year)}, ${timelineY})`}>
           <line x1="0" y1="0" x2="0" y2={tickLength}></line>
@@ -296,8 +361,14 @@
       class="milestone-card"
       class:is-garrett={year === 1862}
       class:has-image={year === 1862 || year === 1889 || year === 1892}
-      class:is-visible={pausedAtYear === year}
-      style="left: {clampedLeft(yearToX(year))}px;"
+      class:is-active={pausedAtYear === year}
+      class:is-past={shrinkEnabledYears.has(year)}
+      style:top={pausedAtYear === year
+        ? "15vh"
+        : `${collapsedMarkerTopByYear.get(year) ?? height - collapsedMarkerDefaultOffset}px`}
+      style:left="{pausedAtYear === year
+        ? clampedLeft(yearToX(year))
+        : centeredMarkerLeft(yearToX(year))}px"
     >
       {#if year === 1862}
         <div class="milestone-text">{milestoneLabels.get(year) ?? ""}</div>
@@ -306,8 +377,8 @@
           src="/img/garrett.png"
           alt="Elizabeth Garrett"
         />
-      {:else if year === 1875}
-        <MapView {womenPhysiologyGeoData} />
+      {:else if [1875, 1878, 1883, 1886, 1891].includes(year) && womenPhysiologyGeoData.length > 0}
+        <MapView data={womenPhysiologyGeoData} />
       {:else if year === 1889}
         <div class="milestone-text">{milestoneLabels.get(year) ?? ""}</div>
         <img
@@ -336,36 +407,66 @@
     position: relative;
   }
 
+  h1 {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    color: #fff;
+    font-family: Montserrat, sans-serif;
+    font-size: 26px;
+    margin: 0;
+  }
+
   .milestone-card {
     position: absolute;
-    top: 15vh;
-    width: 1000px;
+    width: 20px;
     box-sizing: border-box;
-    height: 60vh;
+    height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-size: 10px;
-    border-radius: 4px;
+    border-radius: 7px;
+    border: 1px solid rgba(110, 110, 110, 0.8);
     background-color: rgb(46, 46, 46);
     opacity: 0;
-    transform: translateY(8px) scale(0.98);
+    transform: translateY(8px);
     transition:
+      width 260ms ease,
+      height 260ms ease,
+      top 260ms ease,
+      left 260ms ease,
       opacity 260ms ease,
       transform 260ms ease;
     pointer-events: none;
     overflow: hidden;
   }
 
-  .milestone-card.is-visible {
+  .milestone-card.is-active,
+  .milestone-card.is-past {
     opacity: 1;
-    transform: translateY(8px) scale(1);
+  }
+
+  .milestone-card.is-active {
+    width: 800px;
+    height: 60vh;
+    transform: translateY(8px);
     pointer-events: auto;
   }
 
-  .milestone-card.is-garrett,
-  .milestone-card.has-image {
+  .milestone-card.is-past {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    gap: 0;
+    background-color: #000000;
+  }
+
+  .milestone-card.is-active.is-garrett,
+  .milestone-card.is-active.has-image {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;

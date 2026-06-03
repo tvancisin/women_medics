@@ -1,125 +1,160 @@
 <script lang="ts">
-	import { onDestroy, onMount } from "svelte";
-	import L from "leaflet";
-	import "leaflet/dist/leaflet.css";
+  import "leaflet/dist/leaflet.css";
+  import L from "leaflet";
+  import { onDestroy, onMount } from "svelte";
 
-	export let womenPhysiologyGeoData: unknown = null;
+  export let data: unknown = null;
 
-	type PhysiologyGeoRow = {
-		source_data?: {
-			name?: string;
-			university_address?: {
-				original_name?: string;
-				lat?: number;
-				lon?: number;
-			};
-		};
-	};
+  type PhysiologyGeoRow = {
+    source_data?: {
+      name?: string;
+      university_address?: {
+        original_name?: string;
+        lat?: number;
+        lon?: number;
+      };
+    };
+  };
 
-	type MapLocation = {
-		name: string;
-		address: string;
-		lat: number;
-		lon: number;
-	};
+  type MapLocation = {
+    name: string;
+    address: string;
+    lat: number;
+    lon: number;
+  };
 
-	let mapElement: HTMLDivElement;
-	let map: ReturnType<typeof L.map> | null = null;
-	let locationLayer: ReturnType<typeof L.layerGroup> | null = null;
+  const defaultCenter: [number, number] = [55.9533, -3.1883];
+  const defaultZoom = 11;
 
-	const getLocations = (rawData: unknown): MapLocation[] => {
-		if (!Array.isArray(rawData)) {
-			return [];
-		}
+  let mapElement: HTMLDivElement;
+  let map: ReturnType<typeof L.map> | null = null;
+  let locationLayer: ReturnType<typeof L.layerGroup> | null = null;
 
-		const rows = rawData as PhysiologyGeoRow[];
-		return rows
-			.map((row) => {
-				const universityAddress = row.source_data?.university_address;
-				const lat = Number(universityAddress?.lat);
-				const lon = Number(universityAddress?.lon);
+  const recenterMap = () => {
+    if (!map) {
+      return;
+    }
 
-				if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
-					return null;
-				}
+    map.setView(defaultCenter, defaultZoom, { animate: false });
+  };
 
-				return {
-					name: row.source_data?.name ?? "Unknown",
-					address: universityAddress?.original_name ?? "Unknown address",
-					lat,
-					lon,
-				};
-			})
-			.filter((location): location is MapLocation => location !== null);
-	};
+  const invalidateMapSize = () => {
+    if (!map) {
+      return;
+    }
 
-	const renderLocationCircles = () => {
-		if (!map || !locationLayer) {
-			return;
-		}
+    requestAnimationFrame(() => {
+      map?.invalidateSize({ pan: false, animate: false });
+      recenterMap();
+    });
+  };
 
-		locationLayer.clearLayers();
-		const locations = getLocations(womenPhysiologyGeoData);
+  const getLocations = (rawData: unknown): MapLocation[] => {
+    if (!Array.isArray(rawData)) {
+      return [];
+    }
 
-		locations.forEach((location) => {
-			L.circleMarker([location.lat, location.lon], {
-				radius: 5,
-				color: "#d9f0ff",
-				fillColor: "black",
-				fillOpacity: 0.8,
-				weight: 1,
-			})
-				.addTo(locationLayer)
-				.bindPopup(`<strong>${location.name}</strong><br />${location.address}`);
-		});
-	};
+    const rows = rawData as PhysiologyGeoRow[];
+    return rows
+      .map((row) => {
+        const universityAddress = row.source_data?.university_address;
+        const lat = Number(universityAddress?.lat);
+        const lon = Number(universityAddress?.lon);
 
-	$: if (map && locationLayer && womenPhysiologyGeoData) {
-		renderLocationCircles();
-	}
+        if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+          return null;
+        }
 
-	onMount(() => {
-		// Center on Edinburgh and keep this intentionally minimal for now.
-		map = L.map(mapElement, {
-			zoomControl: true,
-			attributionControl: true,
-		}).setView([55.9533, -3.1883], 11);
+        return {
+          name: row.source_data?.name ?? "Unknown",
+          address: universityAddress?.original_name ?? "Unknown address",
+          lat,
+          lon,
+        };
+      })
+      .filter((location): location is MapLocation => location !== null);
+  };
 
-		L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-			maxZoom: 19,
-			attribution: "&copy; OpenStreetMap contributors",
-		}).addTo(map);
+  const renderLocationCircles = () => {
+    if (!map || !locationLayer) {
+      return;
+    }
 
-		locationLayer = L.layerGroup().addTo(map);
-		renderLocationCircles();
+    locationLayer.clearLayers();
+    const locations = getLocations(data);
 
-	});
+    locations.forEach((location) => {
+      L.circleMarker([location.lat, location.lon], {
+        radius: 5,
+        color: "#d9f0ff",
+        fillColor: "black",
+        fillOpacity: 0.8,
+        weight: 1,
+      })
+        .addTo(locationLayer)
+        .bindPopup(
+          `<strong>${location.name}</strong><br />${location.address}`,
+        );
+    });
 
-	onDestroy(() => {
-		locationLayer?.clearLayers();
-		locationLayer = null;
-		map?.remove();
-		map = null;
-	});
+  };
+
+  $: if (map && locationLayer && data) {
+    invalidateMapSize();
+    renderLocationCircles();
+  }
+
+  onMount(() => {
+    // Center on Edinburgh and keep this intentionally minimal for now.
+    map = L.map(mapElement, {
+      zoomControl: true,
+      attributionControl: true,
+    }).setView(defaultCenter, defaultZoom);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(map);
+
+    locationLayer = L.layerGroup().addTo(map);
+    invalidateMapSize();
+    renderLocationCircles();
+
+    const resizeObserver = new ResizeObserver(() => {
+      invalidateMapSize();
+    });
+    resizeObserver.observe(mapElement);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  });
+
+  onDestroy(() => {
+    locationLayer?.clearLayers();
+    locationLayer = null;
+    map?.remove();
+    map = null;
+  });
 </script>
 
 <div class="map-wrap">
-	<div class="map" bind:this={mapElement}></div>
+  <div class="map" bind:this={mapElement}></div>
 </div>
 
 <style>
-	.map-wrap {
-		width: 100%;
-		height: 100%;
-		padding: 0.75rem;
-		box-sizing: border-box;
-	}
+  .map-wrap {
+    width: 100%;
+    height: 100%;
+    padding: 0.75rem;
+    box-sizing: border-box;
+  }
 
-	.map {
-		width: 100%;
-		height: 100%;
-		min-height: 320px;
-		border-radius: 6px;
-		overflow: hidden;
-	}
+  .map {
+    width: 100%;
+    height: 100%;
+    min-height: 320px;
+    border-radius: 6px;
+    overflow: hidden;
+  }
 </style>
