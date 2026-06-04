@@ -8,7 +8,7 @@
   type PhysiologyGeoRow = {
     source_data?: {
       name?: string;
-      university_address?: {
+      university_addrews?: {
         original_name?: string;
         lat?: number;
         lon?: number;

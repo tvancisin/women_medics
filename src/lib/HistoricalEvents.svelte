@@ -47,7 +47,7 @@
     <text
       class="event-label"
       x={x2 - 5}
-      y={100 + index * 20}
+      y={80 + index * 20}
       text-anchor={event.startYear == 1582 ? "start" : "end"}
     >
       {event.description}

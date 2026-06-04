@@ -14,20 +14,21 @@
 
   const startYear = 1582;
   const endYear = 2026;
-  const stepYears = 50;
+  const stepYears = 20;
   const margin = { top: 20, right: 40, bottom: 30, left: 40 };
   const tickLength = 5;
   const totalRange = endYear - startYear;
 
   // keeping the detail div inside screen
   const milestoneCardWidth = 800;
-  const milestoneMarkerSize = 20;
-  const collapsedMarkerDefaultOffset = 180;
-  const collapsedMarkerOverlapOffset = 210;
+  const milestoneMarkerSize = 30;
+  const collapsedMarkerDefaultOffset = 80;
+  const collapsedMarkerOverlapOffset = 110;
   const collapsedMarkerOverlapThresholdPx = milestoneMarkerSize + 6;
+
   // Anchor cards differently depending on whether the milestone is left or right of center.
   const clampedLeft = (x: number) => {
-    return x < width / 2 ? x + 5 : x - milestoneCardWidth - 5;
+    return x < width / 2 ? x + 5 : x - milestoneCardWidth - 10;
   };
   const centeredMarkerLeft = (x: number) => x - milestoneMarkerSize / 2;
 
@@ -45,6 +46,14 @@
     // [1889, "Universities Scotland Act 1889"],
     // [1892, "Women admitted to universities"],
     // [1914, "Official female medics"],
+  ]);
+  // Map each pause year to the image shown when the card is shrunk (is-past).
+  // Point multiple years at the same path, or leave a year out to show no image.
+  const milestoneImages = new Map<number, string>([
+    [1862, "/img/garrett_pic.jpg"],
+    [1867, "/img/uni_logo.png"],
+    [1869, "/img/uni_logo.png"],
+    [1875, "/img/uni_logo.png"],
   ]);
   const pauseDurationMs = 1000;
 
@@ -284,7 +293,7 @@
 
 <main bind:clientWidth={width} bind:clientHeight={height}>
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
-  <h1>Women in Medicine Timeline</h1>
+  <h1>Female Medical Students at the University of Edinburgh</h1>
   {#if devRequireClickToResume && awaitingResumeClick}
     <button class="resume-button" type="button" on:click={handleResumeClick}>
       Continue
@@ -360,9 +369,13 @@
     <div
       class="milestone-card"
       class:is-garrett={year === 1862}
-      class:has-image={year === 1862 || year === 1889 || year === 1892}
+      class:has-image={year === 1862 || year === 1867 || year === 1892}
       class:is-active={pausedAtYear === year}
       class:is-past={shrinkEnabledYears.has(year)}
+      style:background-image={shrinkEnabledYears.has(year) &&
+      milestoneImages.has(year)
+        ? `url(${milestoneImages.get(year)})`
+        : undefined}
       style:top={pausedAtYear === year
         ? "15vh"
         : `${collapsedMarkerTopByYear.get(year) ?? height - collapsedMarkerDefaultOffset}px`}
@@ -371,19 +384,19 @@
         : centeredMarkerLeft(yearToX(year))}px"
     >
       {#if year === 1862}
-        <div class="milestone-text">{milestoneLabels.get(year) ?? ""}</div>
         <img
           class="milestone-image"
           src="/img/garrett.png"
           alt="Elizabeth Garrett"
         />
+        <div class="milestone-text">{milestoneLabels.get(year) ?? ""}</div>
       {:else if [1875, 1878, 1883, 1886, 1891].includes(year) && womenPhysiologyGeoData.length > 0}
         <MapView data={womenPhysiologyGeoData} />
-      {:else if year === 1889}
+      {:else if year === 1867}
         <div class="milestone-text">{milestoneLabels.get(year) ?? ""}</div>
         <img
           class="milestone-image"
-          src="/img/act_1889.png"
+          src="/img/first_women.png"
           alt="Universities Scotland Act 1889 excerpt"
         />
       {:else if year === 1892}
@@ -421,9 +434,9 @@
 
   .milestone-card {
     position: absolute;
-    width: 20px;
+    width: 30px;
     box-sizing: border-box;
-    height: 20px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -458,11 +471,18 @@
   }
 
   .milestone-card.is-past {
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
     padding: 0;
     gap: 0;
-    background-color: #000000;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    font-size: 0;
+  }
+
+  .milestone-card.is-past > * {
+    display: none;
   }
 
   .milestone-card.is-active.is-garrett,
@@ -478,6 +498,7 @@
 
   .milestone-text {
     width: 100%;
+    font-size: 16px;
     flex: 0 0 auto;
   }
 
