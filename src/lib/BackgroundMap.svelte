@@ -14,6 +14,15 @@
   let hasAnimatedBarryLine = false;
   let hasAnimatedGarrettLine = false;
   let hasFocusedBarryMilestone = false;
+  let imageMarkers = new Map<string, mapboxgl.Marker>();
+
+  type ImageMarkerConfig = {
+    id: string;
+    year: number;
+    coordinates: [number, number];
+    imageName: string;
+    alt: string;
+  };
 
   const rawEnvToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
   const envToken = (rawEnvToken ?? "").trim().replace(/^"|"$/g, "");
@@ -21,6 +30,49 @@
   const barryLineLayerId = "barry-journey-line";
   const garrettSourceId = "garrett-journey";
   const garrettLineLayerId = "garrett-journey-line";
+  const timelineImageMarkers: ImageMarkerConfig[] = [
+    {
+      id: "university-founded",
+      year: 1583,
+      coordinates: [55.94741706177913, -3.1872452967325717],
+      imageName: "uni_logo.png",
+      alt: "University of Edinburgh",
+    },
+    {
+      id: "school-of-medicine",
+      year: 1726,
+      coordinates: [55.94528777582195, -3.190270487035351],
+      imageName: "uni_logo.png",
+      alt: "School of Medicine",
+    },
+  ];
+
+  const addImageMarker = ({
+    id,
+    coordinates,
+    imageName,
+    alt,
+  }: ImageMarkerConfig) => {
+    if (!map || imageMarkers.has(id)) return;
+
+    const [latitude, longitude] = coordinates;
+    const markerImage = document.createElement("img");
+    markerImage.src = `/img/${imageName}`;
+    markerImage.alt = alt;
+    markerImage.style.width = "30px";
+    markerImage.style.height = "30px";
+    markerImage.style.display = "block";
+    markerImage.style.objectFit = "contain";
+
+    const marker = new mapboxgl.Marker({
+      element: markerImage,
+      anchor: "center",
+    })
+      .setLngLat([longitude, latitude])
+      .addTo(map);
+
+    imageMarkers.set(id, marker);
+  };
 
   const isGeoJsonData = (value: unknown): value is GeoJSON.GeoJSON => {
     return Boolean(value && typeof value === "object" && "type" in value);
@@ -147,10 +199,18 @@
     return true;
   };
 
+  $: if (map) {
+    for (const marker of timelineImageMarkers) {
+      if (currentYear >= marker.year) {
+        addImageMarker(marker);
+      }
+    }
+  }
+
   $: if (map && currentYear === 1809 && !hasFocusedBarryMilestone) {
     map.flyTo({
-      center: [-3.1883, 55.5533],
-      zoom: 5,
+      center: [-3.1883, 54.5533],
+      zoom: 5.5,
       duration: 3000,
       essential: true,
     });
@@ -220,7 +280,8 @@
       container: mapContainer,
       center: [-3.1883, 55.9533],
       zoom: 12,
-      pitch: 60,
+      // pitch: 60,
+      logoPosition: "top-right",
       style: "mapbox://styles/mapbox/dark-v11",
     });
 
@@ -242,6 +303,8 @@
     return () => {
       window.removeEventListener("resize", handleResize);
       if (animationFrame) cancelAnimationFrame(animationFrame);
+      imageMarkers.forEach((marker) => marker.remove());
+      imageMarkers.clear();
       map.remove();
     };
   });

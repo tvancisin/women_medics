@@ -67,9 +67,9 @@
 {#if label}
   <text
     class="event-label"
-    x={x + 5}
+    x={x + 20}
     // y={labelY}
-    y={endY}
+    y={endY  + 2}
     transform="rotate(-90, {x}, {endY})"
     text-anchor="start">{label}</text
   >

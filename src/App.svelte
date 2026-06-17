@@ -21,7 +21,7 @@
   const totalRange = endYear - startYear;
 
   // keeping the detail div inside screen
-  const milestoneCardWidth = 800;
+  const milestoneCardWidth = 400;
   const milestoneMarkerSize = 30;
   const collapsedMarkerDefaultOffset = 80;
   const collapsedMarkerOverlapOffset = 110;
@@ -36,13 +36,13 @@
   // Dev-only: set to false or remove this flag and the related blocks below to restore auto-resume.
   const devRequireClickToResume = true;
 
-  const pauseYears = [1809, 1862, 1867, 1869, 1875];
+  const pauseYears = [1583, 1726, 1809, 1862, 1867, 1869, 1875];
   const milestoneLabels = new Map<number, string>([
-    // [1583, "University Founded"],
-    // [1726, "School of Medicine"],
-    [1809, "James Barry"],
+    [1583, "University Founded"],
+    [1726, "School of Medicine"],
+    [1809, "Margaret Bulkley / James Barry"],
     [1862, "Elizabeth Garrett"],
-    [1867, "First female students"],
+    [1867, "First classes for women"],
     [1869, "Edinburgh Seven"],
     [1875, "Physiology students"],
     // [1889, "Universities Scotland Act 1889"],
@@ -53,11 +53,11 @@
   // Map each pause year to the image shown when the card is shrunk (is-past).
   // Point multiple years at the same path, or leave a year out to show no image.
   const milestoneImages = new Map<number, string>([
-    [1809, "/img/uni_logo.jpg"],
-    [1862, "/img/garrett_pic.jpg"],
-    [1867, "/img/uni_logo.png"],
-    [1869, "/img/uni_logo.png"],
-    [1875, "/img/uni_logo.png"],
+    // [1809, "/img/uni_logo.jpg"],
+    // [1862, "/img/garrett_pic.jpg"],
+    // [1867, "/img/uni_logo.png"],
+    // [1869, "/img/uni_logo.png"],
+    // [1875, "/img/uni_logo.png"],
   ]);
   const pauseDurationMs = 1000;
 
@@ -74,6 +74,7 @@
   let shrinkEnabledYears = new Set<number>();
   let womenMedicsData: Array<{ year: number; number: number }> = [];
   let edinburghSevenData: Array<Record<string, string>> = [];
+  let firstClassesData: Array<Record<string, string>> = [];
   type PhysiologyGeoDatum = {
     source_data?: {
       entry_year?: number | string;
@@ -172,11 +173,13 @@
   onMount(() => {
     const loadCsvData = async () => {
       try {
-        const [rawWomenMedicsData, rawEdinburghSevenData] = (await getCSV([
+        const [rawWomenMedicsData, rawEdinburghSevenData, first_classes] = (await getCSV([
           "/data/women_medics_1914_1966.csv",
           "/data/edinburgh_seven.csv",
+          "/data/first_women_classes+1867.csv",
         ])) as [
           Array<{ year?: string; number?: string }>,
+          Array<Record<string, string>>,
           Array<Record<string, string>>,
         ];
 
@@ -192,6 +195,7 @@
           );
 
         edinburghSevenData = rawEdinburghSevenData;
+        firstClassesData = first_classes;
       } catch (error: unknown) {
         console.error(
           "Failed to load women_medics_1914_1966.csv and/or edinburgh_seven.csv",
@@ -376,7 +380,7 @@
     {/if}
   </svg>
 
-  <!-- {#each pauseYears as year (year)}
+  {#each pauseYears as year (year)}
     <div
       class="milestone-card"
       class:is-garrett={year === 1862}
@@ -388,7 +392,7 @@
         ? `url(${milestoneImages.get(year)})`
         : undefined}
       style:top={pausedAtYear === year
-        ? "15vh"
+        ? "65vh"
         : `${collapsedMarkerTopByYear.get(year) ?? height - collapsedMarkerDefaultOffset}px`}
       style:left="{pausedAtYear === year
         ? clampedLeft(yearToX(year))
@@ -421,7 +425,7 @@
         {milestoneLabels.get(year) ?? ""}
       {/if}
     </div>
-  {/each} -->
+  {/each}
 </main>
 
 <style>
@@ -461,8 +465,8 @@
     color: white;
     font-size: 10px;
     border-radius: 7px;
-    border: 1px solid rgba(110, 110, 110, 0.8);
-    background-color: rgb(46, 46, 46);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    background-color: rgb(0, 0, 0);
     opacity: 0;
     transform: translateY(8px);
     transition:
@@ -482,8 +486,8 @@
   }
 
   .milestone-card.is-active {
-    width: 800px;
-    height: 60vh;
+    width: 400px;
+    height: 30vh;
     transform: translateY(8px);
     pointer-events: auto;
   }
@@ -516,7 +520,7 @@
 
   .milestone-text {
     width: 100%;
-    font-size: 16px;
+    font-size: 12px;
     flex: 0 0 auto;
   }
 
