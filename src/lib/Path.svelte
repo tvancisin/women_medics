@@ -24,7 +24,7 @@
   });
 
   $: startY = height - 30;
-  $: middleY = height - 500;
+  $: middleY = height - 100;
   $: fullLength = Math.max(0, startY - middleY);
 
   onMount(() => {
@@ -39,7 +39,6 @@
     markerTop === undefined
       ? fallbackShrinkLength
       : Math.max(0, startY - markerTop - 20);
-  
 
   $: if (shrink) {
     pathLengthPx.set(shrinkLength);
@@ -65,14 +64,16 @@
   fill="white"
   rx="2"
 /> -->
-<!-- {#if label && shrink}
+{#if label}
   <text
     class="event-label"
     x={x + 5}
     // y={labelY}
     y={endY}
-    text-anchor="start">{label}</text>
-{/if} -->
+    transform="rotate(-90, {x}, {endY})"
+    text-anchor="start">{label}</text
+  >
+{/if}
 
 <style>
   .event-path {

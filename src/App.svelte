@@ -11,6 +11,7 @@
   import Linechart from "./lib/Linechart.svelte";
   import MapView from "./lib/MapView.svelte";
   import Bar from "./lib/Bar.svelte";
+  import BackgroundMap from "./lib/BackgroundMap.svelte";
 
   const startYear = 1582;
   const endYear = 2026;
@@ -35,11 +36,12 @@
   // Dev-only: set to false or remove this flag and the related blocks below to restore auto-resume.
   const devRequireClickToResume = true;
 
-  const pauseYears = [1862, 1867, 1869, 1875];
+  const pauseYears = [1809, 1862, 1867, 1869, 1875];
   const milestoneLabels = new Map<number, string>([
     // [1583, "University Founded"],
     // [1726, "School of Medicine"],
-    [1862, "Elizabeth Garrett refusal"],
+    [1809, "James Barry"],
+    [1862, "Elizabeth Garrett"],
     [1867, "First female students"],
     [1869, "Edinburgh Seven"],
     [1875, "Physiology students"],
@@ -47,9 +49,11 @@
     // [1892, "Women admitted to universities"],
     // [1914, "Official female medics"],
   ]);
+
   // Map each pause year to the image shown when the card is shrunk (is-past).
   // Point multiple years at the same path, or leave a year out to show no image.
   const milestoneImages = new Map<number, string>([
+    [1809, "/img/uni_logo.jpg"],
     [1862, "/img/garrett_pic.jpg"],
     [1867, "/img/uni_logo.png"],
     [1869, "/img/uni_logo.png"],
@@ -59,6 +63,8 @@
 
   let height = 0;
   let width = 0;
+  let garrettJourneyData: unknown = null;
+  let barryJourneyData: unknown = null;
   let currentYear = startYear;
   let animationStartMs = 0;
   let animationFrameId: number | null = null;
@@ -196,14 +202,27 @@
 
     const loadJsonData = async () => {
       try {
-        const rawWomenPhysiologyGeoData = await getIndividualJSON(
-          "/data/women_physiology_geo.json",
-        );
+        const [
+          rawWomenPhysiologyGeoData,
+          rawGarrettJourneyData,
+          rawBarryJourneyData,
+        ] = await Promise.all([
+          getIndividualJSON("/data/women_physiology_geo.json"),
+          getIndividualJSON("/data/geo/garrett_journey.json"),
+          getIndividualJSON("/data/geo/barry_journey.json"),
+        ]);
+
         womenPhysiologyGeoData = Array.isArray(rawWomenPhysiologyGeoData)
           ? (rawWomenPhysiologyGeoData as PhysiologyGeoDatum[])
           : [];
+
+        garrettJourneyData = rawGarrettJourneyData ?? null;
+        barryJourneyData = rawBarryJourneyData ?? null;
       } catch (error: unknown) {
-        console.error("Failed to load women_physiology_geo.json", error);
+        console.error(
+          "Failed to load women_physiology_geo.json and/or garrett_journey.json",
+          error,
+        );
       }
     };
 
@@ -292,8 +311,9 @@
 </script>
 
 <main bind:clientWidth={width} bind:clientHeight={height}>
+  <!-- <h1>Female Medical Students at the University of Edinburgh</h1> -->
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
-  <h1>Female Medical Students at the University of Edinburgh</h1>
+  <BackgroundMap {currentYear} {garrettJourneyData} {barryJourneyData} />
   {#if devRequireClickToResume && awaitingResumeClick}
     <button class="resume-button" type="button" on:click={handleResumeClick}>
       Continue
@@ -315,17 +335,7 @@
         x2={axisEnd}
         y2={timelineY}
       ></line>
-      <!-- <text
-        x={yearToX(displayYear)}
-        y={timelineY - 10}
-        text-anchor="middle"
-        fill="#fff"
-        font-size="18px"
-      >
-        {displayYear}
-      </text> -->
 
-      <!-- when the current year reaches each milestone in pauseYears, a Path component is rendered for it -->
       {#each pauseYears.filter((year) => displayYear >= year && milestoneLabels.has(year)) as year, index (year)}
         <Path
           x={yearToX(year)}
@@ -365,7 +375,8 @@
       <Linechart {currentYear} {timelineY} {yearToX} {womenMedicsData} />
     {/if}
   </svg>
-  {#each pauseYears as year (year)}
+
+  <!-- {#each pauseYears as year (year)}
     <div
       class="milestone-card"
       class:is-garrett={year === 1862}
@@ -410,7 +421,7 @@
         {milestoneLabels.get(year) ?? ""}
       {/if}
     </div>
-  {/each}
+  {/each} -->
 </main>
 
 <style>
@@ -418,6 +429,12 @@
     width: 100%;
     height: 100vh;
     position: relative;
+  }
+
+  svg {
+    position: relative;
+    z-index: 1;
+    display: block;
   }
 
   h1 {
@@ -434,6 +451,7 @@
 
   .milestone-card {
     position: absolute;
+    z-index: 2;
     width: 30px;
     box-sizing: border-box;
     height: 30px;
@@ -517,7 +535,7 @@
     position: absolute;
     top: 16px;
     left: 16px;
-    z-index: 1;
+    z-index: 10;
     padding: 0.5rem 0.75rem;
     border: 1px solid rgba(255, 255, 255, 0.4);
     background: rgba(20, 20, 20, 0.75);
