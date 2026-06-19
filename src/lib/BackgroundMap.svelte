@@ -45,6 +45,20 @@
       imageName: "uni_logo.png",
       alt: "School of Medicine",
     },
+    {
+      id: "school",
+      year: 1886,
+      coordinates: [55.947346356539505, -3.19082680144295],
+      imageName: "uni_logo.png",
+      alt: "Schoolof Medicine",
+    },
+    {
+      id: "college",
+      year: 1889,
+      coordinates: [55.94772479242563, -3.1889092603064184],
+      imageName: "uni_logo.png",
+      alt: "College of Medicine",
+    },
   ];
 
   const addImageMarker = ({
@@ -59,8 +73,8 @@
     const markerImage = document.createElement("img");
     markerImage.src = `/img/${imageName}`;
     markerImage.alt = alt;
-    markerImage.style.width = "30px";
-    markerImage.style.height = "30px";
+    markerImage.style.width = "15px";
+    markerImage.style.height = "15px";
     markerImage.style.display = "block";
     markerImage.style.objectFit = "contain";
 
@@ -207,16 +221,6 @@
     }
   }
 
-  $: if (map && currentYear === 1809 && !hasFocusedBarryMilestone) {
-    map.flyTo({
-      center: [-3.1883, 54.5533],
-      zoom: 5.5,
-      duration: 3000,
-      essential: true,
-    });
-    hasFocusedBarryMilestone = true;
-  }
-
   $: if (
     map &&
     styleReady &&
@@ -228,8 +232,15 @@
       journeyData: barryJourneyData,
       sourceId: barrySourceId,
       lineLayerId: barryLineLayerId,
-      lineColor: "yellow",
+      lineColor: "white",
     });
+    map.flyTo({
+      center: [-5.1883, 54.5533],
+      zoom: 5.5,
+      duration: 3000,
+      essential: true,
+    });
+    hasFocusedBarryMilestone = true;
   }
 
   $: if (
@@ -243,8 +254,13 @@
       journeyData: garrettJourneyData,
       sourceId: garrettSourceId,
       lineLayerId: garrettLineLayerId,
-      lineColor: "yellow",
+      lineColor: "white",
     });
+    map.flyTo({
+      center: [-2.1883, 54.5533],
+      duration: 2000,
+      essential: true,
+    })
   }
 
   $: if (map && styleReady && currentYear >= 1867) {

@@ -2,8 +2,8 @@
   import { onMount } from "svelte";
   import {
     getCSV,
+    getJson,
     getIndividualCSV,
-    getIndividualJSON,
     historicalEvents,
   } from "./datastore";
   import Path from "./lib/Path.svelte";
@@ -22,29 +22,38 @@
 
   // keeping the detail div inside screen
   const milestoneCardWidth = 400;
-  const milestoneMarkerSize = 30;
+  const milestoneMarkerSize = 20;
   const collapsedMarkerDefaultOffset = 80;
   const collapsedMarkerOverlapOffset = 110;
   const collapsedMarkerOverlapThresholdPx = milestoneMarkerSize + 6;
 
   // Anchor cards differently depending on whether the milestone is left or right of center.
-  const clampedLeft = (x: number) => {
-    return x < width / 2 ? x + 5 : x - milestoneCardWidth - 10;
+  const card_left = [1726, 1809];
+  const clampedLeft = (x: number, year: number) => {
+    // return x < width / 2 ? x + 10 : x - milestoneCardWidth - 10;
+    if (card_left.includes(year)) {
+      return x - milestoneCardWidth - 15;
+    } else {
+      return x + 15;
+    }
   };
   const centeredMarkerLeft = (x: number) => x - milestoneMarkerSize / 2;
 
   // Dev-only: set to false or remove this flag and the related blocks below to restore auto-resume.
   const devRequireClickToResume = true;
 
-  const pauseYears = [1583, 1726, 1809, 1862, 1867, 1869, 1875];
+  const pauseYears = [1583, 1726, 1809, 1862, 1867, 1869, 1875, 1884, 1886, 1889];
   const milestoneLabels = new Map<number, string>([
-    [1583, "University Founded"],
-    [1726, "School of Medicine"],
-    [1809, "Margaret Bulkley / James Barry"],
-    [1862, "Elizabeth Garrett"],
-    [1867, "First classes for women"],
-    [1869, "Edinburgh Seven"],
-    [1875, "Physiology students"],
+    [1583, "University Founded 1583"],
+    [1726, "School of Medicine 1726"],
+    [1809, "Margaret Bulkley / James Barry 1809"],
+    [1862, "Elizabeth Garrett 1862"],
+    [1867, "First classes for women 1867"],
+    [1869, "Edinburgh Seven/Forty 1869"],
+    [1875, "Physiology students 1875"],
+    [1884, "Triple Qualification 1884"],
+    [1886, "School of Medicine for Women 1886"],
+    [1889, "College of Medicine for Women 1889"],
     // [1889, "Universities Scotland Act 1889"],
     // [1892, "Women admitted to universities"],
     // [1914, "Official female medics"],
@@ -173,15 +182,16 @@
   onMount(() => {
     const loadCsvData = async () => {
       try {
-        const [rawWomenMedicsData, rawEdinburghSevenData, first_classes] = (await getCSV([
-          "/data/women_medics_1914_1966.csv",
-          "/data/edinburgh_seven.csv",
-          "/data/first_women_classes+1867.csv",
-        ])) as [
-          Array<{ year?: string; number?: string }>,
-          Array<Record<string, string>>,
-          Array<Record<string, string>>,
-        ];
+        const [rawWomenMedicsData, rawEdinburghSevenData, first_classes] =
+          (await getCSV([
+            "/data/women_medics_1914_1966.csv",
+            "/data/edinburgh_seven.csv",
+            "/data/first_women_classes_1867.csv",
+          ])) as [
+            Array<{ year?: string; number?: string }>,
+            Array<Record<string, string>>,
+            Array<Record<string, string>>,
+          ];
 
         womenMedicsData = rawWomenMedicsData
           .map((row: { year?: string; number?: string }) => {
@@ -210,10 +220,10 @@
           rawWomenPhysiologyGeoData,
           rawGarrettJourneyData,
           rawBarryJourneyData,
-        ] = await Promise.all([
-          getIndividualJSON("/data/women_physiology_geo.json"),
-          getIndividualJSON("/data/geo/garrett_journey.json"),
-          getIndividualJSON("/data/geo/barry_journey.json"),
+        ] = await getJson([
+          "/data/women_physiology_geo.json",
+          "/data/geo/garrett_journey.json",
+          "/data/geo/barry_journey.json",
         ]);
 
         womenPhysiologyGeoData = Array.isArray(rawWomenPhysiologyGeoData)
@@ -312,6 +322,8 @@
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   });
+
+  $: console.log(firstClassesData);
 </script>
 
 <main bind:clientWidth={width} bind:clientHeight={height}>
@@ -383,8 +395,6 @@
   {#each pauseYears as year (year)}
     <div
       class="milestone-card"
-      class:is-garrett={year === 1862}
-      class:has-image={year === 1862 || year === 1867 || year === 1892}
       class:is-active={pausedAtYear === year}
       class:is-past={shrinkEnabledYears.has(year)}
       style:background-image={shrinkEnabledYears.has(year) &&
@@ -392,28 +402,26 @@
         ? `url(${milestoneImages.get(year)})`
         : undefined}
       style:top={pausedAtYear === year
-        ? "65vh"
+        ? "15vh"
         : `${collapsedMarkerTopByYear.get(year) ?? height - collapsedMarkerDefaultOffset}px`}
       style:left="{pausedAtYear === year
-        ? clampedLeft(yearToX(year))
+        ? clampedLeft(yearToX(year), year)
         : centeredMarkerLeft(yearToX(year))}px"
     >
-      {#if year === 1862}
-        <img
-          class="milestone-image"
-          src="/img/garrett.png"
-          alt="Elizabeth Garrett"
-        />
-        <div class="milestone-text">{milestoneLabels.get(year) ?? ""}</div>
-      {:else if [1875, 1878, 1883, 1886, 1891].includes(year) && womenPhysiologyGeoData.length > 0}
+      {#if [1875].includes(year) && womenPhysiologyGeoData.length > 0}
         <MapView data={womenPhysiologyGeoData} />
       {:else if year === 1867}
-        <div class="milestone-text">{milestoneLabels.get(year) ?? ""}</div>
-        <img
-          class="milestone-image"
-          src="/img/first_women.png"
-          alt="Universities Scotland Act 1889 excerpt"
-        />
+        <div class="first-classes-list">
+          {#each firstClassesData as d}
+            <p>{d.name}</p>
+          {/each}
+        </div>
+      {:else if year === 1869}
+        <div class="first-classes-list">
+          {#each edinburghSevenData as d}
+            <p>{d.name}</p>
+          {/each}
+        </div>
       {:else if year === 1892}
         <div class="milestone-text">{milestoneLabels.get(year) ?? ""}</div>
         <img
@@ -439,18 +447,6 @@
     position: relative;
     z-index: 1;
     display: block;
-  }
-
-  h1 {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1;
-    color: #fff;
-    font-family: Montserrat, sans-serif;
-    font-size: 26px;
-    margin: 0;
   }
 
   .milestone-card {
@@ -487,14 +483,14 @@
 
   .milestone-card.is-active {
     width: 400px;
-    height: 30vh;
+    height: 75vh;
     transform: translateY(8px);
     pointer-events: auto;
   }
 
   .milestone-card.is-past {
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
     padding: 0;
     gap: 0;
     background-size: cover;
@@ -505,17 +501,6 @@
 
   .milestone-card.is-past > * {
     display: none;
-  }
-
-  .milestone-card.is-active.is-garrett,
-  .milestone-card.is-active.has-image {
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 1rem;
-    padding-top: 1rem;
-    padding-inline: 1rem;
-    text-align: center;
   }
 
   .milestone-text {
@@ -532,6 +517,22 @@
     display: block;
     flex: 1 1 auto;
     min-height: 0;
+  }
+
+  .first-classes-list {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    overflow-y: auto;
+    padding: 1rem;
+    text-align: left;
+    scrollbar-gutter: stable;
+  }
+
+  .first-classes-list p {
+    margin: 0;
+    padding: 0.25rem 0;
+    line-height: 1.3;
   }
 
   /* Dev-only: remove this style block with the Continue button markup. */

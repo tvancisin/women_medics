@@ -5,26 +5,11 @@
     description: string;
   };
 
-  type MilestoneLabel = {
-    year: number;
-    label: string;
-  };
-
   export let events: HistoricalEvent[] = [];
   export let currentYear: number;
   export let startYear: number;
   export let timelineY: number;
   export let yearToX: (year: number) => number;
-
-  // const milestoneLabels: MilestoneLabel[] = [
-  // 	{ year: 1726, label: "School of Medicine" },
-  // 	{ year: 1867, label: "First female students" },
-  // 	{ year: 1869, label: "Edinburgh Seven" },
-  // 	{ year: 1892, label: "Women admitted to universities" }
-  // ];
-
-  $: displayYear = Math.floor(currentYear);
-  // $: activeMilestone = milestoneLabels.find((milestone) => milestone.year === displayYear);
 </script>
 
 {#each events as event, index (event.description + index)}
@@ -41,7 +26,7 @@
       y="0"
       width={Math.max(1, Math.abs(x2 - x1))}
       height={timelineY}
-      fill="gray"
+      fill="steelblue"
       aria-label={event.description}
     />
     <text
@@ -61,7 +46,7 @@
 
 <style>
   .historical-event {
-    opacity: 0.1;
+    opacity: 0.05;
     pointer-events: none;
   }
   .event-label {
