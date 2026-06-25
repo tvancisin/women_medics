@@ -15,21 +15,21 @@ export const historicalEvents = [
     endYear: 1893,
     description: "Women admitted to universities →"
   },
-  {
-    startYear: 1832,
-    endYear: 1903,
-    description: "Suffrage →"
-  },
+  // {
+  //   startYear: 1832,
+  //   endYear: 1903,
+  //   description: "Suffrage →"
+  // },
   {
     startYear: 1914,
     endYear: 1918,
     description: "The First World War →"
   },
-  {
-    startYear: 1928,
-    endYear: 1929,
-    description: "Voting Rights →"
-  },
+  // {
+  //   startYear: 1928,
+  //   endYear: 1929,
+  //   description: "Voting Rights →"
+  // },
   {
     startYear: 1939,
     endYear: 1945,

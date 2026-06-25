@@ -6,6 +6,7 @@
   export let currentYear: number;
   export let garrettJourneyData: unknown = null;
   export let barryJourneyData: unknown = null;
+  export let womenPhysiologyGeoData: unknown = null;
 
   let map: mapboxgl.Map;
   let mapContainer: HTMLDivElement;
@@ -14,7 +15,22 @@
   let hasAnimatedBarryLine = false;
   let hasAnimatedGarrettLine = false;
   let hasFocusedBarryMilestone = false;
+  let hasDrawnPhysiologyStudents = false;
   let imageMarkers = new Map<string, mapboxgl.Marker>();
+
+  type PhysiologyGeoDatum = {
+    source_data?: {
+      entry_year?: number | string;
+      name?: string;
+      lat?: number | string;
+      lon?: number | string;
+      university_address?: {
+        original_name?: string;
+        lat?: number | string;
+        lon?: number | string;
+      };
+    };
+  };
 
   type ImageMarkerConfig = {
     id: string;
@@ -30,6 +46,8 @@
   const barryLineLayerId = "barry-journey-line";
   const garrettSourceId = "garrett-journey";
   const garrettLineLayerId = "garrett-journey-line";
+  const physiologyStudentsSourceId = "physiology-students";
+  const physiologyStudentsLayerId = "physiology-students-circles";
   const timelineImageMarkers: ImageMarkerConfig[] = [
     {
       id: "university-founded",
@@ -48,7 +66,7 @@
     {
       id: "school",
       year: 1886,
-      coordinates: [55.947346356539505, -3.19082680144295],
+      coordinates: [55.94884986998478, -3.1830358396746496],
       imageName: "uni_logo.png",
       alt: "Schoolof Medicine",
     },
@@ -117,6 +135,47 @@
     }
 
     return null;
+  };
+
+  const getPhysiologyStudentFeatures = (
+    rawData: unknown,
+  ): GeoJSON.Feature<GeoJSON.Point>[] => {
+    if (!Array.isArray(rawData)) {
+      return [];
+    }
+
+    return (rawData as PhysiologyGeoDatum[])
+      .map((row) => {
+        const sourceData = row.source_data;
+        const universityAddress = sourceData?.university_address;
+        const directLat = Number(sourceData?.lat);
+        const directLon = Number(sourceData?.lon);
+        const addressLat = Number(universityAddress?.lat);
+        const addressLon = Number(universityAddress?.lon);
+        const lat = Number.isFinite(directLat) ? directLat : addressLat;
+        const lon = Number.isFinite(directLon) ? directLon : addressLon;
+
+        if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+          return null;
+        }
+
+        return {
+          type: "Feature",
+          properties: {
+            name: sourceData?.name ?? "Unknown",
+            entry_year: sourceData?.entry_year ?? null,
+            address: universityAddress?.original_name ?? "",
+          },
+          geometry: {
+            type: "Point",
+            coordinates: [lon, lat],
+          },
+        } satisfies GeoJSON.Feature<GeoJSON.Point>;
+      })
+      .filter(
+        (feature): feature is GeoJSON.Feature<GeoJSON.Point> =>
+          feature !== null,
+      );
   };
 
   const animateJourneyLine = ({
@@ -260,7 +319,7 @@
       center: [-2.1883, 54.5533],
       duration: 2000,
       essential: true,
-    })
+    });
   }
 
   $: if (map && styleReady && currentYear >= 1867) {
@@ -272,6 +331,58 @@
     });
   }
 
+  function drawPhysiologyStudents(rawData: unknown) {
+    if (!map || !styleReady || !map.isStyleLoaded()) return false;
+
+    const data: GeoJSON.FeatureCollection<GeoJSON.Point> = {
+      type: "FeatureCollection",
+      features: getPhysiologyStudentFeatures(rawData),
+    };
+
+    if (data.features.length === 0) return false;
+
+    const existingSource = map.getSource(physiologyStudentsSourceId) as
+      | mapboxgl.GeoJSONSource
+      | undefined;
+
+    if (existingSource) {
+      existingSource.setData(data);
+    } else {
+      map.addSource(physiologyStudentsSourceId, {
+        type: "geojson",
+        data,
+      });
+    }
+
+    if (!map.getLayer(physiologyStudentsLayerId)) {
+      map.addLayer({
+        id: physiologyStudentsLayerId,
+        type: "circle",
+        source: physiologyStudentsSourceId,
+        paint: {
+          "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 2, 14, 4],
+          "circle-color": "white",
+          "circle-opacity": 0.85,
+          "circle-stroke-color": "#111",
+          "circle-stroke-width": 1,
+        },
+      });
+    }
+
+    return true;
+  }
+
+  $: if (
+    map &&
+    styleReady &&
+    currentYear >= 1875 &&
+    Array.isArray(womenPhysiologyGeoData) &&
+    womenPhysiologyGeoData.length > 0 &&
+    !hasDrawnPhysiologyStudents
+  ) {
+    hasDrawnPhysiologyStudents = drawPhysiologyStudents(womenPhysiologyGeoData);
+  }
+
   $: if (map && currentYear < 1862) {
     hasAnimatedGarrettLine = false;
   }
@@ -281,12 +392,30 @@
     hasFocusedBarryMilestone = false;
   }
 
+  // dimming
   $: if (map && currentYear >= 1864 && map.getLayer(garrettLineLayerId)) {
-    map.setPaintProperty(garrettLineLayerId, "line-opacity", 0.5);
+    map.setPaintProperty(garrettLineLayerId, "line-opacity", 0.3);
   }
 
   $: if (map && currentYear >= 1810 && map.getLayer(barryLineLayerId)) {
-    map.setPaintProperty(barryLineLayerId, "line-opacity", 0.5);
+    map.setPaintProperty(barryLineLayerId, "line-opacity", 0.3);
+  }
+
+  $: if (
+    map &&
+    currentYear >= 1876 &&
+    map.getLayer(physiologyStudentsLayerId)
+  ) {
+    map.setPaintProperty(physiologyStudentsLayerId, "circle-opacity", 0.3);
+  }
+
+  $: if (map && currentYear >= 1886) {
+    map.flyTo({
+      center: [-3.1883, 55.9433],
+      zoom: 14,
+      duration: 1000,
+      essential: true,
+    });
   }
 
   onMount(() => {

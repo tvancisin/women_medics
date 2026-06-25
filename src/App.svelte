@@ -20,6 +20,9 @@
   const tickLength = 5;
   const totalRange = endYear - startYear;
 
+  let milesstoneCardWidth: number | null = null,
+    milestoneCardHeight: number | null = null;
+
   // keeping the detail div inside screen
   const milestoneCardWidth = 400;
   const milestoneMarkerSize = 20;
@@ -42,10 +45,10 @@
   // Dev-only: set to false or remove this flag and the related blocks below to restore auto-resume.
   const devRequireClickToResume = true;
 
-  const pauseYears = [1583, 1726, 1809, 1862, 1867, 1869, 1875, 1884, 1886, 1889];
+  const pauseYears = [1809, 1862, 1867, 1869, 1875, 1884, 1886, 1889];
   const milestoneLabels = new Map<number, string>([
-    [1583, "University Founded 1583"],
-    [1726, "School of Medicine 1726"],
+    // [1583, "University Founded 1583"],
+    // [1726, "School of Medicine 1726"],
     [1809, "Margaret Bulkley / James Barry 1809"],
     [1862, "Elizabeth Garrett 1862"],
     [1867, "First classes for women 1867"],
@@ -58,6 +61,8 @@
     // [1892, "Women admitted to universities"],
     // [1914, "Official female medics"],
   ]);
+
+  const splitMilestoneYears = new Set([1809, 1862]);
 
   // Map each pause year to the image shown when the card is shrunk (is-past).
   // Point multiple years at the same path, or leave a year out to show no image.
@@ -84,6 +89,14 @@
   let womenMedicsData: Array<{ year: number; number: number }> = [];
   let edinburghSevenData: Array<Record<string, string>> = [];
   let firstClassesData: Array<Record<string, string>> = [];
+  type FirstClassesLabel = {
+    key: string;
+    x: number;
+    y: number;
+    label: string;
+    fontSize: number;
+  };
+  let firstClassesLabels: FirstClassesLabel[] = [];
   type PhysiologyGeoDatum = {
     source_data?: {
       entry_year?: number | string;
@@ -124,6 +137,131 @@
 
   $: tickValues = width > 0 && height > 0 ? buildTickValues(currentYear) : [];
   $: displayYear = Math.floor(currentYear);
+
+  $: firstClassesLabels = (() => {
+    const itemCount = firstClassesData.length;
+    const containerWidth = milesstoneCardWidth ?? 0;
+    const containerHeight = milestoneCardHeight ?? 0;
+
+    if (itemCount === 0 || containerWidth <= 0 || containerHeight <= 0) {
+      return [];
+    }
+
+    const labels = firstClassesData.map(
+      (item, index) => item.name ?? `Entry ${index + 1}`,
+    );
+    const horizontalPadding = Math.min(20, containerWidth * 0.025);
+    const topBottomPadding = Math.min(18, containerHeight * 0.05);
+    const preferredFontSizePx = 10;
+    const minReadableFontSizePx = 8;
+    const lineHeightFactor = 1.2;
+    const rowGapFactor = 0.18;
+    const charWidthFactor = 0.54;
+    const columnInnerPadding = 4;
+    const columnGap = 8;
+
+    const usableWidth = Math.max(1, containerWidth - horizontalPadding * 2);
+    const usableHeight = Math.max(1, containerHeight - topBottomPadding * 2);
+    type Layout = {
+      fontSizePx: number;
+      rows: number;
+      columns: number;
+      columnWidth: number;
+      rowStep: number;
+      startY: number;
+    };
+
+    const fitsWidth = (columns: number, rows: number, fontSizePx: number, columnWidth: number) => {
+      for (let column = 0; column < columns; column += 1) {
+        const start = column * rows;
+        const end = Math.min(start + rows, itemCount);
+        let maxChars = 1;
+        for (let i = start; i < end; i += 1) {
+          maxChars = Math.max(maxChars, labels[i].length);
+        }
+        const estimatedTextWidth = maxChars * fontSizePx * charWidthFactor;
+        if (estimatedTextWidth > Math.max(1, columnWidth - columnInnerPadding * 2)) {
+          return false;
+        }
+      }
+      return true;
+    };
+
+    let chosenLayout: Layout | null = null;
+
+    for (
+      let fontSizePx = preferredFontSizePx;
+      fontSizePx >= minReadableFontSizePx;
+      fontSizePx -= 0.25
+    ) {
+      const lineHeight = fontSizePx * lineHeightFactor;
+      const rowGap = fontSizePx * rowGapFactor;
+      const rowStep = lineHeight + rowGap;
+      const maxRows = Math.max(1, Math.floor((usableHeight + rowGap) / rowStep));
+      const columns = Math.max(1, Math.ceil(itemCount / maxRows));
+      const rows = Math.max(1, Math.ceil(itemCount / columns));
+
+      const totalGapWidth = (columns - 1) * columnGap;
+      const columnWidth = Math.max(1, (usableWidth - totalGapWidth) / columns);
+      const totalRowsHeight = rows * lineHeight + Math.max(0, rows - 1) * rowGap;
+
+      const fitsHeight = totalRowsHeight <= usableHeight;
+      const widthOk = fitsWidth(columns, rows, fontSizePx, columnWidth);
+
+      if (fitsHeight && widthOk) {
+        chosenLayout = {
+          fontSizePx,
+          rows,
+          columns,
+          columnWidth,
+          rowStep,
+          startY: topBottomPadding + Math.max(0, (usableHeight - totalRowsHeight) / 2),
+        };
+        break;
+      }
+    }
+
+    if (!chosenLayout) {
+      const fallbackFont = minReadableFontSizePx;
+      const lineHeight = fallbackFont * lineHeightFactor;
+      const rowGap = fallbackFont * rowGapFactor;
+      const rowStep = lineHeight + rowGap;
+      const maxRows = Math.max(1, Math.floor((usableHeight + rowGap) / rowStep));
+      const columns = Math.max(1, Math.ceil(itemCount / maxRows));
+      const rows = Math.max(1, Math.ceil(itemCount / columns));
+      const totalGapWidth = (columns - 1) * columnGap;
+      const columnWidth = Math.max(1, (usableWidth - totalGapWidth) / columns);
+      const totalRowsHeight = rows * lineHeight + Math.max(0, rows - 1) * rowGap;
+      chosenLayout = {
+        fontSizePx: fallbackFont,
+        rows,
+        columns,
+        columnWidth,
+        rowStep,
+        startY: topBottomPadding + Math.max(0, (usableHeight - totalRowsHeight) / 2),
+      };
+    }
+
+    const { fontSizePx, rows, columnWidth, rowStep, startY } = chosenLayout;
+
+    return firstClassesData.map((item, index) => {
+      const row = index % rows;
+      const column = Math.floor(index / rows);
+      const x =
+        horizontalPadding + column * (columnWidth + columnGap) + columnInnerPadding;
+      const y = startY + row * rowStep;
+      const label = labels[index];
+
+      return {
+        key: `${index}-${label}`,
+        x,
+        y,
+        label,
+        fontSize: fontSizePx,
+      };
+    });
+  })();
+
   let topByYear: Map<number, number> = new Map();
   $: collapsedMarkerTopByYear = (() => {
     topByYear = new Map<number, number>();
@@ -322,14 +460,16 @@
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   });
-
-  $: console.log(firstClassesData);
 </script>
 
 <main bind:clientWidth={width} bind:clientHeight={height}>
-  <!-- <h1>Female Medical Students at the University of Edinburgh</h1> -->
+  <BackgroundMap
+    {currentYear}
+    {garrettJourneyData}
+    {barryJourneyData}
+    {womenPhysiologyGeoData}
+  />
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
-  <BackgroundMap {currentYear} {garrettJourneyData} {barryJourneyData} />
   {#if devRequireClickToResume && awaitingResumeClick}
     <button class="resume-button" type="button" on:click={handleResumeClick}>
       Continue
@@ -395,26 +535,102 @@
   {#each pauseYears as year (year)}
     <div
       class="milestone-card"
+      class:milestone-card--split={splitMilestoneYears.has(year)}
+      class:milestone-card--first-classes-active={year === 1867 && pausedAtYear === year}
       class:is-active={pausedAtYear === year}
       class:is-past={shrinkEnabledYears.has(year)}
       style:background-image={shrinkEnabledYears.has(year) &&
       milestoneImages.has(year)
         ? `url(${milestoneImages.get(year)})`
         : undefined}
+      style:width={pausedAtYear === year && year === 1867 ? "80vw" : undefined}
       style:top={pausedAtYear === year
         ? "15vh"
         : `${collapsedMarkerTopByYear.get(year) ?? height - collapsedMarkerDefaultOffset}px`}
       style:left="{pausedAtYear === year
-        ? clampedLeft(yearToX(year), year)
+        ? year === 1867
+          ? 0.1 * width
+          : clampedLeft(yearToX(year), year)
         : centeredMarkerLeft(yearToX(year))}px"
     >
-      {#if [1875].includes(year) && womenPhysiologyGeoData.length > 0}
-        <MapView data={womenPhysiologyGeoData} />
+      {#if year === 1809}
+        <div class="milestone-card-split-layout">
+          <div class="milestone-card-split-half milestone-card-split-image">
+            <img
+              class="milestone-image"
+              src="/img/barry.jpg"
+              alt="Margaret Bulkley / James Barry"
+            />
+          </div>
+          <div class="milestone-card-split-half milestone-card-split-text">
+            <div class="milestone-card-title">
+              James Barry (born Margaret Anne Bulkley, or Bulkeley; c. 1789[a] –
+              25 July 1865) was a military surgeon in the British Army.
+              Originally from the city of Cork in Ireland, Barry obtained a
+              medical degree from the University of Edinburgh Medical School,
+              then served first in Cape Town, South Africa, and subsequently in
+              many parts of the British Empire.
+            </div>
+          </div>
+        </div>
+      {:else if year === 1862}
+        <div class="milestone-card-split-layout">
+          <div class="milestone-card-split-half milestone-card-split-image">
+            <img
+              class="milestone-image"
+              src="/img/garrett_pic.jpg"
+              alt="Elizabeth Garrett"
+            />
+          </div>
+          <div class="milestone-card-split-half milestone-card-split-text">
+            <div class="milestone-card-title">
+              Elizabeth Garrett Anderson (9 June 1836 – 17 December 1917) was an
+              English physician and suffragist. She is known for being the first
+              woman to qualify in Britain as a physician and surgeon and as a
+              co-founder and dean of the London School of Medicine for Women,
+              which was the first medical school in Britain to train women as
+              doctors. She was the first female dean of a British medical
+              school, the first woman in Britain to be elected to a school board
+              and, as mayor of Aldeburgh, the first female mayor in Britain.
+            </div>
+          </div>
+        </div>
       {:else if year === 1867}
-        <div class="first-classes-list">
-          {#each firstClassesData as d}
+        <div
+          class="first-classes-list"
+          bind:clientWidth={milesstoneCardWidth}
+          bind:clientHeight={milestoneCardHeight}
+        >
+          <svg
+            height={milestoneCardHeight ?? 0}
+            width={milesstoneCardWidth ?? 0}
+            aria-label="First classes for women represented as circles"
+          >
+            {#each firstClassesLabels as item (item.key)}
+              <!-- <circle
+                cx={circle.cx}
+                cy={circle.cy}
+                r={circle.r}
+                fill="rgba(255, 255, 255, 0.82)"
+                stroke="rgba(255, 255, 255, 0.35)"
+                stroke-width="1"
+              >
+                <title>{circle.label}</title>
+              </circle> -->
+              <text
+                x={item.x}
+                y={item.y}
+                class="first-classes-name"
+                text-anchor="start"
+                style:font-size={`${item.fontSize}px`}
+              >
+                {item.label}
+              </text>
+            {/each}
+          </svg>
+          <!-- {#each firstClassesData as d}
             <p>{d.name}</p>
-          {/each}
+          {/each} -->
         </div>
       {:else if year === 1869}
         <div class="first-classes-list">
@@ -488,6 +704,41 @@
     pointer-events: auto;
   }
 
+  .milestone-card--split {
+    padding: 0;
+  }
+
+  .milestone-card--split .milestone-card-split-layout {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .milestone-card--split .milestone-card-split-half {
+    flex: 1 1 50%;
+    min-height: 0;
+    min-width: 0;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+  }
+
+  .milestone-card--split .milestone-card-split-image {
+    padding: 0.5rem;
+    align-items: center;
+  }
+
+  .milestone-card--split .milestone-card-split-text {
+    padding: 30px;
+    text-align: left;
+  }
+
+  .milestone-card-title {
+    font-size: 12px;
+    line-height: 1.3;
+  }
+
   .milestone-card.is-past {
     width: 20px;
     height: 20px;
@@ -523,16 +774,19 @@
     width: 100%;
     height: 100%;
     box-sizing: border-box;
-    overflow-y: auto;
-    padding: 1rem;
-    text-align: left;
-    scrollbar-gutter: stable;
+    overflow: hidden;
   }
 
   .first-classes-list p {
     margin: 0;
     padding: 0.25rem 0;
     line-height: 1.3;
+  }
+
+  .first-classes-name {
+    fill: rgba(255, 255, 255, 0.95);
+    dominant-baseline: hanging;
+    pointer-events: none;
   }
 
   /* Dev-only: remove this style block with the Continue button markup. */
