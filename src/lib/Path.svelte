@@ -69,10 +69,13 @@
     class="event-label"
     x={x + 20}
     // y={labelY}
-    y={endY  + 2}
+    y={endY + 2}
     transform="rotate(-90, {x}, {endY})"
-    text-anchor="start">{label}</text
+    text-anchor="start"
+    opacity={label === "First classes for women 1867" ? 0.5 : 1}
   >
+    {label}
+  </text>
 {/if}
 
 <style>

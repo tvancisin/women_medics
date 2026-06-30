@@ -5,11 +5,21 @@ export const historicalEvents = [
     endYear: 1800,
     description: "Scottish Enlightenment →"
   },
-  // {
-  //   startYear: 1804,
-  //   endYear: 1805,
-  //   description: "Half of University's History →"
-  // },
+  {
+    startYear: 1884,
+    endYear: 1885,
+    description: "Triple Qualifications →"
+  },
+  {
+    startYear: 1886,
+    endYear: 1887,
+    description: "School of Medicine for Women →"
+  },
+  {
+    startYear: 1889,
+    endYear: 1890,
+    description: "College of Medicine for Women →"
+  },
   {
     startYear: 1892,
     endYear: 1893,

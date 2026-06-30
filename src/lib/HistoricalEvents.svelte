@@ -46,11 +46,11 @@
 
 <style>
   .historical-event {
-    opacity: 0.05;
+    opacity: 0.2;
     pointer-events: none;
   }
   .event-label {
-    fill: gray;
+    fill: white;
     font-size: 12px;
     pointer-events: none;
   }

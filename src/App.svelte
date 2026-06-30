@@ -3,7 +3,6 @@
   import {
     getCSV,
     getJson,
-    getIndividualCSV,
     historicalEvents,
   } from "./datastore";
   import Path from "./lib/Path.svelte";
@@ -89,6 +88,17 @@
   let womenMedicsData: Array<{ year: number; number: number }> = [];
   let edinburghSevenData: Array<Record<string, string>> = [];
   let firstClassesData: Array<Record<string, string>> = [];
+
+  const edinburghFortyImageUrl = (img?: string) => {
+    const fileName = String(img ?? "").trim();
+    if (!fileName || fileName.toLowerCase() === "null") return undefined;
+
+    const src = fileName.startsWith("/")
+      ? fileName
+      : `/img/edin_forty/${fileName}`;
+    return `url("${src}")`;
+  };
+
   type FirstClassesLabel = {
     key: string;
     x: number;
@@ -633,9 +643,15 @@
           {/each} -->
         </div>
       {:else if year === 1869}
-        <div class="first-classes-list">
-          {#each edinburghSevenData as d}
-            <p>{d.name}</p>
+        <div class="edinburgh_forty">
+          {#each edinburghSevenData as d (d.name)}
+            <div class="edinburgh_forty-item">
+              <div
+                class="edinburgh_forty-circle"
+                style:background-image={edinburghFortyImageUrl(d.img)}
+              ></div>
+              <div class="edinburgh_forty-name">{d.name}</div>
+            </div>
           {/each}
         </div>
       {:else if year === 1892}
@@ -777,16 +793,55 @@
     overflow: hidden;
   }
 
-  .first-classes-list p {
-    margin: 0;
-    padding: 0.25rem 0;
-    line-height: 1.3;
-  }
-
   .first-classes-name {
     fill: rgba(255, 255, 255, 0.95);
     dominant-baseline: hanging;
     pointer-events: none;
+  }
+
+  .edinburgh_forty {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 3px;
+    padding: 3px;
+    overflow: hidden;
+  }
+
+  .edinburgh_forty-item {
+    min-width: 0;
+    min-height: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 3px;
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .edinburgh_forty-circle {
+    width: min(36px, 70%);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    flex: 0 0 auto;
+    background: rgba(56, 56, 56, 0.82);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+
+  .edinburgh_forty-name {
+    width: 100%;
+    min-width: 0;
+    color: #fff;
+    font-size: 8px;
+    line-height: 1.1;
+    text-align: center;
+    overflow-wrap: anywhere;
   }
 
   /* Dev-only: remove this style block with the Continue button markup. */
