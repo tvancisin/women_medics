@@ -46,7 +46,7 @@
 
 <style>
   .historical-event {
-    opacity: 0.2;
+    opacity: 0.1;
     pointer-events: none;
   }
   .event-label {

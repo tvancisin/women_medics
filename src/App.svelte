@@ -44,10 +44,10 @@
   // Dev-only: set to false or remove this flag and the related blocks below to restore auto-resume.
   const devRequireClickToResume = true;
 
-  const pauseYears = [1809, 1862, 1867, 1869, 1875, 1884, 1886, 1889];
+  const pauseYears = [1583, 1726, 1809, 1862, 1867, 1869, 1875, 1884, 1886, 1889];
   const milestoneLabels = new Map<number, string>([
-    // [1583, "University Founded 1583"],
-    // [1726, "School of Medicine 1726"],
+    [1583, "University Founded 1583"],
+    [1726, "School of Medicine 1726"],
     [1809, "Margaret Bulkley / James Barry 1809"],
     [1862, "Elizabeth Garrett 1862"],
     [1867, "First classes for women 1867"],
