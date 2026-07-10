@@ -12,6 +12,9 @@
   import Bar from "./lib/Bar.svelte";
   import BackgroundMap from "./lib/BackgroundMap.svelte";
 
+  const baseUrl = import.meta.env.BASE_URL;
+  const publicUrl = (path: string) => `${baseUrl}${path}`;
+
   const startYear = 1582;
   const endYear = 2026;
   const stepYears = 20;
@@ -25,7 +28,7 @@
   // keeping the detail div inside screen
   const milestoneCardWidth = 400;
   const milestoneMarkerSize = 20;
-  const collapsedMarkerDefaultOffset = 80;
+  const collapsedMarkerDefaultOffset = 90;
   const collapsedMarkerOverlapOffset = 110;
   const collapsedMarkerOverlapThresholdPx = milestoneMarkerSize + 6;
 
@@ -93,9 +96,10 @@
     const fileName = String(img ?? "").trim();
     if (!fileName || fileName.toLowerCase() === "null") return undefined;
 
-    const src = fileName.startsWith("/")
-      ? fileName
-      : `/img/edin_forty/${fileName}`;
+    const normalizedPath = fileName.startsWith("/")
+      ? fileName.slice(1)
+      : `img/edin_forty/${fileName}`;
+    const src = publicUrl(normalizedPath);
     return `url("${src}")`;
   };
 
@@ -332,9 +336,9 @@
       try {
         const [rawWomenMedicsData, rawEdinburghSevenData, first_classes] =
           (await getCSV([
-            "/data/women_medics_1914_1966.csv",
-            "/data/edinburgh_seven.csv",
-            "/data/first_women_classes_1867.csv",
+            publicUrl("data/women_medics_1914_1966.csv"),
+            publicUrl("data/edinburgh_seven.csv"),
+            publicUrl("data/first_women_classes_1867.csv"),
           ])) as [
             Array<{ year?: string; number?: string }>,
             Array<Record<string, string>>,
@@ -369,9 +373,9 @@
           rawGarrettJourneyData,
           rawBarryJourneyData,
         ] = await getJson([
-          "/data/women_physiology_geo.json",
-          "/data/geo/garrett_journey.json",
-          "/data/geo/barry_journey.json",
+          publicUrl("data/women_physiology_geo.json"),
+          publicUrl("data/geo/garrett_journey.json"),
+          publicUrl("data/geo/barry_journey.json"),
         ]);
 
         womenPhysiologyGeoData = Array.isArray(rawWomenPhysiologyGeoData)
@@ -568,7 +572,7 @@
           <div class="milestone-card-split-half milestone-card-split-image">
             <img
               class="milestone-image"
-              src="/img/barry.jpg"
+              src={publicUrl("img/barry.jpg")}
               alt="Margaret Bulkley / James Barry"
             />
           </div>
@@ -588,7 +592,7 @@
           <div class="milestone-card-split-half milestone-card-split-image">
             <img
               class="milestone-image"
-              src="/img/garrett_pic.jpg"
+              src={publicUrl("img/garrett_pic.jpg")}
               alt="Elizabeth Garrett"
             />
           </div>
@@ -658,7 +662,7 @@
         <div class="milestone-text">{milestoneLabels.get(year) ?? ""}</div>
         <img
           class="milestone-image"
-          src="/img/ordinance_1892.png"
+          src={publicUrl("img/ordinance_1892.png")}
           alt="Women Admitted to Universities"
         />
       {:else}

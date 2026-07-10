@@ -107,7 +107,7 @@ Cadell,180,
 Caldwell,16,2 Victoria Terrace Portobello
 Carmichael,16,3 Malta Terrace
 Campbell,16,9 Bruntsfiled Place
-Campbell,20,
+Campbell,20,15 Carton Terrace
 Campbell,96,
 Campbell,96,
 Campbell,114,
@@ -124,63 +124,63 @@ Carnegie,192,
 Carter,16,1 Inverleith Terrace
 Cash,164,
 Cay,16,7 Blackford Road
-Cay,18,
+Cay,18,7 Blackford Road
 Cheyne,48,
 Chile,192,
-Chintal,"18, 30",
-Chintal,"18, 50",
-Chintal A,"18, 48",
+Chrystal,"18, 30",1 Lauder Road
+Chrystal,"18, 50",1 Lauder Road
+Chrystal A,"18, 48",1 Lauder Road
 Chiron,96,
 Chrene,48,
 Christie,166,
 Christre J,50,
 Christre L,50,
-Chuningham Mrs,20,
-Chustre,18,
+Cunningham Mrs,20,2 Ainslie Place
+Christie,18,52 Merchiston Park
 Clabbie,71,
 Claigie,64,
 Clapperton,"180, 142",
 Clargie,180,
-Clayton,18,
+Clayton,18,28 Rutland Square
 Clease,166,
 Clee Mrs.,76,
-Cludelius,20,
-Cludelius Mrs,20,
-Coldittiam,18,
+Crudelius,20,Jessfield Trinity
+Crudelius Mrs,20,Chapelside Trinity
+Coldstream,18,51 York Place
 Collins,"114, 134",
-Colvin Mrs,18,
+Colvin Mrs,18,Chamberlain Road
 Constable,50,
 Constable C. A.,164,
 Constable M,164,
-Cook,18,
+Cook,18,35 Little King Street
 Cook,192,
-Cook A,18,
-Cook A,"18, 76",
-Cook J,18,
-Cook M,18,
-Coventry Mrs,"18, 76, 122, 180",
+Cook A,18,11 Little King Street
+Cook A,"18, 76",35 Little King Street
+Cook J,18,Claremont Park
+Cook M,18,Claremont Park
+Coventry Mrs,"18, 76, 122, 180",29 Moray Place
 Cowan,50,
 Cowan,50,
 Cowan,50,
 Cowan,50,
-Cowan,18,
+Cowan M Miss,18,4 Ainslie Place
 Cowan,164,
 Cowan,64,
 Cowan,122,
 Cowan C,50,
 Cowan J,50,
 Cowan J,50,
-Cox,"18, 76",
-Cox,"18, 50, 122",
-Cox Mrs,18,
-Craig,"20, 122, 180",
+Cox,"18, 76",13 Manor Place
+Cox,"18, 50, 122",13 Manor Place
+Cox Mrs,18,Gorgie
+Craig,"20, 122, 180",6 Carlton Street
 Craig,96,
-Craig A,"76, 122, 18",
+Craig Agnes,"76, 122, 18",6 Carlton Street
 Crawford,"122, 202, 64",
 Crawford,114,
-Crighton,20,
+Crichton McGill,20,54 Melville Street
 Cullen,"122, 180",
-Cundell,20,
+Cundell,20,Leith
 Cuningham,165,
 Cunningham,50,
 Cunningham,50,
@@ -190,18 +190,18 @@ Cuthbertson,164,
 Cuther,192,
 Cuther M,192,
 Dalgleish,76,
-Dalmahoy,"20, 134",
-Dalmahoy A,20,
+Dalmahoys,"20, 134",69 Queen Street
+Dalmahoys A,20,69 Queen Street
 Dalmis,"166, 192",
-Danell Mrs,20,
-Davidson,20,
+Daniell Mrs,20,1 Inverleith Terrace
+Davidson,20,7 Rutland Square
 Davidson,"50, 122, 142",
 Davidson,50,
 Davidson,96,
 Davidson E,96,
 Davidson Mrs,96,
-Deas,"20, 96, 76",
-Deas E,20,
+Deas,"20, 96, 76",32 Heriot Row
+Deas E,20,32 Heriot Row
 Dennistonn,166,
 Detley Joans,164,
 Dew,166,
@@ -211,18 +211,18 @@ Dlas M,"75, 124, 180, 96",
 Donald,"76, 124",
 Donaldson,50,
 Dortheson,22,
-Douglas,20,
+Douglas,20,3 Charlotte Square
 Douglas,50,
 Douglas,96,
 Douglas,180,
-Douglas Mrs,"20, 74",
+Douglas Mrs,"20, 74",Athol Crescent
 Douglas Mrs,52,
 Douglas St,64,
-Dove,22,
+Dove Jane,22,Wark
 Drummond,64,
-Ducan,20,
-Dudgeon,22,
-Duff,22,
+Ducan,20,18 Rillbank Terrace
+Dudgeon,22,15 St Bernard's Crescent
+Duff Helen,22,12 Randolph Crescent
 Duffus,52,
 Dun,166,
 Duncan,96,
@@ -231,23 +231,23 @@ Duncan,166,
 Duncan B,96,
 Duncan M,52,
 Duncan S,52,
-Dundas,"22, 64, 114, 192",
-Dundas,"22, 52, 76",
-Dundas,22,
+Dundas,"22, 64, 114, 192",Polton House
+Dundas,"22, 52, 76",8 Charlotte Square
+Dundas,22,8 Charlotte Square
 Dundas,202,
-Dundas A,22,
+Dundas A,22,25 St Andrew Square
 Dundas H A,76,
-Dundas Mrs,22,
-Dunfermline Lady,22,
+Dundas Mrs,22,8 Charlotte Square
+Dunfermline Lady,22,Colinton House
 Dunlop,"78, 124",
 Dunlop A,52,
-Dunlop Day,24,
-Dunlop Muclay,"114, 76, 124 134, 64",
-Edington,"24, 78",
+Dunlop May,22,27 Drummond Place
+Dunlop Muclay,"114, 76, 124, 134, 64",
+Edington,"22, 78",1 Doune Terrace
 Edington A.,166,
 Edmonston,98,
 Edmonston C,98,
-Edmonstone,"22, 98",
+Edmonstone,"22, 98",11 Merchiston Terrace
 Edward,52,
 Eenton,"58, 118",
 Elder,52,
@@ -255,21 +255,21 @@ Ellis,78,
 Fenlay,98,
 Fenlay S,98,
 Ferguson,168,
-Ferguson Gillon,24,
+Ferguson Gillon,24,8 Bellevue Crescent
 Ferguson Mrs,52,
-Ferries,"24, 52",
+Ferries,"24, 52",5 Leamington Terrace
 Findlater Mrs,52,
-Fleming Mrs,"24, 52",
+Fleming Mrs,"24, 52",12 Eton Terrace
 Forbes,66,
 Forbes J.,52,
 Forbes Mrs,168,
 Forman,168,
-Forrester,24,
+Forrester,24,8 Drummond Place
 Forster,"114, 194",
 Fraser,52,
 Fraser,98,
-Fraser Mrs,"24, 64, 114, 194",
-Frulay Mrs,24,
+Fraser Mrs,"24, 64, 114, 194",20 Chester Street
+Finday Mrs,24,9 Dundas Street
 Gandner,"98, 114",
 Gant,98,
 Gardner,52,
@@ -284,77 +284,77 @@ Gibson,78,
 Gibson,,
 Gibson,98,
 Gibson I,52,
-Gibson Mrs,"24, 114",
+Gibson Mrs,"24, 114",4 Merchiston Place
 Gibson Thomson,"52, 42",
 Gillespie,98,
 Gleenoak,"98, 66",
 Gleenoak A,"98, 66",
-Glenn,"24, 100",
-Glenn,"24, 100",
+Gunn,"24, 100",
+Gunn C.,"24, 100",
 Gloug,78,
 Gondon,54,
 Goold,54,
 Gordon,144,
-Grahame,24,
+Graham,24,4 Clarendon Crescent
 Gramquftewart,"78, 124",
 Grant Lady,165,
 Gray,"54, 66",
 Gray,98,
 Gregory,"98, 168",
 Grene A,78,
-Guthrie,24,
-Guthrie Ll,"24, 168",
+Guthrie,24,1 Salisbury Road
+Guthrie H,"24, 168",1 Salisbury Road
 Hairison,"54, 182",
 Haldane,168,
-Hamillon,"26, 116",
+Hamillon,"26, 116",5 West Circus Place
 Hamillon,78,
-Hamilton,"26, 66, 116, 124",
-Hamilton Miss,26,
+Hamilton,"26, 66, 116, 124",5 West Circus Place
+Hamilton Miss,26,16 Little King Street
 Hang,"182, 202",
 Hang J.C,"182, 202",
 Hanglave,"26, 54, 66, 124",
-Harvey,"26, 124",
+Harvey,"26, 124",21 Regent Terrace
 Harvey,124,
 Harvie,78,
 Hay Mrs,100,
-Henderson,"26, 66, 78",
-Henderson,26,
+Henderson,"26, 66, 78",Canaan Cottage
+Henderson,26,19 Ainslie Place
 Henderson C. Ll,194,
-Henderson JM,26,
+Henderson JM,26,19 Ainslie Place
 Henderson Mrs,78,
-Hill Ramsay,24,
+Hill Ramsay Mrs,26,108 George Street
 Horne C.,"80, 124",
 Horne Mrs,"80, 124",
 Houldsworth,168,
 Hume Mrs,"100, 66",
 Hunt,80,
-Hunter,"26, 80",
-Hunter,26,
+Hunter,"26, 80",1 Buckingham Terrace
+Hunter,26,10 Ainslie Place
 Hunter,66,
 Hunter M.,66,
-Hunter Mrs,24,
+Hunter Mrs,26,5 St Stuart Street
 Huswell,168,
-Hutchinson,"26, 80",
-Hutchinson J,26,
+Hutchinson,"26, 80",4 James Place Leith
+Hutchinson J M,26,4 James Place Leith
 Imlach,182,
 Imlach C,182,
-Inglis H.M.,26,
-Inglis Mrs,"26, 54, 124, 194",
-Innes Mitchell,26,
-Irvine Forbes,"26, 100",
+Inglis A.,26,3 Duncan Street 
+Inglis Mrs,"26, 54, 124, 194",Merchiston Park
+Innes Mitchell,26,12 Melville Street
+Irvine Forbes,"26, 100",44 Heriot Row
 Isles,"100, 194",
-Ivory,8o,
+Ivory,80,
 Jameson,54,
-Jeffrey,28,
+Jeffrey,28,10 Upper Gray Street
 Jeffrey,182,
-Jeffrey J,28,
+Jeffrey J,28,10 Upper Gray Street
 Jenkin,66,
 Jenkin Fleeming,"134, 202",
-Jenton,28,
-Johnston,28 168,
-Johnston,28,
-Johnstone,"66, 28, 80",
-Johnstone,"28, 66, 80",
+Jenson,28,15 Buckingham Terrace
+Johnston,"28, 168",10 London Street
+Johnston,28,34 Queen Street
+Johnstone,"66, 28, 80",50 Melville Street
+Johnstone,"28, 66, 80",50 Melville Street
 Johnstone,54,
 Jones,68,
 K McCallum,30,
@@ -363,14 +363,14 @@ Keighley,168,
 Keighley J,168,
 Keimack,54,
 Keimack J,54,
-Keir,"28, 144",
+Keir,"28, 144",27 Rutland Square
 Keir,80,
 Keir A,66,
 Keir MC.,168,
-Keir WM.,28,
+Keir WM.,28,4 Melville Street
 Kelland,168,
 Kennedy,28,
-Ker,"66, 28 116, 80",
+Ker,"66, 28 116, 80",28 Rutland Square
 King,124,
 King Campbell,80,
 King Campbell,"126, 134",
@@ -380,26 +380,26 @@ Kingeley Mrs,"100, 64, 194",
 Krim Sultana Cherry,54,
 Lambe,82,
 Lang,184,
-Laurie,28,
+Laurie,28,9 Nelson Street
 Law,100,
 Lawrie,"184, 58",
 Lawrie Mrs,184,
 Lawson,126,
-Laycock Mrs,28,
+Laycock Mrs,28,13 Walker Street
 Leitch,"54, 116, 194, 184",
 Lennie Mrs,68,
-Leslie,"28, 100, 82, 126, 184",
-Leslie E,50,
-Lewis,"30, 80",
+Leslie,"28, 100, 82, 126, 184",2 Charlotte Square
+Leslie E,30,2 Charlotte Square
+Lewis Kate,"30, 80",16 Inverleith Row
 Lillie,170,
 Lillie Mrs,170,
 Lindsay M. M,"194, 170",
-Logan,"82, 30",
-Logan,"30, 114, 196, 82",
+Logan C.B.,"82, 30",31 Saxe Cobing Place
+Logan,"30, 116, 196, 82",29 India Street
 Logan,"54, 170, 68",
-Logan JD,30,
-Lolhian,"30, 82",
-Lorimer,30,
+Logan JD,30,14 Saxe Cobing Place
+Lolhian M,"30, 82",28 Drummond Place
+Lorimer,30,3 Charlotte Place
 Lorimer,"54, 126",
 Lorimer,126,
 Low,68,
@@ -415,27 +415,27 @@ Macduff,102,
 Macfarlane,84,
 Macfie,170,
 Macfurlane,"56, 100",
-MacKay,"30, 100, 82",
-MacKay,"32, 84, 144",
+MacKay,"30, 100, 82",Blair Casle
+MacKay,"32, 84, 144",7 Albyn Place
 Mackay A,82,
 Mackay Mrs,82,
-Mackenzie,32,
-MacKenzie C.,32,
+Mackenzie,32,12 Great King Street
+MacKenzie C.,32,12 Great King Street
 Mackenzie Mrs,68,
-Maclagan,32,
-Maclaren,"32, 92, 134",
-Maclaren,32,
-Maclaren,32,
+Maclagan,32,28 Heriot Row
+Maclaren,"32, 92, 134",1 Morningside Bank
+Maclaren,32,12 Darnaway Street
+Maclaren,32,Newington House
 Maclaren,"56, 126, 184",
 Maclaren,100,
-Maclaren,"196, 32, 100",
+Maclaren,"196, 32, 100",34 Buckingham Terrace
 Maclaren C,126,
-Maclaren E,32,
-Maclaren Mrs,32,
+Maclaren E,32,Newington House
+Maclaren Mrs,32,Newington House
 Maclaren Mrs,100,
-Maclaren Mrs C,"32, 82",
-"Maclaren,","32, 170, 126, 144",
-Macqueen Mrs,32,
+Maclaren Mrs C,"32, 82",Moreland
+"Maclaren,","32, 170, 126, 144",36 Greenhill Gardens
+Macqueen Mrs,32,11 Oxford Terrace
 Maddison,68,
 Mair,102,
 Mair,102,
@@ -446,21 +446,21 @@ Malcolm,"82, 184, 132",
 Mancreiff M,110,
 Marchall,"102, 134",
 Marchall,136,
-Marshall,32,
-Marshall,32,
-Marshall,32,
-Marshall,"32, 144",
+Marshall,32,2 Lauriston Terrace
+Marshall,32,5 Doune Terrace
+Marshall,32,3 Heriot Row
+Marshall,"32, 144",5 Doune Terrace
 Marshall,56,
 Marshall,84,
 Marshall,184,
-Marshall A,34,
-Marshall M,32,
+Marshall A,34,18 Albany Street
+Marshall M,32,5 Doune Terrace
 Marshall Mrs,56,
-Martin,"82, 184, 136, 34",
+Martin,"82, 184, 136, 34",35 Alba Street
 Martin A,32,
 Martin M,"116, 82, 144",
-Martin Mrs,"34, 82",
-Maryonbanks Mrs,32,
+Martin Mrs,"34, 82",16 Melville Street
+Marjoribanks Mrs,32,Warriston House
 Masson Mrs,"56, 84, 136",
 Matheson,"116, 68, 170, 144",
 May H,"126, 182, 144",
@@ -469,33 +469,33 @@ McAlpine,82,
 McCall,30,
 McCallum,30,
 McDonall,82,
-McDongal,30,
-McDongall,30,
+McDougall,30,Canaan Park
+McDougall S,30,10 Upper Gray Street
 McDongall,126,
 McDougul Mrs,82,
-McKay,30,
+McKay,30,10 Shadowick Place
 McKellar,102,
 McKenzie,126,
 McLean,56,
 McPherson,126,
 McSumahan Mrs,82,
-Meck,"56, 34",
+Meek,"56, 34",19 Rutland Square
 Mellis,102,
 Mellis,170,
 Mellis M,170,
-Melville,"126, 34, 84, 184",
-Mengies,34,
+Melville,"126, 34, 84, 184",15 Heriot Row
+Menzies,34,7 Manor Place
 Mengies,102,
-Mengies C,34,
-Mengies C,34,
+Mengies C,34,7 Manor Place
+Mengies C,34,Canaan Cottage
 Menzies,68,
 Middleton,184,
-Millar White,34,
-Milne,34,
-Milne,34,
+Millar White,34,10 George Square
+Milne,34,6 West Maitland Street
+Milne,34,6 West Maitland Street
 Milne,102,
 Milne,84,
-Milne,"128, 34, 56",
+Milne,"128, 34, 56",4 Chester Street
 Milne Mrs,102,
 Milroy,56,
 Minto,56,
@@ -503,15 +503,15 @@ Minto A,56,
 Mitchele,102,
 Moir,56,
 Moir M P,56,
-Moncrieff,"34, 84, 184, 136",
-Moncrieff A,34,
+Moncrieff,"34, 84, 184, 136",15 St Stewart Street
+Moncrieff A,34,15 St Stewart Street
 Moncrieff Scott,184,
 Moodie Stewart,"84, 186",
 Moodie Stewart,"84, 186",
-Mornet,"128, 34",
-Morrison Mrs,34,
-Muirhead,34,
-Muirhead,34,
+Moinet,"128, 34",30 Melville Street
+Morrison Mrs,34,12 Randolph Crescent
+Muirhead,34,12 Oxford Street
+Muirhead,34,12 Oxford Street
 Mullay,"56, 128",
 Mullay,"102, 68, 202",
 Murray,"102, 68, 202",
@@ -522,13 +522,13 @@ Murray Grahame,34,
 Murray Mrs,"102, 84, 196",
 Muston,128,
 Neanes,"68, 116, 196, 136, 144",
-Neil A J,"68, 116, 196, 36",
-Neil M E.,"68, 116, 196, 36",
+Neil A J,"68, 116, 196, 36",16 Warriston Crescent
+Neil M E.,"68, 116, 196, 36",16 Warriston Crescent
 Neilson,"56, 102",
-Nelson,"56, 36",
+Nelson,"56, 36",Abden House Newington
 Newbigging,102,
 Nicholson,102,
-Nimm,36,
+Ninnus,36,Murrayfield
 Nisbet,104,
 Nisbet C,170,
 Nisbet E,104,
@@ -538,8 +538,8 @@ Norman S,104,
 Norris,"104, 128, 134",
 Norris A,"104, 128, 136",
 Ogilvie,104,
-Oldham,36,
-Oliver,36,
+Oldham,36,20 Great Stuart Street
+Oliver,36,13 Gayfield Square
 Omond,56,
 Oswald,"68, 118, 195",
 Panton,104,
@@ -554,29 +554,29 @@ Paton,36,
 Paton Lady,58,
 Paul,104,
 Pedelie Dick,136,
-Pellie,36,
-Penney,36,
+Petrie,36,6 St Vincent Street
+Penney L.,36,24 Great King Street
 Philip,170,
 Phingle,"104, 68, 84",
 Plingle Mrs,"170, 184",
-Preston,36,
-Pringle Mrs,36,
+Preston,36,Lynedoch Place
+Pringle Mrs,36,27 Rutland Square
 Ramsay Smith,"84, 38, 128",
-Ranken Mrs,"38, 58, 68, 118",
-Reid,"38, 86, 128, 186",
+Ranken Mrs,"38, 58, 68, 118",Cargilfield
+Reid,"38, 86, 128, 186",6 Merchiston Place
 Reid Mrs,118,
-Renton Mrs,"76, 38",
+Renton Mrs,"76, 38",4 George Street
 Richardson,58,
-Richmond Mr,"38, 70",
+Richmond Miss,"38, 70",18 Ann Street
 Ritchie,172,
 Ritchie,196,
 Ritchie,"84, 128",
-Robertson,"38, 144",
+Robertson,"38, 144",76 Great King Street
 Robertson,"58, 106, 84",
 Robertson,106,
 Robertson,86,
 Robertson,178,
-Robertson,38,
+Robertson,38,Holland Lodge Newington
 Robertson,38,
 Robertson,58,
 Robertson,58,
@@ -585,15 +585,15 @@ Robertson Mrs,106,
 Robertson Mrs,106,
 Robinon,"86, 172",
 Robinon,172,
-Robinson,38,
+Robinson,38,21 Clarendon Crescent
 Robinson,70,
-Robinson S,38,
+Robinson S,38,21 Clarendon Crescent
 Robson,58,
 Robson Scott,"58, 128",
-Romanes,38,
+Romanes,38,4 Oxford Terrace
 Ronalds,"186, 136",
 Ronalds Mrs,172,
-Ross Mrs,38,
+Ross Mrs,38,22 Duke Street
 Rotherham,"86, 106",
 Rothes bounless,196,
 Rowatt,58,
@@ -605,21 +605,22 @@ Scott,58,
 Scott,86,
 Seeales G,172,
 Seeales J S.,"172, 106, 144",
-Sellar Mrs,38,
+Sellar Mrs,38,15 Buckingham Terrace
 Semson,"106, 81",
 Semson M,"106, 86",
 Seton,"106, 198",
-Seton Mrs,40,
+Seton Mrs,40,"St Bennet's, Greenhill"
 Shennan,106,
 Simpson,"58, 136",
 Simpson,58,
 Simson,106,
 Sinison,70,
-Smail M Ll,38,
-Smail S,38,
-Smart S U,38,
-Smith,"38, 86",
-Smith,40,
+Smail M H,38,1 Atholl Crescent
+Smail S,38,1 Atholl Crescent
+Smart S U,38,"11 Smith's Place, Leith"
+Smith,38,7 Comely Bank
+Smith Ramsay,"38, 86",5 North Charlotte Street
+Smith,40,15 Inverleith Row
 Smith,58,
 Smith,60,
 Smith,"106, 144",
@@ -627,45 +628,45 @@ Smith,106,
 Smith,"172, 198",
 Smith A.,106,
 Smith J.,"108, 118",
-Smith Jane,40,
+Smith Jane,40,15 Inverleith Row
 Smith L.,"172, 186",
 Smith L.,"172, 185",
-Smith Mrs,40,
+Smith Mrs,40,28 Findhorn Place
 Smith Mrs,106,
 Smith Mrs,86,
 Somerille,70,
 Somers,"70, 172",
-Somerville,40,
-Somerville,6o,
+Somerville,40,42 Moray Place
+Somerville,60,
 Somerville,106,
 Spalding W.,"70, 108, 198,",
 Spence,60,
 Spens,70,
 Spry,172,
-Steven,6o,
+Steven,60,
 Stevenson,106,
 Stevenson,108,
-Stevenson F,"40, 60, 86, 186",
-Stevenson L,"40, 198",
-Stevenson Mrs,40,
-Stevenson S,"40, 60, 70, 86",
-Stewart,40,
-Stewart M,40,
+Stevenson F,"40, 60, 86, 186",13 Randolph Crescent
+Stevenson L,"40, 198",13 Randolph Crescent
+Stevenson Mrs,40,39 Charlotte Square
+Stevenson S,"40, 60, 70, 86",13 Randolph Crescent
+Stewart,40,3 Buckingham Terrace
+Stewart M,40,3 Buckingham Terrace
 Stewart Mrs,98,
 Stewart Mrs A.,172,
 Stewent,70,
-Stirling A,40,
+Stirling A,40,5 Gloucester Place
 Stirling Mrs,108,
 Strachan,108,
-Striling,40,
-Suckling,40,
+Stirling,40,
+Suckling,40,2 Melville Street
 Sutherland,108,
-Sym,"86, 40",
+Sym,"86, 40",37 George Square
 Sym G.,108,
-Sym M A,40,
-Syrne Mrs.,40,
-Tawse,"42, 50",
-Tawse M.,"42, 60",
+Sym M A,40,37 George Square
+Syme Mrs.,40,14 Great King Street
+Tawse,"42, 50",11 Royal Terrace
+Tawse M.,"42, 60",11 Royal Terrace
 Taylor,"88, 186",
 Taylor W,88,
 Tennant Mrs,174,
@@ -675,43 +676,43 @@ Tent M,"204, 124, 136",
 Tent Mrs,"128, 86",
 Terrat G,108,
 Thin Mrs,60,
-Thomson,"42, 88",
-Thomson,"42, 198",
+Thomson,"42, 88",17 Alva Street
+Thomson,"42, 198",14 York Place
 Thomson,174,
 Thomson C,108,
 Thomson C. A.,174,
 Thomson G.,"108, 174, 118",
-Thomson Jem,42,
-Thomson Mrs,"42, 88",
+Thomson Jem,42,14 York Place
+Thomson Mrs,"42, 88",5 Rutland Street
 Thomson R,128,
 Thorburn,"60, 136",
 Tillie,"108, 118",
 Tod,"60, 70, 88, 130",
-Tod,42,
-Tod,"42, 198",
+Tod,42,St Leonards
+Tod,"42, 198",14 Ainslie Place
 Tod Mrs,118,
-Tod Mrw,"42, 136",
+Tod Mrs,"42, 136",St Leonards
 Tod Th,"70, 80, 130",
 Torrop Mrs,"108, 118",
 Tragnair,88,
-Traper,42,
+Traper,42,37 Dublin Street
 Tuka,174,
 Turcan,"60, 108, 70",
 Turnbull,60,
 Turnbull Mrs,60,
-Urquhart,"42, 130",
+Urquhart,"42, 130",5 St Colme Street
 Urquhart,"174, 188",
 Veitch,"174, 188",
-Vinson,"60, 130, 136, 42",
+Vinson,"60, 130, 136, 42",1 Boughton Place
 Vinson,"70, 188",
 Wahab,"174, 88",
 Wahab L,174,
-Walker,42,
+Walker,42,43 Grange Road
 Walker,"60, 88",
 Wallace Mrs,"108, 188",
 Waller Paton Mrs,58,
 Walson,"88, 174",
-Ward,44,
+Ward,44,41 Randolph Place
 Warren,194,
 Warwick,"60, 88",
 Watson,42,
@@ -719,32 +720,32 @@ Watson,108,
 Watson,"174, 98",
 Watson,118,
 Watson A,88,
-Watson Mrs,42,
-Watson Mrs,42,
-Weightman,44,
+Watson Mrs,42,45 Charlotte Square
+Watson Mrs,42,16 Greenhill Garden
+Weightman,44,7 Darnaway Street
 Weir,"138, 204, 70, 88",
 Weir,88,
 Weir M.,"88, 118, 108, 198",
 Wellis,110,
-Welsh,"44, 70, 80, 188, 130",
-Wenstanley,44,
+Welsh,"44, 70, 80, 188, 130",2 Gloucester Place
+Wenstanley,44,36 Minto Street
 Wersse,110,
 Whitehead,198,
-Whitehead,"44, 70, 138",
-Whitehead Ll,"44, 70, 138",
+Whitehead,"44, 70, 138",9 Fettes Row
+Whitehead Ll,"44, 70, 138",9 Fettes Row
 Willen,108,
 Wood,110,
-Wood Mrs,"44, 90",
+Wood Mrs,"44, 90",10 St Cohne Street
 Wright Guthrie,74,
-Wyld,"44, 110",
-Wyld,"44 60, 188",
-Wyld C,44,
-Wyld Mrs,"44, 146",
+Wyld,"44, 110",24 Hill Street
+Wyld,"44 60, 188",19 Inverleith Row
+Wyld C,44,19 Inverleith Row
+Wyld Mrs,"44, 146",19 Inverleith Row
 Wylie,110,
-Young,44,
+Young,44,29 Stafford Street
 Young,110,
 Young,118,
 Young,90,
 Young Herth Mrs,"188, 204",
-Young Mrs,44,
+Young Mrs,44,47 Moray Place
 Yule,110,

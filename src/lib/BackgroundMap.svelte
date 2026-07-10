@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import mapboxgl from "mapbox-gl";
+  import MapboxWorker from "mapbox-gl/dist/mapbox-gl-csp-worker?worker";
   import "mapbox-gl/dist/mapbox-gl.css";
 
   export let currentYear: number;
@@ -42,6 +43,7 @@
 
   const rawEnvToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
   const envToken = (rawEnvToken ?? "").trim().replace(/^"|"$/g, "");
+  const baseUrl = import.meta.env.BASE_URL;
   const barrySourceId = "barry-journey";
   const barryLineLayerId = "barry-journey-line";
   const garrettSourceId = "garrett-journey";
@@ -89,7 +91,7 @@
 
     const [latitude, longitude] = coordinates;
     const markerImage = document.createElement("img");
-    markerImage.src = `/img/${imageName}`;
+    markerImage.src = `${baseUrl}img/${imageName}`;
     markerImage.alt = alt;
     markerImage.style.width = "15px";
     markerImage.style.height = "15px";
@@ -144,8 +146,7 @@
       return [];
     }
 
-    return (rawData as PhysiologyGeoDatum[])
-      .map((row) => {
+    return (rawData as PhysiologyGeoDatum[]).flatMap((row) => {
         const sourceData = row.source_data;
         const universityAddress = sourceData?.university_address;
         const directLat = Number(sourceData?.lat);
@@ -156,10 +157,10 @@
         const lon = Number.isFinite(directLon) ? directLon : addressLon;
 
         if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
-          return null;
+          return [];
         }
 
-        return {
+        const feature: GeoJSON.Feature<GeoJSON.Point> = {
           type: "Feature",
           properties: {
             name: sourceData?.name ?? "Unknown",
@@ -170,12 +171,10 @@
             type: "Point",
             coordinates: [lon, lat],
           },
-        } satisfies GeoJSON.Feature<GeoJSON.Point>;
-      })
-      .filter(
-        (feature): feature is GeoJSON.Feature<GeoJSON.Point> =>
-          feature !== null,
-      );
+        };
+
+        return [feature];
+      });
   };
 
   const animateJourneyLine = ({
@@ -420,6 +419,9 @@
 
   onMount(() => {
     mapboxgl.accessToken = envToken;
+    mapboxgl.workerClass = MapboxWorker as unknown as new (
+      ...args: unknown[]
+    ) => Worker;
 
     map = new mapboxgl.Map({
       container: mapContainer,
