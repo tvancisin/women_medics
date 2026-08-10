@@ -1,0 +1,5880 @@
+[{
+  "_id": {
+    "$oid": "6a5f8a58c22475b40282c357"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Abercromby Miss",
+    "ref": "12",
+    "university_address": {
+      "original_name": "Colinton House, Edinburgh",
+      "lat": 55.9059999,
+      "lon": -3.2624665,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Abercromby Miss",
+    "normalized": "abercromby",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Abercromby"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a59c22475b40282c358"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Adam E Miss",
+    "ref": "12",
+    "university_address": {
+      "original_name": "Afton Lodge, Edinburgh",
+      "lat": 55.9736363,
+      "lon": -3.2139462,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Adam E Miss",
+    "normalized": "adam e",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Adam",
+    "surname": "E"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a59c22475b40282c359"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Adam Miss",
+    "ref": "12",
+    "university_address": {
+      "original_name": "Afton Lodge, Edinburgh",
+      "lat": 55.9736363,
+      "lon": -3.2139462,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Adam Miss",
+    "normalized": "adam",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Adam"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a59c22475b40282c35a"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Anderson Miss",
+    "ref": "12",
+    "university_address": {
+      "original_name": "32 Moray Place, Edinburgh",
+      "lat": 55.9543525,
+      "lon": -3.2101493,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Anderson Miss",
+    "normalized": "anderson",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Anderson"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a59c22475b40282c35b"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Anderson Miss M",
+    "ref": "12",
+    "university_address": {
+      "original_name": "Merchiston Lodge, Edinburgh",
+      "lat": 55.935556,
+      "lon": -3.218961,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Anderson Miss M",
+    "normalized": "m anderson",
+    "title": "miss",
+    "forename": "M",
+    "middlename": null,
+    "surname": "Anderson"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a5ac22475b40282c35c"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Arbuthnot Miss",
+    "ref": "12, 94",
+    "university_address": {
+      "original_name": "Maois Bank, Edinburgh",
+      "lat": 55.953252,
+      "lon": -3.188267,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Arbuthnot Miss",
+    "normalized": "arbuthnot",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Arbuthnot"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a5ac22475b40282c35d"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Arnott Miss",
+    "ref": "12",
+    "university_address": {
+      "original_name": "Merchiston Place, Edinburgh",
+      "lat": 55.9354321,
+      "lon": -3.211245,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Arnott Miss",
+    "normalized": "arnott",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Arnott"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a5ac22475b40282c35e"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Arnott Miss M",
+    "ref": "12",
+    "university_address": {
+      "original_name": "Merchiston Place, Edinburgh",
+      "lat": 55.9354321,
+      "lon": -3.211245,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Arnott Miss M",
+    "normalized": "m arnott",
+    "title": "miss",
+    "forename": "M",
+    "middlename": null,
+    "surname": "Arnott"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a5bc22475b40282c35f"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Baildon Miss",
+    "ref": "14, 64, 134, 114, 202",
+    "university_address": {
+      "original_name": "Murrayfiled, Edinburgh",
+      "lat": 55.947039,
+      "lon": -3.2460193,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Baildon Miss",
+    "normalized": "baildon",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Baildon"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a5bc22475b40282c360"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Baillie Miss",
+    "ref": "14",
+    "university_address": {
+      "original_name": "3 Northumberland Street, Edinburgh",
+      "lat": 55.95746690000001,
+      "lon": -3.19647,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Baillie Miss",
+    "normalized": "baillie",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Baillie"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a5cc22475b40282c361"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Balfour Miss",
+    "ref": "14, 142, 178",
+    "university_address": {
+      "original_name": "27 Inverleith Row, Edinburgh",
+      "lat": 55.9676631,
+      "lon": -3.205857,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Balfour Miss",
+    "normalized": "balfour",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Balfour"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a5cc22475b40282c362"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Bannatyne J Miss",
+    "ref": "14",
+    "university_address": {
+      "original_name": "15 Lansdowne Cres., Edinburgh",
+      "lat": 55.9470695,
+      "lon": -3.2185516,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Bannatyne J Miss",
+    "normalized": "bannatyne j",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Bannatyne",
+    "surname": "J"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a5cc22475b40282c363"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Bannatyne J M Miss",
+    "ref": "14",
+    "university_address": {
+      "original_name": "46 Northumberland Street, Edinburgh",
+      "lat": 55.956554,
+      "lon": -3.2000519,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Bannatyne J M Miss",
+    "normalized": "bannatyne j m",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Bannatyne J",
+    "surname": "M"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a5cc22475b40282c364"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Bannatyne St E. Miss",
+    "ref": "14",
+    "university_address": {
+      "original_name": "46 Northumberland Street, Edinburgh",
+      "lat": 55.956554,
+      "lon": -3.2000519,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Bannatyne St E. Miss",
+    "normalized": "bannatyne st e.",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Bannatyne St",
+    "surname": "E."
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a5dc22475b40282c365"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Belfrage Miss",
+    "ref": "16",
+    "university_address": {
+      "original_name": "North Gill, Edinburgh",
+      "lat": 55.953252,
+      "lon": -3.188267,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Belfrage Miss",
+    "normalized": "belfrage",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Belfrage"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a5dc22475b40282c366"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Bell Miss",
+    "ref": "14, 74",
+    "university_address": {
+      "original_name": "12 Viewforth Place, Edinburgh",
+      "lat": 55.9370881,
+      "lon": -3.2079464,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Bell Miss",
+    "normalized": "bell",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Bell"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a5ec22475b40282c367"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Bell M. S. Miss",
+    "ref": "14",
+    "university_address": {
+      "original_name": "6 Melville Street, Edinburgh",
+      "lat": 55.9507918,
+      "lon": -3.210862,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Bell M. S. Miss",
+    "normalized": "bell m. s.",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Bell M.",
+    "surname": "S."
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a5ec22475b40282c368"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Blaikie Miss",
+    "ref": "14",
+    "university_address": {
+      "original_name": "Pilrig Manse, Edinburgh",
+      "lat": 55.9663881,
+      "lon": -3.1812801,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Blaikie Miss",
+    "normalized": "blaikie",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Blaikie"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a5ec22475b40282c369"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Blyth Miss",
+    "ref": "14",
+    "university_address": {
+      "original_name": "9 Hope Street, Edinburgh",
+      "lat": 55.9507868,
+      "lon": -3.2078399,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Blyth Miss",
+    "normalized": "blyth",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Blyth"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a5fc22475b40282c36a"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Bontig Miss",
+    "ref": "16",
+    "university_address": {
+      "original_name": "Newington House, Edinburgh",
+      "lat": 55.9387894,
+      "lon": -3.17768,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Bontig Miss",
+    "normalized": "bontig",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Bontig"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a5fc22475b40282c36b"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Brodie Mrs",
+    "ref": "14",
+    "university_address": {
+      "original_name": "10 Oxford Terrace, Edinburgh",
+      "lat": 55.9560398,
+      "lon": -3.2151237,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Brodie Mrs",
+    "normalized": "brodie",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Brodie"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a60c22475b40282c36c"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Brown Miss",
+    "ref": "14, 94",
+    "university_address": {
+      "original_name": "20 Ainslie Place, Edinburgh",
+      "lat": 55.9529013,
+      "lon": -3.2098458,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Brown Miss",
+    "normalized": "brown",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Brown"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a61c22475b40282c36d"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Bruce Miss",
+    "ref": "14",
+    "university_address": {
+      "original_name": "3 Charlotte Square, Edinburgh",
+      "lat": 55.9525859,
+      "lon": -3.2075959,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Bruce Miss",
+    "normalized": "bruce",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Bruce"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a61c22475b40282c36e"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Burton E Miss",
+    "ref": "16, 114, 192",
+    "university_address": {
+      "original_name": "Craig House, Edinburgh",
+      "lat": 55.9231452,
+      "lon": -3.2281149,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Burton E Miss",
+    "normalized": "burton e",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Burton",
+    "surname": "E"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a61c22475b40282c36f"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Caldwell Miss",
+    "ref": "16",
+    "university_address": {
+      "original_name": "2 Victoria Terrace Portobello, Edinburgh",
+      "lat": 55.9487685,
+      "lon": -3.1925594,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Caldwell Miss",
+    "normalized": "caldwell",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Caldwell"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a62c22475b40282c370"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Carmichael Miss",
+    "ref": "16",
+    "university_address": {
+      "original_name": "3 Malta Terrace, Edinburgh",
+      "lat": 55.95959190000001,
+      "lon": -3.2099131,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Carmichael Miss",
+    "normalized": "carmichael",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Carmichael"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a62c22475b40282c371"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Campbell Miss",
+    "ref": "20",
+    "university_address": {
+      "original_name": "15 Carton Terrace, Edinburgh",
+      "lat": 55.9566601,
+      "lon": -3.1743493,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Campbell Miss",
+    "normalized": "campbell",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Campbell"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a63c22475b40282c372"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Campbell A. Miss",
+    "ref": "16, 76",
+    "university_address": {
+      "original_name": "4 Darnaway Street, Edinburgh",
+      "lat": 55.9548082,
+      "lon": -3.2067241,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Campbell A. Miss",
+    "normalized": "campbell a.",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Campbell",
+    "surname": "A."
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a63c22475b40282c373"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Campbell C Miss",
+    "ref": "16, 76",
+    "university_address": {
+      "original_name": "4 Darnaway Street, Edinburgh",
+      "lat": 55.9548082,
+      "lon": -3.2067241,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Campbell C Miss",
+    "normalized": "campbell c",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Campbell",
+    "surname": "C"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a63c22475b40282c375"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Candlish Miss",
+    "ref": "16",
+    "university_address": {
+      "original_name": "52 Melville Street, Edinburgh",
+      "lat": 55.949019,
+      "lon": -3.2146903,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Candlish Miss",
+    "normalized": "candlish",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Candlish"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a63c22475b40282c376"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Carter Miss",
+    "ref": "16",
+    "university_address": {
+      "original_name": "1 Inverleith Terrace, Edinburgh",
+      "lat": 55.9636764,
+      "lon": -3.2033115,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Carter Miss",
+    "normalized": "carter",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Carter"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a64c22475b40282c377"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Cay Miss",
+    "ref": "18",
+    "university_address": {
+      "original_name": "7 Blackford Road, Edinburgh",
+      "lat": 55.9319419,
+      "lon": -3.1987898,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Cay Miss",
+    "normalized": "cay",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Cay"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a64c22475b40282c378"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Chrystal Miss",
+    "ref": "18, 50",
+    "university_address": {
+      "original_name": "1 Lauder Road, Edinburgh",
+      "lat": 55.9326241,
+      "lon": -3.1831405,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Chrystal Miss",
+    "normalized": "chrystal",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Chrystal"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a64c22475b40282c379"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Chrystal A Miss",
+    "ref": "18, 48",
+    "university_address": {
+      "original_name": "1 Lauder Road, Edinburgh",
+      "lat": 55.9326241,
+      "lon": -3.1831405,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Chrystal A Miss",
+    "normalized": "chrystal a",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Chrystal",
+    "surname": "A"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a65c22475b40282c37a"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Cunningham Mrs",
+    "ref": "20",
+    "university_address": {
+      "original_name": "2 Ainslie Place, Edinburgh",
+      "lat": 55.9537981,
+      "lon": -3.2102299,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Cunningham Mrs",
+    "normalized": "cunningham",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Cunningham"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a65c22475b40282c37b"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Christie Miss",
+    "ref": "18",
+    "university_address": {
+      "original_name": "52 Merchiston Park, Edinburgh",
+      "lat": 55.938168,
+      "lon": -3.215004,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Christie Miss",
+    "normalized": "christie",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Christie"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a65c22475b40282c37c"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Clayton Miss",
+    "ref": "18",
+    "university_address": {
+      "original_name": "28 Rutland Square, Edinburgh",
+      "lat": 55.9490166,
+      "lon": -3.2093115,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Clayton Miss",
+    "normalized": "clayton",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Clayton"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a66c22475b40282c37d"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Crudelius Mrs",
+    "ref": "20",
+    "university_address": {
+      "original_name": "Chapelside Trinity, Edinburgh",
+      "lat": 55.97559099999999,
+      "lon": -3.21561,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Crudelius Mrs",
+    "normalized": "crudelius",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Crudelius"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a66c22475b40282c37e"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Coldstream Miss",
+    "ref": "18",
+    "university_address": {
+      "original_name": "51 York Place, Edinburgh",
+      "lat": 55.9562725,
+      "lon": -3.1889495,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Coldstream Miss",
+    "normalized": "coldstream",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Coldstream"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a67c22475b40282c37f"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Colvin Mrs",
+    "ref": "18",
+    "university_address": {
+      "original_name": "Chamberlain Road, Edinburgh",
+      "lat": 55.934328,
+      "lon": -3.2074803,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Colvin Mrs",
+    "normalized": "colvin",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Colvin"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a67c22475b40282c380"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Cook Miss",
+    "ref": "18",
+    "university_address": {
+      "original_name": "35 Little King Street, Edinburgh",
+      "lat": 55.95603149999999,
+      "lon": -3.187559,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Cook Miss",
+    "normalized": "cook",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Cook"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a67c22475b40282c381"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Cook A Miss",
+    "ref": "18, 76",
+    "university_address": {
+      "original_name": "35 Little King Street, Edinburgh",
+      "lat": 55.95603149999999,
+      "lon": -3.187559,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Cook A Miss",
+    "normalized": "cook a",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Cook",
+    "surname": "A"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a68c22475b40282c382"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Cook J Miss",
+    "ref": "18",
+    "university_address": {
+      "original_name": "Claremont Park, Edinburgh",
+      "lat": 55.9700944,
+      "lon": -3.1553622,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Cook J Miss",
+    "normalized": "cook j",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Cook",
+    "surname": "J"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a68c22475b40282c383"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Cook M Miss",
+    "ref": "18",
+    "university_address": {
+      "original_name": "Claremont Park, Edinburgh",
+      "lat": 55.9700944,
+      "lon": -3.1553622,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Cook M Miss",
+    "normalized": "cook m",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Cook",
+    "surname": "M"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a68c22475b40282c384"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Coventry Mrs",
+    "ref": "18, 76, 122, 180",
+    "university_address": {
+      "original_name": "29 Moray Place, Edinburgh",
+      "lat": 55.9546382,
+      "lon": -3.2101861,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Coventry Mrs",
+    "normalized": "coventry",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Coventry"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a68c22475b40282c385"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Cowan M Miss",
+    "ref": "18",
+    "university_address": {
+      "original_name": "4 Ainslie Place, Edinburgh",
+      "lat": 55.95374839999999,
+      "lon": -3.2103992,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Cowan M Miss",
+    "normalized": "cowan m",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Cowan",
+    "surname": "M"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a69c22475b40282c386"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Cox Mrs",
+    "ref": "18",
+    "university_address": {
+      "original_name": "Gorgie, Edinburgh",
+      "lat": 55.9375047,
+      "lon": -3.2418246,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Cox Mrs",
+    "normalized": "cox",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Cox"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6ac22475b40282c387"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Craig Miss",
+    "ref": "20, 122, 180",
+    "university_address": {
+      "original_name": "6 Carlton Street, Edinburgh",
+      "lat": 55.95700739999999,
+      "lon": -3.2108116,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Craig Miss",
+    "normalized": "craig",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Craig"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6ac22475b40282c388"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Craig Agnes Miss",
+    "ref": "76, 122, 18",
+    "university_address": {
+      "original_name": "6 Carlton Street, Edinburgh",
+      "lat": 55.95700739999999,
+      "lon": -3.2108116,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Craig Agnes Miss",
+    "normalized": "craig agnes",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Craig",
+    "surname": "Agnes"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6ac22475b40282c389"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Crichton McGill Miss",
+    "ref": "20",
+    "university_address": {
+      "original_name": "54 Melville Street, Edinburgh",
+      "lat": 55.9489884,
+      "lon": -3.2147643,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Crichton McGill Miss",
+    "normalized": "crichton mcgill",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Crichton",
+    "surname": "McGill"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6ac22475b40282c38a"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Cundell Miss",
+    "ref": "20",
+    "university_address": {
+      "original_name": "Leith, Edinburgh",
+      "lat": 55.9754642,
+      "lon": -3.1665302,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Cundell Miss",
+    "normalized": "cundell",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Cundell"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6ac22475b40282c38b"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Dalmahoys Miss",
+    "ref": "20, 134",
+    "university_address": {
+      "original_name": "69 Queen Street, Edinburgh",
+      "lat": 55.9537899,
+      "lon": -3.2049721,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Dalmahoys Miss",
+    "normalized": "dalmahoys",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Dalmahoys"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6ac22475b40282c38c"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Dalmahoys A Miss",
+    "ref": "20",
+    "university_address": {
+      "original_name": "69 Queen Street, Edinburgh",
+      "lat": 55.9537899,
+      "lon": -3.2049721,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Dalmahoys A Miss",
+    "normalized": "dalmahoys a",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Dalmahoys",
+    "surname": "A"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6ac22475b40282c38d"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Daniell Mrs",
+    "ref": "20",
+    "university_address": {
+      "original_name": "1 Inverleith Terrace, Edinburgh",
+      "lat": 55.9636764,
+      "lon": -3.2033115,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Daniell Mrs",
+    "normalized": "daniell",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Daniell"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6bc22475b40282c38e"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Davidson Miss",
+    "ref": "20",
+    "university_address": {
+      "original_name": "7 Rutland Square, Edinburgh",
+      "lat": 55.9486291,
+      "lon": -3.2084907,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Davidson Miss",
+    "normalized": "davidson",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Davidson"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6bc22475b40282c38f"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Deas Miss",
+    "ref": "20, 96, 76",
+    "university_address": {
+      "original_name": "32 Heriot Row, Edinburgh",
+      "lat": 55.9553684,
+      "lon": -3.2038037,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Deas Miss",
+    "normalized": "deas",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Deas"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6bc22475b40282c390"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Deas E Miss",
+    "ref": "20",
+    "university_address": {
+      "original_name": "32 Heriot Row, Edinburgh",
+      "lat": 55.9553684,
+      "lon": -3.2038037,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Deas E Miss",
+    "normalized": "deas e",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Deas",
+    "surname": "E"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6bc22475b40282c391"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Douglas Mrs",
+    "ref": "20, 74",
+    "university_address": {
+      "original_name": "Athol Crescent, Edinburgh",
+      "lat": 55.9481349,
+      "lon": -3.2117037,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Douglas Mrs",
+    "normalized": "douglas",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Douglas"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6cc22475b40282c392"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Dove Jane Miss",
+    "ref": "22",
+    "university_address": {
+      "original_name": "Wark, Edinburgh",
+      "lat": 55.97614249999999,
+      "lon": -3.1695419,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Dove Jane Miss",
+    "normalized": "dove jane",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Dove",
+    "surname": "Jane"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6cc22475b40282c393"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Ducan Miss",
+    "ref": "20",
+    "university_address": {
+      "original_name": "18 Rillbank Terrace, Edinburgh",
+      "lat": 55.9392548,
+      "lon": -3.1894857,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Ducan Miss",
+    "normalized": "ducan",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Ducan"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6dc22475b40282c394"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Dudgeon Miss",
+    "ref": "22",
+    "university_address": {
+      "original_name": "15 St Bernard's Crescent, Edinburgh",
+      "lat": 55.9578669,
+      "lon": -3.2123229,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Dudgeon Miss",
+    "normalized": "dudgeon",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Dudgeon"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6dc22475b40282c395"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Duff Helen Miss",
+    "ref": "22",
+    "university_address": {
+      "original_name": "12 Randolph Crescent, Edinburgh",
+      "lat": 55.95242099999999,
+      "lon": -3.2121894,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Duff Helen Miss",
+    "normalized": "duff helen",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Duff",
+    "surname": "Helen"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6dc22475b40282c396"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Dundas Mrs",
+    "ref": "22",
+    "university_address": {
+      "original_name": "8 Charlotte Square, Edinburgh",
+      "lat": 55.9524011,
+      "lon": -3.2083797,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Dundas Mrs",
+    "normalized": "dundas",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Dundas"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6ec22475b40282c397"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Dundas A Miss",
+    "ref": "22",
+    "university_address": {
+      "original_name": "25 St Andrew Square, Edinburgh",
+      "lat": 55.954974,
+      "lon": -3.1934185,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Dundas A Miss",
+    "normalized": "dundas a",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Dundas",
+    "surname": "A"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6ec22475b40282c398"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Dunfermline Lady Miss",
+    "ref": "22",
+    "university_address": {
+      "original_name": "Colinton House, Edinburgh",
+      "lat": 55.9059999,
+      "lon": -3.2624665,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Dunfermline Lady Miss",
+    "normalized": "dunfermline lady",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Dunfermline",
+    "surname": "Lady"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6fc22475b40282c399"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Dunlop May Miss",
+    "ref": "22",
+    "university_address": {
+      "original_name": "27 Drummond Place, Edinburgh",
+      "lat": 55.9591469,
+      "lon": -3.1955557,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Dunlop May Miss",
+    "normalized": "dunlop may",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Dunlop",
+    "surname": "May"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6fc22475b40282c39a"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Edington Miss",
+    "ref": "22, 78",
+    "university_address": {
+      "original_name": "1 Doune Terrace, Edinburgh",
+      "lat": 55.9562622,
+      "lon": -3.2075502,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Edington Miss",
+    "normalized": "edington",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Edington"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a6fc22475b40282c39b"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Edmonstone Miss",
+    "ref": "22, 98",
+    "university_address": {
+      "original_name": "11 Merchiston Terrace, Edinburgh",
+      "lat": 55.9297149,
+      "lon": -3.2212712,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Edmonstone Miss",
+    "normalized": "edmonstone",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Edmonstone"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a70c22475b40282c39c"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Ferguson Gillon Miss",
+    "ref": "24",
+    "university_address": {
+      "original_name": "8 Bellevue Crescent, Edinburgh",
+      "lat": 55.9599975,
+      "lon": -3.192882,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Ferguson Gillon Miss",
+    "normalized": "ferguson gillon",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Ferguson",
+    "surname": "Gillon"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a70c22475b40282c39d"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Ferries Miss",
+    "ref": "24, 52",
+    "university_address": {
+      "original_name": "5 Leamington Terrace, Edinburgh",
+      "lat": 55.9403569,
+      "lon": -3.2095394,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Ferries Miss",
+    "normalized": "ferries",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Ferries"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a70c22475b40282c39e"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Fleming Mrs",
+    "ref": "24, 52",
+    "university_address": {
+      "original_name": "12 Eton Terrace, Edinburgh",
+      "lat": 55.9549883,
+      "lon": -3.2134403,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Fleming Mrs",
+    "normalized": "fleming",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Fleming"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a71c22475b40282c39f"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Forrester Miss",
+    "ref": "24",
+    "university_address": {
+      "original_name": "8 Drummond Place, Edinburgh",
+      "lat": 55.9578637,
+      "lon": -3.1954545,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Forrester Miss",
+    "normalized": "forrester",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Forrester"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a71c22475b40282c3a0"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Fraser Mrs",
+    "ref": "24, 64, 114, 194",
+    "university_address": {
+      "original_name": "20 Chester Street, Edinburgh",
+      "lat": 55.9497079,
+      "lon": -3.2161798,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Fraser Mrs",
+    "normalized": "fraser",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Fraser"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a71c22475b40282c3a2"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Finday Mrs",
+    "ref": "24",
+    "university_address": {
+      "original_name": "9 Dundas Street, Edinburgh",
+      "lat": 55.9564399,
+      "lon": -3.1985938,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Finday Mrs",
+    "normalized": "finday",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Finday"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a72c22475b40282c3a3"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Gibson Mrs",
+    "ref": "24, 114",
+    "university_address": {
+      "original_name": "4 Merchiston Place, Edinburgh",
+      "lat": 55.9355383,
+      "lon": -3.2105279,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Gibson Mrs",
+    "normalized": "gibson",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Gibson"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a72c22475b40282c3a4"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Graham Miss",
+    "ref": "24",
+    "university_address": {
+      "original_name": "4 Clarendon Crescent, Edinburgh",
+      "lat": 55.9543253,
+      "lon": -3.2145157,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Graham Miss",
+    "normalized": "graham",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Graham"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a72c22475b40282c3a5"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Guthrie Miss",
+    "ref": "24",
+    "university_address": {
+      "original_name": "1 Salisbury Road, Edinburgh",
+      "lat": 55.93849110000001,
+      "lon": -3.174229,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Guthrie Miss",
+    "normalized": "guthrie",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Guthrie"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a72c22475b40282c3a6"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Guthrie H Miss",
+    "ref": "24, 168",
+    "university_address": {
+      "original_name": "1 Salisbury Road, Edinburgh",
+      "lat": 55.93849110000001,
+      "lon": -3.174229,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Guthrie H Miss",
+    "normalized": "guthrie h",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Guthrie",
+    "surname": "H"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a73c22475b40282c3a7"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Hamillon Miss",
+    "ref": "26, 116",
+    "university_address": {
+      "original_name": "5 West Circus Place, Edinburgh",
+      "lat": 55.9572576,
+      "lon": -3.2059319,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Hamillon Miss",
+    "normalized": "hamillon",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Hamillon"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a73c22475b40282c3a8"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Hamilton Miss",
+    "ref": "26",
+    "university_address": {
+      "original_name": "16 Little King Street, Edinburgh",
+      "lat": 55.9558888,
+      "lon": -3.1874196,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Hamilton Miss",
+    "normalized": "hamilton",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Hamilton"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a73c22475b40282c3a9"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Harvey Miss",
+    "ref": "26, 124",
+    "university_address": {
+      "original_name": "21 Regent Terrace, Edinburgh",
+      "lat": 55.9550724,
+      "lon": -3.1757959,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Harvey Miss",
+    "normalized": "harvey",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Harvey"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a74c22475b40282c3aa"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Henderson Miss",
+    "ref": "26",
+    "university_address": {
+      "original_name": "19 Ainslie Place, Edinburgh",
+      "lat": 55.9529308,
+      "lon": -3.2097864,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Henderson Miss",
+    "normalized": "henderson",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Henderson"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a74c22475b40282c3ab"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Henderson JM Miss",
+    "ref": "26",
+    "university_address": {
+      "original_name": "19 Ainslie Place, Edinburgh",
+      "lat": 55.9529308,
+      "lon": -3.2097864,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Henderson JM Miss",
+    "normalized": "henderson jm",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Henderson",
+    "surname": "JM"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a75c22475b40282c3ac"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Hill Ramsay Mrs",
+    "ref": "26",
+    "university_address": {
+      "original_name": "108 George Street, Edinburgh",
+      "lat": 55.95216509999999,
+      "lon": -3.2038642,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Hill Ramsay Mrs",
+    "normalized": "hill ramsay",
+    "title": "mrs",
+    "forename": null,
+    "middlename": "Hill",
+    "surname": "Ramsay"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a75c22475b40282c3ad"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Hunter Mrs",
+    "ref": "26",
+    "university_address": {
+      "original_name": "5 St Stuart Street, Edinburgh",
+      "lat": 55.9500609,
+      "lon": -3.3048096,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Hunter Mrs",
+    "normalized": "hunter",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Hunter"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a76c22475b40282c3ae"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Hutchinson Miss",
+    "ref": "26, 80",
+    "university_address": {
+      "original_name": "4 James Place Leith, Edinburgh",
+      "lat": 55.9754642,
+      "lon": -3.1665302,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Hutchinson Miss",
+    "normalized": "hutchinson",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Hutchinson"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a76c22475b40282c3af"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Hutchinson J M Miss",
+    "ref": "26",
+    "university_address": {
+      "original_name": "4 James Place Leith, Edinburgh",
+      "lat": 55.9754642,
+      "lon": -3.1665302,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Hutchinson J M Miss",
+    "normalized": "hutchinson j m",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Hutchinson J",
+    "surname": "M"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a76c22475b40282c3b0"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Inglis A. Miss",
+    "ref": "26",
+    "university_address": {
+      "original_name": "3 Duncan Street, Edinburgh",
+      "lat": 55.9356391,
+      "lon": -3.1768152,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Inglis A. Miss",
+    "normalized": "inglis a.",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Inglis",
+    "surname": "A."
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a77c22475b40282c3b1"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Inglis Mrs",
+    "ref": "26, 54, 124, 194",
+    "university_address": {
+      "original_name": "Merchiston Park, Edinburgh",
+      "lat": 55.9369567,
+      "lon": -3.2131101,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Inglis Mrs",
+    "normalized": "inglis",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Inglis"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a77c22475b40282c3b2"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Innes Mitchell Miss",
+    "ref": "26",
+    "university_address": {
+      "original_name": "12 Melville Street, Edinburgh",
+      "lat": 55.9512833,
+      "lon": -3.211591,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Innes Mitchell Miss",
+    "normalized": "innes mitchell",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Innes",
+    "surname": "Mitchell"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a77c22475b40282c3b3"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Irvine Forbes Miss",
+    "ref": "26, 100",
+    "university_address": {
+      "original_name": "44 Heriot Row, Edinburgh",
+      "lat": 55.9549341,
+      "lon": -3.2057211,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Irvine Forbes Miss",
+    "normalized": "irvine forbes",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Irvine",
+    "surname": "Forbes"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a78c22475b40282c3b4"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Jeffrey Miss",
+    "ref": "28",
+    "university_address": {
+      "original_name": "10 Upper Gray Street, Edinburgh",
+      "lat": 55.9360547,
+      "lon": -3.1789868,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Jeffrey Miss",
+    "normalized": "jeffrey",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Jeffrey"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a78c22475b40282c3b5"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Jeffrey J Miss",
+    "ref": "28",
+    "university_address": {
+      "original_name": "10 Upper Gray Street, Edinburgh",
+      "lat": 55.9360547,
+      "lon": -3.1789868,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Jeffrey J Miss",
+    "normalized": "jeffrey j",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Jeffrey",
+    "surname": "J"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a78c22475b40282c3b6"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Jenson Miss",
+    "ref": "28",
+    "university_address": {
+      "original_name": "15 Buckingham Terrace, Edinburgh",
+      "lat": 55.9547836,
+      "lon": -3.2166208,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Jenson Miss",
+    "normalized": "jenson",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Jenson"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a78c22475b40282c3b7"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Johnston Miss",
+    "ref": "28",
+    "university_address": {
+      "original_name": "34 Queen Street, Edinburgh",
+      "lat": 55.9543653,
+      "lon": -3.2003979,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Johnston Miss",
+    "normalized": "johnston",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Johnston"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a79c22475b40282c3b8"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Johnstone Miss",
+    "ref": "28, 66, 80",
+    "university_address": {
+      "original_name": "50 Melville Street, Edinburgh",
+      "lat": 55.94909939999999,
+      "lon": -3.2145788,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Johnstone Miss",
+    "normalized": "johnstone",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Johnstone"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a79c22475b40282c3b9"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Keir Miss",
+    "ref": "28, 144",
+    "university_address": {
+      "original_name": "27 Rutland Square, Edinburgh",
+      "lat": 55.9489579,
+      "lon": -3.2093902,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Keir Miss",
+    "normalized": "keir",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Keir"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a7ac22475b40282c3ba"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Keir WM. Miss",
+    "ref": "28",
+    "university_address": {
+      "original_name": "4 Melville Street, Edinburgh",
+      "lat": 55.9508412,
+      "lon": -3.2107849,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Keir WM. Miss",
+    "normalized": "keir wm.",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Keir",
+    "surname": "WM."
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a7ac22475b40282c3bb"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Ker Miss",
+    "ref": "66, 28 116, 80",
+    "university_address": {
+      "original_name": "28 Rutland Square, Edinburgh",
+      "lat": 55.9490166,
+      "lon": -3.2093115,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Ker Miss",
+    "normalized": "ker",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Ker"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a7ac22475b40282c3bc"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Laurie Miss",
+    "ref": "28",
+    "university_address": {
+      "original_name": "9 Nelson Street, Edinburgh",
+      "lat": 55.9571225,
+      "lon": -3.1960441,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Laurie Miss",
+    "normalized": "laurie",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Laurie"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a7ac22475b40282c3bd"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Laycock Mrs",
+    "ref": "28",
+    "university_address": {
+      "original_name": "13 Walker Street, Edinburgh",
+      "lat": 55.9493242,
+      "lon": -3.213039,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Laycock Mrs",
+    "normalized": "laycock",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Laycock"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a7bc22475b40282c3be"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Leslie Miss",
+    "ref": "28, 100, 82, 126, 184",
+    "university_address": {
+      "original_name": "2 Charlotte Square, Edinburgh",
+      "lat": 55.9525671,
+      "lon": -3.2073779,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Leslie Miss",
+    "normalized": "leslie",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Leslie"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a7bc22475b40282c3bf"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Leslie E Miss",
+    "ref": "30",
+    "university_address": {
+      "original_name": "2 Charlotte Square, Edinburgh",
+      "lat": 55.9525671,
+      "lon": -3.2073779,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Leslie E Miss",
+    "normalized": "leslie e",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Leslie",
+    "surname": "E"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a7bc22475b40282c3c0"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Lewis Kate Miss",
+    "ref": "30, 80",
+    "university_address": {
+      "original_name": "16 Inverleith Row, Edinburgh",
+      "lat": 55.9659877,
+      "lon": -3.2043815,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Lewis Kate Miss",
+    "normalized": "lewis kate",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Lewis",
+    "surname": "Kate"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a7bc22475b40282c3c1"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Logan C.B. Miss",
+    "ref": "82, 30",
+    "university_address": {
+      "original_name": "31 Saxe Cobing Place, Edinburgh",
+      "lat": 55.9607165,
+      "lon": -3.2080445,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Logan C.B. Miss",
+    "normalized": "logan c. b.",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Logan C.",
+    "surname": "B."
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a7cc22475b40282c3c2"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Logan Miss",
+    "ref": "30, 116, 196, 82",
+    "university_address": {
+      "original_name": "29 India Street, Edinburgh",
+      "lat": 55.9560906,
+      "lon": -3.2057123,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Logan Miss",
+    "normalized": "logan",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Logan"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a7cc22475b40282c3c3"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Logan JD Miss",
+    "ref": "30",
+    "university_address": {
+      "original_name": "14 Saxe Cobing Place, Edinburgh",
+      "lat": 55.96061899999999,
+      "lon": -3.2097796,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Logan JD Miss",
+    "normalized": "logan jd",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Logan",
+    "surname": "JD"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a7dc22475b40282c3c4"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Lolhian M Miss",
+    "ref": "30, 82",
+    "university_address": {
+      "original_name": "28 Drummond Place, Edinburgh",
+      "lat": 55.9591751,
+      "lon": -3.1954193,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Lolhian M Miss",
+    "normalized": "lolhian m",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Lolhian",
+    "surname": "M"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a7dc22475b40282c3c5"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Lorimer Miss",
+    "ref": "30",
+    "university_address": {
+      "original_name": "3 Charlotte Place, Edinburgh",
+      "lat": 55.9528693,
+      "lon": -3.2071904,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Lorimer Miss",
+    "normalized": "lorimer",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Lorimer"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a7dc22475b40282c3c6"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "MacKay Miss",
+    "ref": "32, 84, 144",
+    "university_address": {
+      "original_name": "7 Albyn Place, Edinburgh",
+      "lat": 55.9538267,
+      "lon": -3.2066326,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "MacKay Miss",
+    "normalized": "mackay",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "MacKay"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a7ec22475b40282c3c7"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Mackenzie Miss",
+    "ref": "32",
+    "university_address": {
+      "original_name": "12 Great King Street, Edinburgh",
+      "lat": 55.9583241,
+      "lon": -3.1972655,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Mackenzie Miss",
+    "normalized": "mackenzie",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Mackenzie"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a7ec22475b40282c3c8"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "MacKenzie C. Miss",
+    "ref": "32",
+    "university_address": {
+      "original_name": "12 Great King Street, Edinburgh",
+      "lat": 55.9583241,
+      "lon": -3.1972655,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "MacKenzie C. Miss",
+    "normalized": "mackenzie c.",
+    "title": "miss",
+    "forename": null,
+    "middlename": "MacKenzie",
+    "surname": "C."
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a7ec22475b40282c3c9"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Maclagan Miss",
+    "ref": "32",
+    "university_address": {
+      "original_name": "28 Heriot Row, Edinburgh",
+      "lat": 55.95536869999999,
+      "lon": -3.203175,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Maclagan Miss",
+    "normalized": "maclagan",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Maclagan"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a7fc22475b40282c3ca"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Maclaren Mrs",
+    "ref": "32",
+    "university_address": {
+      "original_name": "Newington House, Edinburgh",
+      "lat": 55.9387894,
+      "lon": -3.17768,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Maclaren Mrs",
+    "normalized": "maclaren",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Maclaren"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a80c22475b40282c3cb"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Maclaren E Miss",
+    "ref": "32",
+    "university_address": {
+      "original_name": "Newington House, Edinburgh",
+      "lat": 55.9387894,
+      "lon": -3.17768,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Maclaren E Miss",
+    "normalized": "maclaren e",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Maclaren",
+    "surname": "E"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a80c22475b40282c3cc"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Maclaren Mrs C",
+    "ref": "32, 82",
+    "university_address": {
+      "original_name": "Moreland, Edinburgh",
+      "lat": 55.953252,
+      "lon": -3.188267,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Maclaren Mrs C",
+    "normalized": "c maclaren",
+    "title": "mrs",
+    "forename": "C",
+    "middlename": null,
+    "surname": "Maclaren"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a80c22475b40282c3cd"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Maclaren, Miss",
+    "ref": "32, 170, 126, 144",
+    "university_address": {
+      "original_name": "36 Greenhill Gardens, Edinburgh",
+      "lat": 55.93327300000001,
+      "lon": -3.2049485,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Maclaren, Miss",
+    "normalized": "maclaren,",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Maclaren,"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a81c22475b40282c3ce"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Macqueen Mrs",
+    "ref": "32",
+    "university_address": {
+      "original_name": "11 Oxford Terrace, Edinburgh",
+      "lat": 55.9560246,
+      "lon": -3.215248,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Macqueen Mrs",
+    "normalized": "macqueen",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Macqueen"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a81c22475b40282c3cf"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Marshall Miss",
+    "ref": "32, 144",
+    "university_address": {
+      "original_name": "5 Doune Terrace, Edinburgh",
+      "lat": 55.9561692,
+      "lon": -3.2080364,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Marshall Miss",
+    "normalized": "marshall",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Marshall"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a82c22475b40282c3d0"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Marshall A Miss",
+    "ref": "34",
+    "university_address": {
+      "original_name": "18 Albany Street, Edinburgh",
+      "lat": 55.9572408,
+      "lon": -3.1923417,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Marshall A Miss",
+    "normalized": "marshall a",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Marshall",
+    "surname": "A"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a82c22475b40282c3d1"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Marshall M Miss",
+    "ref": "32",
+    "university_address": {
+      "original_name": "5 Doune Terrace, Edinburgh",
+      "lat": 55.9561692,
+      "lon": -3.2080364,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Marshall M Miss",
+    "normalized": "marshall m",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Marshall",
+    "surname": "M"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a83c22475b40282c3d2"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Martin Mrs",
+    "ref": "34, 82",
+    "university_address": {
+      "original_name": "16 Melville Street, Edinburgh",
+      "lat": 55.9505496,
+      "lon": -3.2114367,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Martin Mrs",
+    "normalized": "martin",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Martin"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a84c22475b40282c3d3"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Marjoribanks Mrs",
+    "ref": "32",
+    "university_address": {
+      "original_name": "Warriston House, Edinburgh",
+      "lat": 55.96619880000001,
+      "lon": -3.1903531,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Marjoribanks Mrs",
+    "normalized": "marjoribanks",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Marjoribanks"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a84c22475b40282c3d4"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "McDougall Miss",
+    "ref": "30",
+    "university_address": {
+      "original_name": "Canaan Park, Edinburgh",
+      "lat": 55.93015440000001,
+      "lon": -3.1974506,
+      "place_name": "Astley",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "McDougall Miss",
+    "normalized": "mcdougall",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "McDougall"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a84c22475b40282c3d5"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "McDougall S Miss",
+    "ref": "30",
+    "university_address": {
+      "original_name": "10 Upper Gray Street, Edinburgh",
+      "lat": 55.9360547,
+      "lon": -3.1789868,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "McDougall S Miss",
+    "normalized": "mcdougall s",
+    "title": "miss",
+    "forename": null,
+    "middlename": "McDougall",
+    "surname": "S"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a84c22475b40282c3d6"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "McKay Miss",
+    "ref": "30",
+    "university_address": {
+      "original_name": "10 Shadowick Place, Edinburgh",
+      "lat": 55.953252,
+      "lon": -3.188267,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "McKay Miss",
+    "normalized": "mckay",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "McKay"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a85c22475b40282c3d7"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Meek Miss",
+    "ref": "56, 34",
+    "university_address": {
+      "original_name": "19 Rutland Square, Edinburgh",
+      "lat": 55.9483457,
+      "lon": -3.2097009,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Meek Miss",
+    "normalized": "meek",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Meek"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a85c22475b40282c3d8"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Melville Miss",
+    "ref": "126, 34, 84, 184",
+    "university_address": {
+      "original_name": "15 Heriot Row, Edinburgh",
+      "lat": 55.9557397,
+      "lon": -3.200991,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Melville Miss",
+    "normalized": "melville",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Melville"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a85c22475b40282c3d9"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Menzies Miss",
+    "ref": "34",
+    "university_address": {
+      "original_name": "7 Manor Place, Edinburgh",
+      "lat": 55.94810589999999,
+      "lon": -3.2140739,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Menzies Miss",
+    "normalized": "menzies",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Menzies"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a85c22475b40282c3da"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Mengies C Miss",
+    "ref": "34",
+    "university_address": {
+      "original_name": "Canaan Cottage, Edinburgh",
+      "lat": 55.953252,
+      "lon": -3.188267,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Mengies C Miss",
+    "normalized": "mengies c",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Mengies",
+    "surname": "C"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a86c22475b40282c3db"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Millar White Miss",
+    "ref": "34",
+    "university_address": {
+      "original_name": "10 George Square, Edinburgh",
+      "lat": 55.94433369999999,
+      "lon": -3.1885843,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Millar White Miss",
+    "normalized": "millar white",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Millar",
+    "surname": "White"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a86c22475b40282c3dc"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Milne Miss",
+    "ref": "128, 34, 56",
+    "university_address": {
+      "original_name": "4 Chester Street, Edinburgh",
+      "lat": 55.9501576,
+      "lon": -3.2153716,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Milne Miss",
+    "normalized": "milne",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Milne"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a87c22475b40282c3dd"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Moncrieff Miss",
+    "ref": "34, 84, 184, 136",
+    "university_address": {
+      "original_name": "15 St Stewart Street, Edinburgh",
+      "lat": 55.9487089,
+      "lon": -3.3046827,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Moncrieff Miss",
+    "normalized": "moncrieff",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Moncrieff"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a87c22475b40282c3de"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Moncrieff A Miss",
+    "ref": "34",
+    "university_address": {
+      "original_name": "15 St Stewart Street, Edinburgh",
+      "lat": 55.9487089,
+      "lon": -3.3046827,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Moncrieff A Miss",
+    "normalized": "moncrieff a",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Moncrieff",
+    "surname": "A"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a87c22475b40282c3df"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Moinet Miss",
+    "ref": "128, 34",
+    "university_address": {
+      "original_name": "30 Melville Street, Edinburgh",
+      "lat": 55.95006230000001,
+      "lon": -3.2124559,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Moinet Miss",
+    "normalized": "moinet",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Moinet"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a87c22475b40282c3e0"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Morrison Mrs",
+    "ref": "34",
+    "university_address": {
+      "original_name": "12 Randolph Crescent, Edinburgh",
+      "lat": 55.95242099999999,
+      "lon": -3.2121894,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Morrison Mrs",
+    "normalized": "morrison",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Morrison"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a88c22475b40282c3e1"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Muirhead Miss",
+    "ref": "34",
+    "university_address": {
+      "original_name": "12 Oxford Street, Edinburgh",
+      "lat": 55.9398018,
+      "lon": -3.1777007,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Muirhead Miss",
+    "normalized": "muirhead",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Muirhead"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a88c22475b40282c3e2"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Neil A J Miss",
+    "ref": "68, 116, 196, 36",
+    "university_address": {
+      "original_name": "16 Warriston Crescent, Edinburgh",
+      "lat": 55.9642113,
+      "lon": -3.1998081,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Neil A J Miss",
+    "normalized": "neil a j",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Neil A",
+    "surname": "J"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a88c22475b40282c3e3"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Neil M E. Miss",
+    "ref": "68, 116, 196, 36",
+    "university_address": {
+      "original_name": "16 Warriston Crescent, Edinburgh",
+      "lat": 55.9642113,
+      "lon": -3.1998081,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Neil M E. Miss",
+    "normalized": "neil m e.",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Neil M",
+    "surname": "E."
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a89c22475b40282c3e4"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Nelson Miss",
+    "ref": "56, 36",
+    "university_address": {
+      "original_name": "Abden House Newington, Edinburgh",
+      "lat": 55.9375393,
+      "lon": -3.1693357,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Nelson Miss",
+    "normalized": "nelson",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Nelson"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a89c22475b40282c3e5"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Ninnus Miss",
+    "ref": "36",
+    "university_address": {
+      "original_name": "Murrayfield, Edinburgh",
+      "lat": 55.947039,
+      "lon": -3.2460193,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Ninnus Miss",
+    "normalized": "ninnus",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Ninnus"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a89c22475b40282c3e6"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Oldham Miss",
+    "ref": "36",
+    "university_address": {
+      "original_name": "20 Great Stuart Street, Edinburgh",
+      "lat": 55.9522341,
+      "lon": -3.2111164,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Oldham Miss",
+    "normalized": "oldham",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Oldham"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a8ac22475b40282c3e7"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Oliver Miss",
+    "ref": "36",
+    "university_address": {
+      "original_name": "13 Gayfield Square, Edinburgh",
+      "lat": 55.95948869999999,
+      "lon": -3.1859841,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Oliver Miss",
+    "normalized": "oliver",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Oliver"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a8ac22475b40282c3e8"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Petrie Miss",
+    "ref": "36",
+    "university_address": {
+      "original_name": "6 St Vincent Street, Edinburgh",
+      "lat": 55.9577448,
+      "lon": -3.2027781,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Petrie Miss",
+    "normalized": "petrie",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Petrie"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a8ac22475b40282c3e9"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Penney L. Miss",
+    "ref": "36",
+    "university_address": {
+      "original_name": "24 Great King Street, Edinburgh",
+      "lat": 55.9582641,
+      "lon": -3.198244,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Penney L. Miss",
+    "normalized": "penney l.",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Penney",
+    "surname": "L."
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a8bc22475b40282c3ea"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Preston Miss",
+    "ref": "36",
+    "university_address": {
+      "original_name": "Lynedoch Place, Edinburgh",
+      "lat": 55.9521373,
+      "lon": -3.213826,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Preston Miss",
+    "normalized": "preston",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Preston"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a8bc22475b40282c3eb"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Pringle Mrs",
+    "ref": "36",
+    "university_address": {
+      "original_name": "27 Rutland Square, Edinburgh",
+      "lat": 55.9489579,
+      "lon": -3.2093902,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Pringle Mrs",
+    "normalized": "pringle",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Pringle"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a8bc22475b40282c3ec"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Ranken Mrs",
+    "ref": "38, 58, 68, 118",
+    "university_address": {
+      "original_name": "Cargilfield, Edinburgh",
+      "lat": 55.9694075,
+      "lon": -3.299830800000001,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Ranken Mrs",
+    "normalized": "ranken",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Ranken"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a8cc22475b40282c3ed"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Reid Miss",
+    "ref": "38, 86, 128, 186",
+    "university_address": {
+      "original_name": "6 Merchiston Place, Edinburgh",
+      "lat": 55.9354398,
+      "lon": -3.2106858,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Reid Miss",
+    "normalized": "reid",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Reid"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a8cc22475b40282c3ee"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Renton Mrs",
+    "ref": "76, 38",
+    "university_address": {
+      "original_name": "4 George Street, Edinburgh",
+      "lat": 55.9536891,
+      "lon": -3.1980369,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Renton Mrs",
+    "normalized": "renton",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Renton"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a8cc22475b40282c3ef"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Richmond Miss",
+    "ref": "38, 70",
+    "university_address": {
+      "original_name": "18 Ann Street, Edinburgh",
+      "lat": 55.9567245,
+      "lon": -3.2131365,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Richmond Miss",
+    "normalized": "richmond",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Richmond"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a8dc22475b40282c3f0"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Robertson Miss",
+    "ref": "38",
+    "university_address": {
+      "original_name": "Holland Lodge Newington, Edinburgh",
+      "lat": 55.939138,
+      "lon": -3.1795155,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Robertson Miss",
+    "normalized": "robertson",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Robertson"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a8dc22475b40282c3f1"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Robinson Miss",
+    "ref": "38",
+    "university_address": {
+      "original_name": "21 Clarendon Crescent, Edinburgh",
+      "lat": 55.9553132,
+      "lon": -3.215914,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Robinson Miss",
+    "normalized": "robinson",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Robinson"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a8dc22475b40282c3f2"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Robinson S Miss",
+    "ref": "38",
+    "university_address": {
+      "original_name": "21 Clarendon Crescent, Edinburgh",
+      "lat": 55.9553132,
+      "lon": -3.215914,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Robinson S Miss",
+    "normalized": "robinson s",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Robinson",
+    "surname": "S"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a8ec22475b40282c3f3"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Romanes Miss",
+    "ref": "38",
+    "university_address": {
+      "original_name": "4 Oxford Terrace, Edinburgh",
+      "lat": 55.9556227,
+      "lon": -3.2156462,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Romanes Miss",
+    "normalized": "romanes",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Romanes"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a8ec22475b40282c3f4"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Ross Mrs",
+    "ref": "38",
+    "university_address": {
+      "original_name": "22 Duke Street, Edinburgh",
+      "lat": 55.9702075,
+      "lon": -3.17075,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Ross Mrs",
+    "normalized": "ross",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Ross"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a8ec22475b40282c3f5"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Sellar Mrs",
+    "ref": "38",
+    "university_address": {
+      "original_name": "15 Buckingham Terrace, Edinburgh",
+      "lat": 55.9547836,
+      "lon": -3.2166208,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Sellar Mrs",
+    "normalized": "sellar",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Sellar"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a8ec22475b40282c3f6"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Seton Mrs",
+    "ref": "40",
+    "university_address": {
+      "original_name": "St Bennet's, Greenhill, Edinburgh",
+      "lat": 55.9326175,
+      "lon": -3.2046955,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Seton Mrs",
+    "normalized": "seton",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Seton"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a8fc22475b40282c3f7"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Smail M H Miss",
+    "ref": "38",
+    "university_address": {
+      "original_name": "1 Atholl Crescent, Edinburgh",
+      "lat": 55.9481088,
+      "lon": -3.2112422,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Smail M H Miss",
+    "normalized": "smail m h",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Smail M",
+    "surname": "H"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a8fc22475b40282c3f8"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Smail S Miss",
+    "ref": "38",
+    "university_address": {
+      "original_name": "1 Atholl Crescent, Edinburgh",
+      "lat": 55.9481088,
+      "lon": -3.2112422,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Smail S Miss",
+    "normalized": "smail s",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Smail",
+    "surname": "S"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a8fc22475b40282c3f9"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Smart S U Miss",
+    "ref": "38",
+    "university_address": {
+      "original_name": "11 Smith's Place, Leith, Edinburgh",
+      "lat": 55.96737719999999,
+      "lon": -3.1734681,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Smart S U Miss",
+    "normalized": "smart s u",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Smart S",
+    "surname": "U"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a90c22475b40282c3fa"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Smith Mrs",
+    "ref": "40",
+    "university_address": {
+      "original_name": "28 Findhorn Place, Edinburgh",
+      "lat": 55.9352055,
+      "lon": -3.1811176,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Smith Mrs",
+    "normalized": "smith",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Smith"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a90c22475b40282c3fb"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Smith Ramsay Miss",
+    "ref": "38, 86",
+    "university_address": {
+      "original_name": "5 North Charlotte Street, Edinburgh",
+      "lat": 55.9530863,
+      "lon": -3.2070621,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Smith Ramsay Miss",
+    "normalized": "smith ramsay",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Smith",
+    "surname": "Ramsay"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a90c22475b40282c3fc"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Smith Jane Miss",
+    "ref": "40",
+    "university_address": {
+      "original_name": "15 Inverleith Row, Edinburgh",
+      "lat": 55.9658992,
+      "lon": -3.2042483,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Smith Jane Miss",
+    "normalized": "smith jane",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Smith",
+    "surname": "Jane"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a91c22475b40282c3fd"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Somerville Miss",
+    "ref": "40",
+    "university_address": {
+      "original_name": "42 Moray Place, Edinburgh",
+      "lat": 55.9538227,
+      "lon": -3.2083006,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Somerville Miss",
+    "normalized": "somerville",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Somerville"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a91c22475b40282c3fe"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Stevenson F Miss",
+    "ref": "40, 60, 86, 186",
+    "university_address": {
+      "original_name": "13 Randolph Crescent, Edinburgh",
+      "lat": 55.9523398,
+      "lon": -3.2122691,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Stevenson F Miss",
+    "normalized": "stevenson f",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Stevenson",
+    "surname": "F"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a91c22475b40282c3ff"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Stevenson L Miss",
+    "ref": "40, 198",
+    "university_address": {
+      "original_name": "13 Randolph Crescent, Edinburgh",
+      "lat": 55.9523398,
+      "lon": -3.2122691,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Stevenson L Miss",
+    "normalized": "stevenson l",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Stevenson",
+    "surname": "L"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a92c22475b40282c400"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Stevenson Mrs",
+    "ref": "40",
+    "university_address": {
+      "original_name": "39 Charlotte Square, Edinburgh",
+      "lat": 55.9517914,
+      "lon": -3.2062676,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Stevenson Mrs",
+    "normalized": "stevenson",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Stevenson"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a92c22475b40282c401"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Stevenson S Miss",
+    "ref": "40, 60, 70, 86",
+    "university_address": {
+      "original_name": "13 Randolph Crescent, Edinburgh",
+      "lat": 55.9523398,
+      "lon": -3.2122691,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Stevenson S Miss",
+    "normalized": "stevenson s",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Stevenson",
+    "surname": "S"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a92c22475b40282c402"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Stewart Miss",
+    "ref": "40",
+    "university_address": {
+      "original_name": "3 Buckingham Terrace, Edinburgh",
+      "lat": 55.9540393,
+      "lon": -3.215718,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Stewart Miss",
+    "normalized": "stewart",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Stewart"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a92c22475b40282c403"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Stewart M Miss",
+    "ref": "40",
+    "university_address": {
+      "original_name": "3 Buckingham Terrace, Edinburgh",
+      "lat": 55.9540393,
+      "lon": -3.215718,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Stewart M Miss",
+    "normalized": "stewart m",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Stewart",
+    "surname": "M"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a93c22475b40282c404"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Stirling A Miss",
+    "ref": "40",
+    "university_address": {
+      "original_name": "5 Gloucester Place, Edinburgh",
+      "lat": 55.95650329999999,
+      "lon": -3.2066133,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Stirling A Miss",
+    "normalized": "stirling a",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Stirling",
+    "surname": "A"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a93c22475b40282c405"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Suckling Miss",
+    "ref": "40",
+    "university_address": {
+      "original_name": "2 Melville Street, Edinburgh",
+      "lat": 55.9509288,
+      "lon": -3.2105307,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Suckling Miss",
+    "normalized": "suckling",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Suckling"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a93c22475b40282c406"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Sym Miss",
+    "ref": "86, 40",
+    "university_address": {
+      "original_name": "37 George Square, Edinburgh",
+      "lat": 55.9439594,
+      "lon": -3.1874467,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Sym Miss",
+    "normalized": "sym",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Sym"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a93c22475b40282c407"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Sym M A Miss",
+    "ref": "40",
+    "university_address": {
+      "original_name": "37 George Square, Edinburgh",
+      "lat": 55.9439594,
+      "lon": -3.1874467,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Sym M A Miss",
+    "normalized": "sym m a",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Sym M",
+    "surname": "A"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a94c22475b40282c408"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Syme Mrs.",
+    "ref": "40",
+    "university_address": {
+      "original_name": "14 Great King Street, Edinburgh",
+      "lat": 55.9583935,
+      "lon": -3.1974566,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Syme Mrs.",
+    "normalized": "syme",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Syme"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a94c22475b40282c409"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Tawse Miss",
+    "ref": "42, 50",
+    "university_address": {
+      "original_name": "11 Royal Terrace, Edinburgh",
+      "lat": 55.9567519,
+      "lon": -3.1795785,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Tawse Miss",
+    "normalized": "tawse",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Tawse"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a94c22475b40282c40a"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Tawse M. Miss",
+    "ref": "42, 60",
+    "university_address": {
+      "original_name": "11 Royal Terrace, Edinburgh",
+      "lat": 55.9567519,
+      "lon": -3.1795785,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Tawse M. Miss",
+    "normalized": "tawse m.",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Tawse",
+    "surname": "M."
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a94c22475b40282c40b"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Thomson Mrs",
+    "ref": "42, 88",
+    "university_address": {
+      "original_name": "5 Rutland Street, Edinburgh",
+      "lat": 55.9490872,
+      "lon": -3.2082483,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Thomson Mrs",
+    "normalized": "thomson",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Thomson"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a95c22475b40282c40c"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Thomson Jem Miss",
+    "ref": "42",
+    "university_address": {
+      "original_name": "14 York Place, Edinburgh",
+      "lat": 55.9562401,
+      "lon": -3.1919075,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Thomson Jem Miss",
+    "normalized": "thomson jem",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Thomson",
+    "surname": "Jem"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a95c22475b40282c40d"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Tod Mrs",
+    "ref": "42, 136",
+    "university_address": {
+      "original_name": "St Leonards, Edinburgh",
+      "lat": 55.9493918,
+      "lon": -3.1796292,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Tod Mrs",
+    "normalized": "tod",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Tod"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a96c22475b40282c40e"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Traper Miss",
+    "ref": "42",
+    "university_address": {
+      "original_name": "37 Dublin Street, Edinburgh",
+      "lat": 55.957259,
+      "lon": -3.1933025,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Traper Miss",
+    "normalized": "traper",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Traper"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a96c22475b40282c40f"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Urquhart Miss",
+    "ref": "42, 130",
+    "university_address": {
+      "original_name": "5 St Colme Street, Edinburgh",
+      "lat": 55.95338169999999,
+      "lon": -3.2084556,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Urquhart Miss",
+    "normalized": "urquhart",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Urquhart"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a97c22475b40282c410"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Vinson Miss",
+    "ref": "60, 130, 136, 42",
+    "university_address": {
+      "original_name": "1 Boughton Place, Edinburgh",
+      "lat": 55.953252,
+      "lon": -3.188267,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Vinson Miss",
+    "normalized": "vinson",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Vinson"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a97c22475b40282c411"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Walker Miss",
+    "ref": "42",
+    "university_address": {
+      "original_name": "43 Grange Road, Edinburgh",
+      "lat": 55.9363344,
+      "lon": -3.1856649,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Walker Miss",
+    "normalized": "walker",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Walker"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a97c22475b40282c412"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Ward Miss",
+    "ref": "44",
+    "university_address": {
+      "original_name": "41 Randolph Place, Edinburgh",
+      "lat": 55.9514821,
+      "lon": -3.2105562,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Ward Miss",
+    "normalized": "ward",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Ward"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a98c22475b40282c413"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Watson Mrs",
+    "ref": "42",
+    "university_address": {
+      "original_name": "16 Greenhill Garden, Edinburgh",
+      "lat": 55.9350214,
+      "lon": -3.2052277,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Watson Mrs",
+    "normalized": "watson",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Watson"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a99c22475b40282c414"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Weightman Miss",
+    "ref": "44",
+    "university_address": {
+      "original_name": "7 Darnaway Street, Edinburgh",
+      "lat": 55.9547447,
+      "lon": -3.2066962,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Weightman Miss",
+    "normalized": "weightman",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Weightman"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a99c22475b40282c415"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Welsh Miss",
+    "ref": "44, 70, 80, 188, 130",
+    "university_address": {
+      "original_name": "2 Gloucester Place, Edinburgh",
+      "lat": 55.9567822,
+      "lon": -3.2066589,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Welsh Miss",
+    "normalized": "welsh",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Welsh"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a99c22475b40282c416"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Wenstanley Miss",
+    "ref": "44",
+    "university_address": {
+      "original_name": "36 Minto Street, Edinburgh",
+      "lat": 55.9352475,
+      "lon": -3.1764078,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Wenstanley Miss",
+    "normalized": "wenstanley",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Wenstanley"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a9ac22475b40282c417"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Whitehead Miss",
+    "ref": "44, 70, 138",
+    "university_address": {
+      "original_name": "9 Fettes Row, Edinburgh",
+      "lat": 55.9593555,
+      "lon": -3.1990179,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Whitehead Miss",
+    "normalized": "whitehead",
+    "title": "miss",
+    "forename": null,
+    "middlename": null,
+    "surname": "Whitehead"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a9ac22475b40282c418"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Whitehead Ll Miss",
+    "ref": "44, 70, 138",
+    "university_address": {
+      "original_name": "9 Fettes Row, Edinburgh",
+      "lat": 55.9593555,
+      "lon": -3.1990179,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Whitehead Ll Miss",
+    "normalized": "whitehead ll",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Whitehead",
+    "surname": "Ll"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a9ac22475b40282c419"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Wood Mrs",
+    "ref": "44, 90",
+    "university_address": {
+      "original_name": "10 St Cohne Street, Edinburgh",
+      "lat": 55.953252,
+      "lon": -3.188267,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Wood Mrs",
+    "normalized": "wood",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Wood"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a9ac22475b40282c41a"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Wyld Mrs",
+    "ref": "44, 146",
+    "university_address": {
+      "original_name": "19 Inverleith Row, Edinburgh",
+      "lat": 55.9664397,
+      "lon": -3.2047901,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Wyld Mrs",
+    "normalized": "wyld",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Wyld"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a9bc22475b40282c41b"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Wyld C Miss",
+    "ref": "44",
+    "university_address": {
+      "original_name": "19 Inverleith Row, Edinburgh",
+      "lat": 55.9664397,
+      "lon": -3.2047901,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Wyld C Miss",
+    "normalized": "wyld c",
+    "title": "miss",
+    "forename": null,
+    "middlename": "Wyld",
+    "surname": "C"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+},
+{
+  "_id": {
+    "$oid": "6a5f8a9bc22475b40282c41c"
+  },
+  "source_data": {
+    "entry_year": 1867,
+    "entry_year_raw": 1867,
+    "name": "Young Mrs",
+    "ref": "44",
+    "university_address": {
+      "original_name": "47 Moray Place, Edinburgh",
+      "lat": 55.9542144,
+      "lon": -3.2072247,
+      "place_name": "Edinburgh",
+      "country": "United Kingdom",
+      "country_code": "GB"
+    }
+  },
+  "name": {
+    "original": "Young Mrs",
+    "normalized": "young",
+    "title": "mrs",
+    "forename": null,
+    "middlename": null,
+    "surname": "Young"
+  },
+  "phd_thesis": null,
+  "st_andrews_data": null,
+  "wikidata": null
+}]

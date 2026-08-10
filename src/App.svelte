@@ -1,15 +1,10 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import {
-    getCSV,
-    getJson,
-    historicalEvents,
-  } from "./datastore";
+  import { getCSV, getJson, historicalEvents } from "./datastore";
   import Path from "./lib/Path.svelte";
   import HistoricalEvents from "./lib/HistoricalEvents.svelte";
   import Linechart from "./lib/Linechart.svelte";
   import MapView from "./lib/MapView.svelte";
-  import Bar from "./lib/Bar.svelte";
   import BackgroundMap from "./lib/BackgroundMap.svelte";
 
   const baseUrl = import.meta.env.BASE_URL;
@@ -21,9 +16,6 @@
   const margin = { top: 20, right: 40, bottom: 30, left: 40 };
   const tickLength = 5;
   const totalRange = endYear - startYear;
-
-  let milesstoneCardWidth: number | null = null,
-    milestoneCardHeight: number | null = null;
 
   // keeping the detail div inside screen
   const milestoneCardWidth = 400;
@@ -47,7 +39,9 @@
   // Dev-only: set to false or remove this flag and the related blocks below to restore auto-resume.
   const devRequireClickToResume = true;
 
-  const pauseYears = [1583, 1726, 1809, 1862, 1867, 1869, 1875, 1884, 1886, 1889];
+  const pauseYears = [
+    1583, 1726, 1809, 1862, 1867, 1869, 1875, 1884, 1886, 1889,
+  ];
   const milestoneLabels = new Map<number, string>([
     [1583, "University Founded 1583"],
     [1726, "School of Medicine 1726"],
@@ -64,7 +58,7 @@
     // [1914, "Official female medics"],
   ]);
 
-  const splitMilestoneYears = new Set([1809, 1862]);
+  const splitMilestoneYears = new Set([1809, 1862, 1867]);
 
   // Map each pause year to the image shown when the card is shrunk (is-past).
   // Point multiple years at the same path, or leave a year out to show no image.
@@ -81,6 +75,7 @@
   let width = 0;
   let garrettJourneyData: unknown = null;
   let barryJourneyData: unknown = null;
+  let firstClassesPathsData: unknown = null;
   let currentYear = startYear;
   let animationStartMs = 0;
   let animationFrameId: number | null = null;
@@ -90,7 +85,6 @@
   let shrinkEnabledYears = new Set<number>();
   let womenMedicsData: Array<{ year: number; number: number }> = [];
   let edinburghSevenData: Array<Record<string, string>> = [];
-  let firstClassesData: Array<Record<string, string>> = [];
 
   const edinburghFortyImageUrl = (img?: string) => {
     const fileName = String(img ?? "").trim();
@@ -103,20 +97,19 @@
     return `url("${src}")`;
   };
 
-  type FirstClassesLabel = {
-    key: string;
-    x: number;
-    y: number;
-    label: string;
-    fontSize: number;
-  };
-  let firstClassesLabels: FirstClassesLabel[] = [];
   type PhysiologyGeoDatum = {
     source_data?: {
       entry_year?: number | string;
     };
   };
   let womenPhysiologyGeoData: PhysiologyGeoDatum[] = [];
+
+  type FirstClassesGeoDatum = {
+    source_data?: {
+      entry_year?: number | string;
+    };
+  };
+  let firstClassesGeoData: FirstClassesGeoDatum[] = [];
 
   // Dev-only: remove these two variables with the click-to-resume behavior.
   let awaitingResumeClick = false;
@@ -151,130 +144,6 @@
 
   $: tickValues = width > 0 && height > 0 ? buildTickValues(currentYear) : [];
   $: displayYear = Math.floor(currentYear);
-
-  $: firstClassesLabels = (() => {
-    const itemCount = firstClassesData.length;
-    const containerWidth = milesstoneCardWidth ?? 0;
-    const containerHeight = milestoneCardHeight ?? 0;
-
-    if (itemCount === 0 || containerWidth <= 0 || containerHeight <= 0) {
-      return [];
-    }
-
-    const labels = firstClassesData.map(
-      (item, index) => item.name ?? `Entry ${index + 1}`,
-    );
-    const horizontalPadding = Math.min(20, containerWidth * 0.025);
-    const topBottomPadding = Math.min(18, containerHeight * 0.05);
-    const preferredFontSizePx = 10;
-    const minReadableFontSizePx = 8;
-    const lineHeightFactor = 1.2;
-    const rowGapFactor = 0.18;
-    const charWidthFactor = 0.54;
-    const columnInnerPadding = 4;
-    const columnGap = 8;
-
-    const usableWidth = Math.max(1, containerWidth - horizontalPadding * 2);
-    const usableHeight = Math.max(1, containerHeight - topBottomPadding * 2);
-    type Layout = {
-      fontSizePx: number;
-      rows: number;
-      columns: number;
-      columnWidth: number;
-      rowStep: number;
-      startY: number;
-    };
-
-    const fitsWidth = (columns: number, rows: number, fontSizePx: number, columnWidth: number) => {
-      for (let column = 0; column < columns; column += 1) {
-        const start = column * rows;
-        const end = Math.min(start + rows, itemCount);
-        let maxChars = 1;
-        for (let i = start; i < end; i += 1) {
-          maxChars = Math.max(maxChars, labels[i].length);
-        }
-        const estimatedTextWidth = maxChars * fontSizePx * charWidthFactor;
-        if (estimatedTextWidth > Math.max(1, columnWidth - columnInnerPadding * 2)) {
-          return false;
-        }
-      }
-      return true;
-    };
-
-    let chosenLayout: Layout | null = null;
-
-    for (
-      let fontSizePx = preferredFontSizePx;
-      fontSizePx >= minReadableFontSizePx;
-      fontSizePx -= 0.25
-    ) {
-      const lineHeight = fontSizePx * lineHeightFactor;
-      const rowGap = fontSizePx * rowGapFactor;
-      const rowStep = lineHeight + rowGap;
-      const maxRows = Math.max(1, Math.floor((usableHeight + rowGap) / rowStep));
-      const columns = Math.max(1, Math.ceil(itemCount / maxRows));
-      const rows = Math.max(1, Math.ceil(itemCount / columns));
-
-      const totalGapWidth = (columns - 1) * columnGap;
-      const columnWidth = Math.max(1, (usableWidth - totalGapWidth) / columns);
-      const totalRowsHeight = rows * lineHeight + Math.max(0, rows - 1) * rowGap;
-
-      const fitsHeight = totalRowsHeight <= usableHeight;
-      const widthOk = fitsWidth(columns, rows, fontSizePx, columnWidth);
-
-      if (fitsHeight && widthOk) {
-        chosenLayout = {
-          fontSizePx,
-          rows,
-          columns,
-          columnWidth,
-          rowStep,
-          startY: topBottomPadding + Math.max(0, (usableHeight - totalRowsHeight) / 2),
-        };
-        break;
-      }
-    }
-
-    if (!chosenLayout) {
-      const fallbackFont = minReadableFontSizePx;
-      const lineHeight = fallbackFont * lineHeightFactor;
-      const rowGap = fallbackFont * rowGapFactor;
-      const rowStep = lineHeight + rowGap;
-      const maxRows = Math.max(1, Math.floor((usableHeight + rowGap) / rowStep));
-      const columns = Math.max(1, Math.ceil(itemCount / maxRows));
-      const rows = Math.max(1, Math.ceil(itemCount / columns));
-      const totalGapWidth = (columns - 1) * columnGap;
-      const columnWidth = Math.max(1, (usableWidth - totalGapWidth) / columns);
-      const totalRowsHeight = rows * lineHeight + Math.max(0, rows - 1) * rowGap;
-      chosenLayout = {
-        fontSizePx: fallbackFont,
-        rows,
-        columns,
-        columnWidth,
-        rowStep,
-        startY: topBottomPadding + Math.max(0, (usableHeight - totalRowsHeight) / 2),
-      };
-    }
-
-    const { fontSizePx, rows, columnWidth, rowStep, startY } = chosenLayout;
-
-    return firstClassesData.map((item, index) => {
-      const row = index % rows;
-      const column = Math.floor(index / rows);
-      const x =
-        horizontalPadding + column * (columnWidth + columnGap) + columnInnerPadding;
-      const y = startY + row * rowStep;
-      const label = labels[index];
-
-      return {
-        key: `${index}-${label}`,
-        x,
-        y,
-        label,
-        fontSize: fontSizePx,
-      };
-    });
-  })();
 
   let topByYear: Map<number, number> = new Map();
   $: collapsedMarkerTopByYear = (() => {
@@ -334,16 +203,14 @@
   onMount(() => {
     const loadCsvData = async () => {
       try {
-        const [rawWomenMedicsData, rawEdinburghSevenData, first_classes] =
-          (await getCSV([
-            publicUrl("data/women_medics_1914_1966.csv"),
-            publicUrl("data/edinburgh_seven.csv"),
-            publicUrl("data/first_women_classes_1867.csv"),
-          ])) as [
-            Array<{ year?: string; number?: string }>,
-            Array<Record<string, string>>,
-            Array<Record<string, string>>,
-          ];
+        const [rawWomenMedicsData, rawEdinburghSevenData] = (await getCSV([
+          publicUrl("data/women_medics_1914_1966.csv"),
+          publicUrl("data/edinburgh_seven.csv"),
+        ])) as [
+          Array<{ year?: string; number?: string }>,
+          Array<Record<string, string>>,
+          Array<Record<string, string>>,
+        ];
 
         womenMedicsData = rawWomenMedicsData
           .map((row: { year?: string; number?: string }) => {
@@ -357,12 +224,9 @@
           );
 
         edinburghSevenData = rawEdinburghSevenData;
-        firstClassesData = first_classes;
+        // firstClassesData = first_classes;
       } catch (error: unknown) {
-        console.error(
-          "Failed to load women_medics_1914_1966.csv and/or edinburgh_seven.csv",
-          error,
-        );
+        console.error("Failed to load", error);
       }
     };
 
@@ -372,21 +236,30 @@
           rawWomenPhysiologyGeoData,
           rawGarrettJourneyData,
           rawBarryJourneyData,
+          rawFirstClasses,
+          rawFirstClassesPaths,
         ] = await getJson([
           publicUrl("data/women_physiology_geo.json"),
           publicUrl("data/geo/garrett_journey.json"),
           publicUrl("data/geo/barry_journey.json"),
+          publicUrl("data/first_women_classes_1867_geo.json"),
+          publicUrl("data/geo/walking_paths_first_classes.json"),
         ]);
 
         womenPhysiologyGeoData = Array.isArray(rawWomenPhysiologyGeoData)
           ? (rawWomenPhysiologyGeoData as PhysiologyGeoDatum[])
           : [];
 
+        firstClassesGeoData = Array.isArray(rawFirstClasses)
+          ? (rawFirstClasses as FirstClassesGeoDatum[])
+          : [];
+
         garrettJourneyData = rawGarrettJourneyData ?? null;
         barryJourneyData = rawBarryJourneyData ?? null;
+        firstClassesPathsData = rawFirstClassesPaths ?? null;
       } catch (error: unknown) {
         console.error(
-          "Failed to load women_physiology_geo.json and/or garrett_journey.json",
+          "Failed to load timeline JSON data",
           error,
         );
       }
@@ -482,6 +355,8 @@
     {garrettJourneyData}
     {barryJourneyData}
     {womenPhysiologyGeoData}
+    {firstClassesGeoData}
+    {firstClassesPathsData}
   />
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
   {#if devRequireClickToResume && awaitingResumeClick}
@@ -491,13 +366,7 @@
   {/if}
   <svg {width} {height}>
     {#if width > 0 && height > 0}
-      <HistoricalEvents
-        events={historicalEvents}
-        {currentYear}
-        {startYear}
-        {timelineY}
-        {yearToX}
-      />
+      <!-- howrizontal x axis line -->
       <line
         class="domain"
         x1={axisStart}
@@ -506,7 +375,16 @@
         y2={timelineY}
       ></line>
 
+      <HistoricalEvents
+        events={historicalEvents}
+        {currentYear}
+        {startYear}
+        {timelineY}
+        {yearToX}
+      />
+
       {#each pauseYears.filter((year) => displayYear >= year && milestoneLabels.has(year)) as year, index (year)}
+        <!-- vertical path indicator -->
         <Path
           x={yearToX(year)}
           {year}
@@ -517,24 +395,7 @@
           {topByYear}
         />
       {/each}
-      <!-- {#if displayYear >= 1869}
-        <Bar x={yearToX(1869)} {height} data={edinburghSevenData} />
-      {/if}
-      {#if displayYear >= 1875}
-        <Bar x={yearToX(1875)} {height} data={getPhysiologyDataForYear(1875)} />
-      {/if}
-      {#if displayYear >= 1878}
-        <Bar x={yearToX(1878)} {height} data={getPhysiologyDataForYear(1878)} />
-      {/if}
-      {#if displayYear >= 1883}
-        <Bar x={yearToX(1883)} {height} data={getPhysiologyDataForYear(1883)} />
-      {/if}
-      {#if displayYear >= 1886}
-        <Bar x={yearToX(1886)} {height} data={getPhysiologyDataForYear(1886)} />
-      {/if}
-      {#if displayYear >= 1891}
-        <Bar x={yearToX(1891)} {height} data={getPhysiologyDataForYear(1891)} />
-      {/if} -->
+
       {#each tickValues as year}
         <g class="tick" transform={`translate(${yearToX(year)}, ${timelineY})`}>
           <line x1="0" y1="0" x2="0" y2={tickLength}></line>
@@ -550,21 +411,17 @@
     <div
       class="milestone-card"
       class:milestone-card--split={splitMilestoneYears.has(year)}
-      class:milestone-card--first-classes-active={year === 1867 && pausedAtYear === year}
       class:is-active={pausedAtYear === year}
       class:is-past={shrinkEnabledYears.has(year)}
       style:background-image={shrinkEnabledYears.has(year) &&
       milestoneImages.has(year)
         ? `url(${milestoneImages.get(year)})`
         : undefined}
-      style:width={pausedAtYear === year && year === 1867 ? "80vw" : undefined}
       style:top={pausedAtYear === year
         ? "15vh"
         : `${collapsedMarkerTopByYear.get(year) ?? height - collapsedMarkerDefaultOffset}px`}
       style:left="{pausedAtYear === year
-        ? year === 1867
-          ? 0.1 * width
-          : clampedLeft(yearToX(year), year)
+        ? clampedLeft(yearToX(year), year)
         : centeredMarkerLeft(yearToX(year))}px"
     >
       {#if year === 1809}
@@ -610,41 +467,26 @@
           </div>
         </div>
       {:else if year === 1867}
-        <div
-          class="first-classes-list"
-          bind:clientWidth={milesstoneCardWidth}
-          bind:clientHeight={milestoneCardHeight}
-        >
-          <svg
-            height={milestoneCardHeight ?? 0}
-            width={milesstoneCardWidth ?? 0}
-            aria-label="First classes for women represented as circles"
-          >
-            {#each firstClassesLabels as item (item.key)}
-              <!-- <circle
-                cx={circle.cx}
-                cy={circle.cy}
-                r={circle.r}
-                fill="rgba(255, 255, 255, 0.82)"
-                stroke="rgba(255, 255, 255, 0.35)"
-                stroke-width="1"
-              >
-                <title>{circle.label}</title>
-              </circle> -->
-              <text
-                x={item.x}
-                y={item.y}
-                class="first-classes-name"
-                text-anchor="start"
-                style:font-size={`${item.fontSize}px`}
-              >
-                {item.label}
-              </text>
-            {/each}
-          </svg>
-          <!-- {#each firstClassesData as d}
-            <p>{d.name}</p>
-          {/each} -->
+        <div class="milestone-card-split-layout">
+          <div class="milestone-card-split-half milestone-card-split-image">
+            <img
+              class="milestone-image"
+              src={publicUrl("img/masson.jpg")}
+              alt="David Masson"
+            />
+          </div>
+          <div class="milestone-card-split-half milestone-card-split-text">
+            <div class="milestone-card-title">
+              David Mather Masson (1822 – 1907), was a Scottish academic,
+              supporter of women's suffrage, literary critic and historian. In
+              1865 he was selected for the chair of rhetoric and English
+              literature at Edinburgh, and during the early years of his
+              professorship actively promoted the movement for the university
+              education of women. He also supported his wife Emily Rosaline Orme
+              and two of their daughters in the women's suffrage movement,
+              speaking at events in Edinburgh and London
+            </div>
+          </div>
         </div>
       {:else if year === 1869}
         <div class="edinburgh_forty">
@@ -788,19 +630,6 @@
     display: block;
     flex: 1 1 auto;
     min-height: 0;
-  }
-
-  .first-classes-list {
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    overflow: hidden;
-  }
-
-  .first-classes-name {
-    fill: rgba(255, 255, 255, 0.95);
-    dominant-baseline: hanging;
-    pointer-events: none;
   }
 
   .edinburgh_forty {

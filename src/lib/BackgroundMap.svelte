@@ -8,18 +8,22 @@
   export let garrettJourneyData: unknown = null;
   export let barryJourneyData: unknown = null;
   export let womenPhysiologyGeoData: unknown = null;
+  export let firstClassesGeoData: unknown = null;
+  export let firstClassesPathsData: unknown = null;
 
   let map: mapboxgl.Map;
   let mapContainer: HTMLDivElement;
   let styleReady = false;
   let animationFrame: number;
+  let firstClassesPathsAnimationFrame: number | null = null;
   let hasAnimatedBarryLine = false;
   let hasAnimatedGarrettLine = false;
   let hasFocusedBarryMilestone = false;
   let hasDrawnPhysiologyStudents = false;
+  let hasAnimatedFirstClassesPaths = false;
   let imageMarkers = new Map<string, mapboxgl.Marker>();
 
-  type PhysiologyGeoDatum = {
+  type StudentGeoDatum = {
     source_data?: {
       entry_year?: number | string;
       name?: string;
@@ -50,6 +54,10 @@
   const garrettLineLayerId = "garrett-journey-line";
   const physiologyStudentsSourceId = "physiology-students";
   const physiologyStudentsLayerId = "physiology-students-circles";
+  const firstClassesSourceId = "first-classes";
+  const firstClassesLayerId = "first-classes-circles";
+  const firstClassesPathsSourceId = "first-classes-paths";
+  const firstClassesPathsLayerId = "first-classes-paths-lines";
   const timelineImageMarkers: ImageMarkerConfig[] = [
     {
       id: "university-founded",
@@ -139,42 +147,42 @@
     return null;
   };
 
-  const getPhysiologyStudentFeatures = (
+  const getStudentPointFeatures = (
     rawData: unknown,
   ): GeoJSON.Feature<GeoJSON.Point>[] => {
     if (!Array.isArray(rawData)) {
       return [];
     }
 
-    return (rawData as PhysiologyGeoDatum[]).flatMap((row) => {
-        const sourceData = row.source_data;
-        const universityAddress = sourceData?.university_address;
-        const directLat = Number(sourceData?.lat);
-        const directLon = Number(sourceData?.lon);
-        const addressLat = Number(universityAddress?.lat);
-        const addressLon = Number(universityAddress?.lon);
-        const lat = Number.isFinite(directLat) ? directLat : addressLat;
-        const lon = Number.isFinite(directLon) ? directLon : addressLon;
+    return (rawData as StudentGeoDatum[]).flatMap((row) => {
+      const sourceData = row.source_data;
+      const universityAddress = sourceData?.university_address;
+      const directLat = Number(sourceData?.lat);
+      const directLon = Number(sourceData?.lon);
+      const addressLat = Number(universityAddress?.lat);
+      const addressLon = Number(universityAddress?.lon);
+      const lat = Number.isFinite(directLat) ? directLat : addressLat;
+      const lon = Number.isFinite(directLon) ? directLon : addressLon;
 
-        if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
-          return [];
-        }
+      if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+        return [];
+      }
 
-        const feature: GeoJSON.Feature<GeoJSON.Point> = {
-          type: "Feature",
-          properties: {
-            name: sourceData?.name ?? "Unknown",
-            entry_year: sourceData?.entry_year ?? null,
-            address: universityAddress?.original_name ?? "",
-          },
-          geometry: {
-            type: "Point",
-            coordinates: [lon, lat],
-          },
-        };
+      const feature: GeoJSON.Feature<GeoJSON.Point> = {
+        type: "Feature",
+        properties: {
+          name: sourceData?.name ?? "Unknown",
+          entry_year: sourceData?.entry_year ?? null,
+          address: universityAddress?.original_name ?? "",
+        },
+        geometry: {
+          type: "Point",
+          coordinates: [lon, lat],
+        },
+      };
 
-        return [feature];
-      });
+      return [feature];
+    });
   };
 
   const animateJourneyLine = ({
@@ -330,34 +338,130 @@
     });
   }
 
-  function drawPhysiologyStudents(rawData: unknown) {
-    if (!map || !styleReady || !map.isStyleLoaded()) return false;
+  function removeLayerAndSource(sourceId: string, layerId: string) {
+    if (!map || !styleReady) return;
+
+    if (map.getLayer(layerId)) {
+      map.removeLayer(layerId);
+    }
+
+    if (map.getSource(sourceId)) {
+      map.removeSource(sourceId);
+    }
+  }
+
+  const getAnimatedLineFeatureCollection = (
+    rawData: unknown,
+    progress: number,
+  ): GeoJSON.FeatureCollection<GeoJSON.LineString> | null => {
+    if (!isGeoJsonData(rawData) || rawData.type !== "FeatureCollection") {
+      return null;
+    }
+
+    const clampedProgress = Math.min(1, Math.max(0, progress));
+    const features = (rawData as GeoJSON.FeatureCollection).features.flatMap(
+      (feature) => {
+        if (feature.geometry?.type !== "LineString") {
+          return [];
+        }
+
+        const coordinates = feature.geometry.coordinates as GeoJSON.Position[];
+        if (coordinates.length === 0) return [];
+
+        if (coordinates.length === 1 || clampedProgress <= 0) {
+          return [
+            {
+              type: "Feature",
+              properties: feature.properties ?? {},
+              geometry: {
+                type: "LineString",
+                coordinates: [coordinates[0], coordinates[0]],
+              },
+            } satisfies GeoJSON.Feature<GeoJSON.LineString>,
+          ];
+        }
+
+        if (clampedProgress >= 1) {
+          return [
+            {
+              type: "Feature",
+              properties: feature.properties ?? {},
+              geometry: {
+                type: "LineString",
+                coordinates,
+              },
+            } satisfies GeoJSON.Feature<GeoJSON.LineString>,
+          ];
+        }
+
+        const scaledIndex = clampedProgress * (coordinates.length - 1);
+        const segmentIndex = Math.floor(scaledIndex);
+        const t = scaledIndex - segmentIndex;
+        const from = coordinates[segmentIndex];
+        const to = coordinates[Math.min(segmentIndex + 1, coordinates.length - 1)];
+        const interpolated: GeoJSON.Position = [
+          from[0] + (to[0] - from[0]) * t,
+          from[1] + (to[1] - from[1]) * t,
+        ];
+
+        return [
+          {
+            type: "Feature",
+            properties: feature.properties ?? {},
+            geometry: {
+              type: "LineString",
+              coordinates: [
+                ...coordinates.slice(0, segmentIndex + 1),
+                interpolated,
+              ],
+            },
+          } satisfies GeoJSON.Feature<GeoJSON.LineString>,
+        ];
+      },
+    );
+
+    return {
+      type: "FeatureCollection",
+      features,
+    };
+  };
+
+  function drawStudentPointLayer({
+    rawData,
+    sourceId,
+    layerId,
+  }: {
+    rawData: unknown;
+    sourceId: string;
+    layerId: string;
+  }) {
+    if (!map || !styleReady) return false;
 
     const data: GeoJSON.FeatureCollection<GeoJSON.Point> = {
       type: "FeatureCollection",
-      features: getPhysiologyStudentFeatures(rawData),
+      features: getStudentPointFeatures(rawData),
     };
 
     if (data.features.length === 0) return false;
 
-    const existingSource = map.getSource(physiologyStudentsSourceId) as
+    const existingSource = map.getSource(sourceId) as
       | mapboxgl.GeoJSONSource
       | undefined;
 
     if (existingSource) {
       existingSource.setData(data);
     } else {
-      map.addSource(physiologyStudentsSourceId, {
+      map.addSource(sourceId, {
         type: "geojson",
         data,
       });
     }
 
-    if (!map.getLayer(physiologyStudentsLayerId)) {
+    if (!map.getLayer(layerId)) {
       map.addLayer({
-        id: physiologyStudentsLayerId,
+        id: layerId,
         type: "circle",
-        source: physiologyStudentsSourceId,
+        source: sourceId,
         paint: {
           "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 2, 14, 4],
           "circle-color": "white",
@@ -371,6 +475,157 @@
     return true;
   }
 
+  function drawGeoJsonLineLayer({
+    rawData,
+    sourceId,
+    layerId,
+  }: {
+    rawData: unknown;
+    sourceId: string;
+    layerId: string;
+  }) {
+    if (!map || !styleReady || !isGeoJsonData(rawData)) {
+      return false;
+    }
+
+    const data = rawData as GeoJSON.GeoJSON;
+    const existingSource = map.getSource(sourceId) as
+      | mapboxgl.GeoJSONSource
+      | undefined;
+
+    if (existingSource) {
+      existingSource.setData(data);
+    } else {
+      map.addSource(sourceId, {
+        type: "geojson",
+        data,
+      });
+    }
+
+    if (!map.getLayer(layerId)) {
+      map.addLayer({
+        id: layerId,
+        type: "line",
+        source: sourceId,
+        layout: { "line-join": "round", "line-cap": "round" },
+        paint: {
+          "line-color": "white",
+          "line-opacity": 0.3,
+        },
+      });
+    }
+
+    return true;
+  }
+
+  function animateGeoJsonLineLayer({
+    rawData,
+    sourceId,
+    layerId,
+  }: {
+    rawData: unknown;
+    sourceId: string;
+    layerId: string;
+  }) {
+    if (!map || !styleReady || !isGeoJsonData(rawData)) {
+      return false;
+    }
+
+    const initialData = getAnimatedLineFeatureCollection(rawData, 0);
+    if (!initialData || initialData.features.length === 0) {
+      return false;
+    }
+
+    const existingSource = map.getSource(sourceId) as
+      | mapboxgl.GeoJSONSource
+      | undefined;
+
+    if (existingSource) {
+      existingSource.setData(initialData);
+    } else {
+      map.addSource(sourceId, {
+        type: "geojson",
+        data: initialData,
+      });
+    }
+
+    if (!map.getLayer(layerId)) {
+      map.addLayer({
+        id: layerId,
+        type: "line",
+        source: sourceId,
+        layout: { "line-join": "round", "line-cap": "round" },
+        paint: {
+          "line-color": "white",
+          "line-opacity": 0.3,
+        },
+      });
+    }
+
+    if (firstClassesPathsAnimationFrame !== null) {
+      cancelAnimationFrame(firstClassesPathsAnimationFrame);
+    }
+
+    const source = map.getSource(sourceId) as mapboxgl.GeoJSONSource;
+    const durationMs = 10000;
+    const startedAt = performance.now();
+
+    const step = (now: number) => {
+      const progress = Math.min(1, (now - startedAt) / durationMs);
+      const nextData = getAnimatedLineFeatureCollection(rawData, progress);
+      if (nextData) {
+        source.setData(nextData);
+      }
+
+      if (progress < 1 && currentYear === 1867) {
+        firstClassesPathsAnimationFrame = requestAnimationFrame(step);
+      } else {
+        firstClassesPathsAnimationFrame = null;
+      }
+    };
+
+    firstClassesPathsAnimationFrame = requestAnimationFrame(step);
+    return true;
+  }
+
+  $: if (
+    map &&
+    styleReady &&
+    currentYear === 1867 &&
+    Array.isArray(firstClassesGeoData) &&
+    firstClassesGeoData.length > 0
+  ) {
+    drawStudentPointLayer({
+      rawData: firstClassesGeoData,
+      sourceId: firstClassesSourceId,
+      layerId: firstClassesLayerId,
+    });
+  }
+
+  $: if (
+    map &&
+    styleReady &&
+    currentYear === 1867 &&
+    isGeoJsonData(firstClassesPathsData) &&
+    !hasAnimatedFirstClassesPaths
+  ) {
+    hasAnimatedFirstClassesPaths = animateGeoJsonLineLayer({
+      rawData: firstClassesPathsData,
+      sourceId: firstClassesPathsSourceId,
+      layerId: firstClassesPathsLayerId,
+    });
+  }
+
+  $: if (
+    map &&
+    styleReady &&
+    currentYear === 1867 &&
+    map.getLayer(firstClassesLayerId) &&
+    map.getLayer(firstClassesPathsLayerId)
+  ) {
+    map.moveLayer(firstClassesLayerId);
+  }
+
   $: if (
     map &&
     styleReady &&
@@ -379,7 +634,11 @@
     womenPhysiologyGeoData.length > 0 &&
     !hasDrawnPhysiologyStudents
   ) {
-    hasDrawnPhysiologyStudents = drawPhysiologyStudents(womenPhysiologyGeoData);
+    hasDrawnPhysiologyStudents = drawStudentPointLayer({
+      rawData: womenPhysiologyGeoData,
+      sourceId: physiologyStudentsSourceId,
+      layerId: physiologyStudentsLayerId,
+    });
   }
 
   $: if (map && currentYear < 1862) {
@@ -398,6 +657,16 @@
 
   $: if (map && currentYear >= 1810 && map.getLayer(barryLineLayerId)) {
     map.setPaintProperty(barryLineLayerId, "line-opacity", 0.3);
+  }
+
+  $: if (map && styleReady && currentYear > 1867) {
+    if (firstClassesPathsAnimationFrame !== null) {
+      cancelAnimationFrame(firstClassesPathsAnimationFrame);
+      firstClassesPathsAnimationFrame = null;
+    }
+    hasAnimatedFirstClassesPaths = false;
+    removeLayerAndSource(firstClassesPathsSourceId, firstClassesPathsLayerId);
+    removeLayerAndSource(firstClassesSourceId, firstClassesLayerId);
   }
 
   $: if (
@@ -450,6 +719,9 @@
     return () => {
       window.removeEventListener("resize", handleResize);
       if (animationFrame) cancelAnimationFrame(animationFrame);
+      if (firstClassesPathsAnimationFrame !== null) {
+        cancelAnimationFrame(firstClassesPathsAnimationFrame);
+      }
       imageMarkers.forEach((marker) => marker.remove());
       imageMarkers.clear();
       map.remove();
