@@ -10,17 +10,18 @@
   export let womenPhysiologyGeoData: unknown = null;
   export let firstClassesGeoData: unknown = null;
   export let firstClassesPathsData: unknown = null;
+  export let physiologyPathsData: unknown = null;
 
   let map: mapboxgl.Map;
   let mapContainer: HTMLDivElement;
   let styleReady = false;
   let animationFrame: number;
-  let firstClassesPathsAnimationFrame: number | null = null;
+  let pathAnimationFrames = new Map<string, number>();
   let hasAnimatedBarryLine = false;
   let hasAnimatedGarrettLine = false;
   let hasFocusedBarryMilestone = false;
-  let hasDrawnPhysiologyStudents = false;
   let hasAnimatedFirstClassesPaths = false;
+  let hasAnimatedPhysiologyPaths = false;
   let imageMarkers = new Map<string, mapboxgl.Marker>();
 
   type StudentGeoDatum = {
@@ -58,6 +59,8 @@
   const firstClassesLayerId = "first-classes-circles";
   const firstClassesPathsSourceId = "first-classes-paths";
   const firstClassesPathsLayerId = "first-classes-paths-lines";
+  const physiologyPathsSourceId = "physiology-paths";
+  const physiologyPathsLayerId = "physiology-paths-lines";
   const timelineImageMarkers: ImageMarkerConfig[] = [
     {
       id: "university-founded",
@@ -522,10 +525,12 @@
     rawData,
     sourceId,
     layerId,
+    milestoneYear,
   }: {
     rawData: unknown;
     sourceId: string;
     layerId: string;
+    milestoneYear: number;
   }) {
     if (!map || !styleReady || !isGeoJsonData(rawData)) {
       return false;
@@ -562,8 +567,10 @@
       });
     }
 
-    if (firstClassesPathsAnimationFrame !== null) {
-      cancelAnimationFrame(firstClassesPathsAnimationFrame);
+    const existingAnimationFrame = pathAnimationFrames.get(layerId);
+    if (existingAnimationFrame !== undefined) {
+      cancelAnimationFrame(existingAnimationFrame);
+      pathAnimationFrames.delete(layerId);
     }
 
     const source = map.getSource(sourceId) as mapboxgl.GeoJSONSource;
@@ -577,14 +584,14 @@
         source.setData(nextData);
       }
 
-      if (progress < 1 && currentYear === 1867) {
-        firstClassesPathsAnimationFrame = requestAnimationFrame(step);
+      if (progress < 1 && currentYear === milestoneYear) {
+        pathAnimationFrames.set(layerId, requestAnimationFrame(step));
       } else {
-        firstClassesPathsAnimationFrame = null;
+        pathAnimationFrames.delete(layerId);
       }
     };
 
-    firstClassesPathsAnimationFrame = requestAnimationFrame(step);
+    pathAnimationFrames.set(layerId, requestAnimationFrame(step));
     return true;
   }
 
@@ -613,6 +620,7 @@
       rawData: firstClassesPathsData,
       sourceId: firstClassesPathsSourceId,
       layerId: firstClassesPathsLayerId,
+      milestoneYear: 1867,
     });
   }
 
@@ -629,16 +637,40 @@
   $: if (
     map &&
     styleReady &&
-    currentYear >= 1875 &&
+    currentYear === 1875 &&
     Array.isArray(womenPhysiologyGeoData) &&
-    womenPhysiologyGeoData.length > 0 &&
-    !hasDrawnPhysiologyStudents
+    womenPhysiologyGeoData.length > 0
   ) {
-    hasDrawnPhysiologyStudents = drawStudentPointLayer({
+    drawStudentPointLayer({
       rawData: womenPhysiologyGeoData,
       sourceId: physiologyStudentsSourceId,
       layerId: physiologyStudentsLayerId,
     });
+  }
+
+  $: if (
+    map &&
+    styleReady &&
+    currentYear === 1875 &&
+    isGeoJsonData(physiologyPathsData) &&
+    !hasAnimatedPhysiologyPaths
+  ) {
+    hasAnimatedPhysiologyPaths = animateGeoJsonLineLayer({
+      rawData: physiologyPathsData,
+      sourceId: physiologyPathsSourceId,
+      layerId: physiologyPathsLayerId,
+      milestoneYear: 1875,
+    });
+  }
+
+  $: if (
+    map &&
+    styleReady &&
+    currentYear === 1875 &&
+    map.getLayer(physiologyStudentsLayerId) &&
+    map.getLayer(physiologyPathsLayerId)
+  ) {
+    map.moveLayer(physiologyStudentsLayerId);
   }
 
   $: if (map && currentYear < 1862) {
@@ -660,21 +692,29 @@
   }
 
   $: if (map && styleReady && currentYear > 1867) {
-    if (firstClassesPathsAnimationFrame !== null) {
-      cancelAnimationFrame(firstClassesPathsAnimationFrame);
-      firstClassesPathsAnimationFrame = null;
+    const firstClassesAnimationFrame = pathAnimationFrames.get(
+      firstClassesPathsLayerId,
+    );
+    if (firstClassesAnimationFrame !== undefined) {
+      cancelAnimationFrame(firstClassesAnimationFrame);
+      pathAnimationFrames.delete(firstClassesPathsLayerId);
     }
     hasAnimatedFirstClassesPaths = false;
     removeLayerAndSource(firstClassesPathsSourceId, firstClassesPathsLayerId);
     removeLayerAndSource(firstClassesSourceId, firstClassesLayerId);
   }
 
-  $: if (
-    map &&
-    currentYear >= 1876 &&
-    map.getLayer(physiologyStudentsLayerId)
-  ) {
-    map.setPaintProperty(physiologyStudentsLayerId, "circle-opacity", 0.3);
+  $: if (map && styleReady && currentYear > 1875) {
+    const physiologyAnimationFrame = pathAnimationFrames.get(
+      physiologyPathsLayerId,
+    );
+    if (physiologyAnimationFrame !== undefined) {
+      cancelAnimationFrame(physiologyAnimationFrame);
+      pathAnimationFrames.delete(physiologyPathsLayerId);
+    }
+    hasAnimatedPhysiologyPaths = false;
+    removeLayerAndSource(physiologyPathsSourceId, physiologyPathsLayerId);
+    removeLayerAndSource(physiologyStudentsSourceId, physiologyStudentsLayerId);
   }
 
   $: if (map && currentYear >= 1886) {
@@ -719,9 +759,10 @@
     return () => {
       window.removeEventListener("resize", handleResize);
       if (animationFrame) cancelAnimationFrame(animationFrame);
-      if (firstClassesPathsAnimationFrame !== null) {
-        cancelAnimationFrame(firstClassesPathsAnimationFrame);
+      for (const frame of pathAnimationFrames.values()) {
+        cancelAnimationFrame(frame);
       }
+      pathAnimationFrames.clear();
       imageMarkers.forEach((marker) => marker.remove());
       imageMarkers.clear();
       map.remove();

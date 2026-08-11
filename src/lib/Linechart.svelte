@@ -114,9 +114,9 @@
       {markerLabel}
     </text>
   {/if}
-  {#if projectionPath}
+  <!-- {#if projectionPath}
     <path d={projectionPath} class="projection-line" fill="none" />
-  {/if}
+  {/if} -->
 {/if}
 
 <style>

@@ -58,7 +58,7 @@
     // [1914, "Official female medics"],
   ]);
 
-  const splitMilestoneYears = new Set([1809, 1862, 1867]);
+  const splitMilestoneYears = new Set([1809, 1862, 1867, 1875]);
 
   // Map each pause year to the image shown when the card is shrunk (is-past).
   // Point multiple years at the same path, or leave a year out to show no image.
@@ -76,6 +76,7 @@
   let garrettJourneyData: unknown = null;
   let barryJourneyData: unknown = null;
   let firstClassesPathsData: unknown = null;
+  let physiologyPathsData: unknown = null;
   let currentYear = startYear;
   let animationStartMs = 0;
   let animationFrameId: number | null = null;
@@ -238,12 +239,14 @@
           rawBarryJourneyData,
           rawFirstClasses,
           rawFirstClassesPaths,
+          rawPhysiologyPaths,
         ] = await getJson([
           publicUrl("data/women_physiology_geo.json"),
           publicUrl("data/geo/garrett_journey.json"),
           publicUrl("data/geo/barry_journey.json"),
           publicUrl("data/first_women_classes_1867_geo.json"),
           publicUrl("data/geo/walking_paths_first_classes.json"),
+          publicUrl("data/geo/walking_paths_physiology.json"),
         ]);
 
         womenPhysiologyGeoData = Array.isArray(rawWomenPhysiologyGeoData)
@@ -257,11 +260,9 @@
         garrettJourneyData = rawGarrettJourneyData ?? null;
         barryJourneyData = rawBarryJourneyData ?? null;
         firstClassesPathsData = rawFirstClassesPaths ?? null;
+        physiologyPathsData = rawPhysiologyPaths ?? null;
       } catch (error: unknown) {
-        console.error(
-          "Failed to load timeline JSON data",
-          error,
-        );
+        console.error("Failed to load timeline JSON data", error);
       }
     };
 
@@ -357,6 +358,7 @@
     {womenPhysiologyGeoData}
     {firstClassesGeoData}
     {firstClassesPathsData}
+    {physiologyPathsData}
   />
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
   {#if devRequireClickToResume && awaitingResumeClick}
@@ -440,7 +442,12 @@
               Originally from the city of Cork in Ireland, Barry obtained a
               medical degree from the University of Edinburgh Medical School,
               then served first in Cape Town, South Africa, and subsequently in
-              many parts of the British Empire.
+              many parts of the British Empire. <a
+                href="https://en.wikipedia.org/wiki/James_Barry_(surgeon)"
+                target="_blank"
+                rel="noopener noreferrer"
+                style="color: white">More info</a
+              >
             </div>
           </div>
         </div>
@@ -462,7 +469,12 @@
               which was the first medical school in Britain to train women as
               doctors. She was the first female dean of a British medical
               school, the first woman in Britain to be elected to a school board
-              and, as mayor of Aldeburgh, the first female mayor in Britain.
+              and, as mayor of Aldeburgh, the first female mayor in Britain. <a
+                href="https://en.wikipedia.org/wiki/Elizabeth_Garrett_Anderson"
+                target="_blank"
+                rel="noopener noreferrer"
+                style="color: white">More info</a
+              >
             </div>
           </div>
         </div>
@@ -484,7 +496,12 @@
               professorship actively promoted the movement for the university
               education of women. He also supported his wife Emily Rosaline Orme
               and two of their daughters in the women's suffrage movement,
-              speaking at events in Edinburgh and London
+              speaking at events in Edinburgh and London. <a
+                href="https://en.wikipedia.org/wiki/David_Masson"
+                target="_blank"
+                rel="noopener noreferrer"
+                style="color: white">More info</a
+              >
             </div>
           </div>
         </div>
@@ -499,6 +516,31 @@
               <div class="edinburgh_forty-name">{d.name}</div>
             </div>
           {/each}
+        </div>
+      {:else if year === 1875}
+        <div class="milestone-card-split-layout">
+          <div class="milestone-card-split-half milestone-card-split-image">
+            <img
+              class="milestone-image"
+              src={publicUrl("img/mckendrick.jpg")}
+              alt="John Gray McKendrick"
+            />
+          </div>
+          <div class="milestone-card-split-half milestone-card-split-text">
+            <div class="milestone-card-title">
+              John Gray McKendrick (1841 – 1926) was a Scottish physiologist. He
+              served as Regius Professor of Physiology at the University of
+              Glasgow from 1876 to 1906, and was co-founder of the Physiological
+              Society. When he was John Hughes Bennett's assistant, he taught
+              physiology to the women medical students in 1871–72, including
+              Sophia Jex-Blake. <a
+                href="https://en.wikipedia.org/wiki/John_Gray_McKendrick"
+                target="_blank"
+                rel="noopener noreferrer"
+                style="color: white">More info</a
+              >
+            </div>
+          </div>
         </div>
       {:else if year === 1892}
         <div class="milestone-text">{milestoneLabels.get(year) ?? ""}</div>
