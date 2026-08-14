@@ -5,26 +5,26 @@ export const historicalEvents = [
     endYear: 1800,
     description: "Scottish Enlightenment →"
   },
-  {
-    startYear: 1884,
-    endYear: 1885,
-    description: "Triple Qualifications →"
-  },
-  {
-    startYear: 1886,
-    endYear: 1887,
-    description: "School of Medicine for Women →"
-  },
-  {
-    startYear: 1889,
-    endYear: 1890,
-    description: "College of Medicine for Women →"
-  },
-  {
-    startYear: 1892,
-    endYear: 1893,
-    description: "Women admitted to universities →"
-  },
+  // {
+  //   startYear: 1884,
+  //   endYear: 1885,
+  //   description: "Triple Qualifications →"
+  // },
+  // {
+  //   startYear: 1886,
+  //   endYear: 1887,
+  //   description: "School of Medicine for Women →"
+  // },
+  // {
+  //   startYear: 1889,
+  //   endYear: 1890,
+  //   description: "College of Medicine for Women →"
+  // },
+  // {
+  //   startYear: 1892,
+  //   endYear: 1893,
+  //   description: "Women admitted to universities →"
+  // },
   // {
   //   startYear: 1832,
   //   endYear: 1903,

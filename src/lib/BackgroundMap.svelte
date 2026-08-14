@@ -11,6 +11,7 @@
   export let firstClassesGeoData: unknown = null;
   export let firstClassesPathsData: unknown = null;
   export let physiologyPathsData: unknown = null;
+  export let womenDoctorsData: unknown = null;
 
   let map: mapboxgl.Map;
   let mapContainer: HTMLDivElement;
@@ -22,6 +23,8 @@
   let hasFocusedBarryMilestone = false;
   let hasAnimatedFirstClassesPaths = false;
   let hasAnimatedPhysiologyPaths = false;
+  let hasDrawnWomenDoctorBirthplaces = false;
+  let hasFocusedWomenDoctorsMilestone = false;
   let imageMarkers = new Map<string, mapboxgl.Marker>();
 
   type StudentGeoDatum = {
@@ -35,6 +38,25 @@
         lat?: number | string;
         lon?: number | string;
       };
+    };
+  };
+
+  type WomenDoctorDatum = {
+    name?: {
+      original?: string;
+    };
+    source_data?: {
+      "First Qual"?: number | string | null;
+      "Year of student registration"?: number | string | null;
+      name?: string;
+      birthplace?: {
+        country?: string | null;
+        country_code?: string | null;
+        lat?: number | string | null;
+        lon?: number | string | null;
+        original_name?: string | null;
+        place_name?: string | null;
+      } | null;
     };
   };
 
@@ -61,6 +83,8 @@
   const firstClassesPathsLayerId = "first-classes-paths-lines";
   const physiologyPathsSourceId = "physiology-paths";
   const physiologyPathsLayerId = "physiology-paths-lines";
+  const womenDoctorsBirthplacesSourceId = "women-doctors-birthplaces";
+  const womenDoctorsBirthplacesLayerId = "women-doctors-birthplaces-circles";
   const timelineImageMarkers: ImageMarkerConfig[] = [
     {
       id: "university-founded",
@@ -177,6 +201,46 @@
           name: sourceData?.name ?? "Unknown",
           entry_year: sourceData?.entry_year ?? null,
           address: universityAddress?.original_name ?? "",
+        },
+        geometry: {
+          type: "Point",
+          coordinates: [lon, lat],
+        },
+      };
+
+      return [feature];
+    });
+  };
+
+  const getWomenDoctorBirthplaceFeatures = (
+    rawData: unknown,
+  ): GeoJSON.Feature<GeoJSON.Point>[] => {
+    if (!Array.isArray(rawData)) {
+      return [];
+    }
+
+    return (rawData as WomenDoctorDatum[]).flatMap((row) => {
+      const sourceData = row.source_data;
+      const birthplace = sourceData?.birthplace;
+      const lat = Number(birthplace?.lat);
+      const lon = Number(birthplace?.lon);
+
+      if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+        return [];
+      }
+
+      const feature: GeoJSON.Feature<GeoJSON.Point> = {
+        type: "Feature",
+        properties: {
+          name: sourceData?.name ?? row.name?.original ?? "Unknown",
+          first_qual: sourceData?.["First Qual"] ?? null,
+          student_registration:
+            sourceData?.["Year of student registration"] ?? null,
+          birthplace:
+            birthplace?.place_name ?? birthplace?.original_name ?? "Unknown",
+          birthplace_original: birthplace?.original_name ?? "",
+          country: birthplace?.country ?? "",
+          country_code: birthplace?.country_code ?? "",
         },
         geometry: {
           type: "Point",
@@ -478,6 +542,66 @@
     return true;
   }
 
+  function drawWomenDoctorBirthplaceLayer({
+    rawData,
+    sourceId,
+    layerId,
+  }: {
+    rawData: unknown;
+    sourceId: string;
+    layerId: string;
+  }) {
+    if (!map || !styleReady) return false;
+
+    const data: GeoJSON.FeatureCollection<GeoJSON.Point> = {
+      type: "FeatureCollection",
+      features: getWomenDoctorBirthplaceFeatures(rawData),
+    };
+
+    if (data.features.length === 0) return false;
+
+    const existingSource = map.getSource(sourceId) as
+      | mapboxgl.GeoJSONSource
+      | undefined;
+
+    if (existingSource) {
+      existingSource.setData(data);
+    } else {
+      map.addSource(sourceId, {
+        type: "geojson",
+        data,
+      });
+    }
+
+    if (!map.getLayer(layerId)) {
+      map.addLayer({
+        id: layerId,
+        type: "circle",
+        source: sourceId,
+        paint: {
+          "circle-radius": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            2,
+            3,
+            5,
+            6,
+            8,
+            10,
+          ],
+          "circle-color": "#f2c14e",
+          "circle-opacity": 0.82,
+          "circle-stroke-color": "white",
+          "circle-stroke-opacity": 0.9,
+          "circle-stroke-width": 1,
+        },
+      });
+    }
+
+    return true;
+  }
+
   function drawGeoJsonLineLayer({
     rawData,
     sourceId,
@@ -673,6 +797,21 @@
     map.moveLayer(physiologyStudentsLayerId);
   }
 
+  $: if (
+    map &&
+    styleReady &&
+    currentYear >= 1884 &&
+    Array.isArray(womenDoctorsData) &&
+    womenDoctorsData.length > 0 &&
+    !hasDrawnWomenDoctorBirthplaces
+  ) {
+    hasDrawnWomenDoctorBirthplaces = drawWomenDoctorBirthplaceLayer({
+      rawData: womenDoctorsData,
+      sourceId: womenDoctorsBirthplacesSourceId,
+      layerId: womenDoctorsBirthplacesLayerId,
+    });
+  }
+
   $: if (map && currentYear < 1862) {
     hasAnimatedGarrettLine = false;
   }
@@ -717,13 +856,23 @@
     removeLayerAndSource(physiologyStudentsSourceId, physiologyStudentsLayerId);
   }
 
-  $: if (map && currentYear >= 1886) {
+  $: if (map && styleReady && currentYear < 1884) {
+    hasDrawnWomenDoctorBirthplaces = false;
+    hasFocusedWomenDoctorsMilestone = false;
+    removeLayerAndSource(
+      womenDoctorsBirthplacesSourceId,
+      womenDoctorsBirthplacesLayerId,
+    );
+  }
+
+  $: if (map && currentYear >= 1911 && !hasFocusedWomenDoctorsMilestone) {
     map.flyTo({
       center: [-3.1883, 55.9433],
-      zoom: 14,
-      duration: 1000,
+      zoom: 1,
+      duration: 5000,
       essential: true,
     });
+    hasFocusedWomenDoctorsMilestone = true;
   }
 
   onMount(() => {
@@ -739,6 +888,7 @@
       // pitch: 60,
       logoPosition: "top-right",
       style: "mapbox://styles/mapbox/dark-v11",
+      projection: "mercator",
     });
 
     map.on("error", (event) => {
