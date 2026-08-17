@@ -2,8 +2,10 @@
   import { onMount } from "svelte";
   import mapboxgl from "mapbox-gl";
   import MapboxWorker from "mapbox-gl/dist/mapbox-gl-csp-worker?worker";
+  import { timelineImageMarkers, type ImageMarkerConfig } from "../datastore";
   import "mapbox-gl/dist/mapbox-gl.css";
 
+  // Component inputs
   export let currentYear: number;
   export let garrettJourneyData: unknown = null;
   export let barryJourneyData: unknown = null;
@@ -13,20 +15,22 @@
   export let physiologyPathsData: unknown = null;
   export let womenDoctorsData: unknown = null;
 
+  // Local Mapbox state
   let map: mapboxgl.Map;
   let mapContainer: HTMLDivElement;
   let styleReady = false;
   let animationFrame: number;
-  let pathAnimationFrames = new Map<string, number>();
+  const pathAnimationFrames = new Map<string, number>();
   let hasAnimatedBarryLine = false;
   let hasAnimatedGarrettLine = false;
-  let hasFocusedBarryMilestone = false;
   let hasAnimatedFirstClassesPaths = false;
   let hasAnimatedPhysiologyPaths = false;
   let hasDrawnWomenDoctorBirthplaces = false;
   let hasFocusedWomenDoctorsMilestone = false;
-  let imageMarkers = new Map<string, mapboxgl.Marker>();
+  const timelineMarkers = new Map<string, mapboxgl.Marker>();
 
+  // Raw data from JSON/CSV loaders is intentionally typed defensively here.
+  // The conversion helpers below validate coordinates before drawing anything.
   type StudentGeoDatum = {
     source_data?: {
       entry_year?: number | string;
@@ -60,17 +64,29 @@
     };
   };
 
-  type ImageMarkerConfig = {
-    id: string;
-    year: number;
-    coordinates: [number, number];
-    imageName: string;
-    alt: string;
+  type LayerConfig = {
+    sourceId: string;
+    layerId: string;
   };
 
+  type DataLayerConfig = LayerConfig & {
+    rawData: unknown;
+  };
+
+  type JourneyLineConfig = {
+    journeyData: unknown;
+    sourceId: string;
+    lineLayerId: string;
+    lineColor: string;
+  };
+
+  type AnimatedLineConfig = DataLayerConfig & {
+    milestoneYear: number;
+  };
+
+  // Keep Mapbox IDs centralized so layers and sources are easy to rename together.
   const rawEnvToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
   const envToken = (rawEnvToken ?? "").trim().replace(/^"|"$/g, "");
-  const baseUrl = import.meta.env.BASE_URL;
   const barrySourceId = "barry-journey";
   const barryLineLayerId = "barry-journey-line";
   const garrettSourceId = "garrett-journey";
@@ -85,64 +101,67 @@
   const physiologyPathsLayerId = "physiology-paths-lines";
   const womenDoctorsBirthplacesSourceId = "women-doctors-birthplaces";
   const womenDoctorsBirthplacesLayerId = "women-doctors-birthplaces-circles";
-  const timelineImageMarkers: ImageMarkerConfig[] = [
-    {
-      id: "university-founded",
-      year: 1583,
-      coordinates: [55.94741706177913, -3.1872452967325717],
-      imageName: "uni_logo.png",
-      alt: "University of Edinburgh",
-    },
-    {
-      id: "school-of-medicine",
-      year: 1726,
-      coordinates: [55.94528777582195, -3.190270487035351],
-      imageName: "uni_logo.png",
-      alt: "School of Medicine",
-    },
-    {
-      id: "school",
-      year: 1886,
-      coordinates: [55.94884986998478, -3.1830358396746496],
-      imageName: "uni_logo.png",
-      alt: "Schoolof Medicine",
-    },
-    {
-      id: "college",
-      year: 1889,
-      coordinates: [55.94772479242563, -3.1889092603064184],
-      imageName: "uni_logo.png",
-      alt: "College of Medicine",
-    },
-  ];
+  const barryJourneyYear = 1809;
+  const garrettJourneyYear = 1862;
+  const firstClassesYear = 1867;
+  const physiologyYear = 1875;
+  const womenDoctorsBirthplacesYear = 1884;
+  const womenDoctorsFocusYear = 1911;
+  const barryJourneyDimYear = 1810;
+  const garrettJourneyDimYear = 1864;
 
-  const addImageMarker = ({
-    id,
-    coordinates,
-    imageName,
-    alt,
-  }: ImageMarkerConfig) => {
-    if (!map || imageMarkers.has(id)) return;
+  // Timeline location markers are DOM markers rather than Mapbox layers because
+  // they need a text label that stays readable at different zoom levels.
+  function createTimelineMarkerElement(alt: string) {
+    const markerElement = document.createElement("div");
+    markerElement.setAttribute("aria-label", alt);
+    markerElement.style.position = "relative";
+    markerElement.style.width = "12px";
+    markerElement.style.height = "12px";
+    markerElement.style.overflow = "visible";
+
+    const markerCircle = document.createElement("span");
+    markerCircle.style.position = "absolute";
+    markerCircle.style.inset = "0";
+    markerCircle.style.borderRadius = "50%";
+    markerCircle.style.background = "#ffffff";
+    markerCircle.style.border = "2px solid #202020";
+    markerCircle.style.boxShadow = "0 1px 4px rgba(0, 0, 0, 0.35)";
+
+    const markerText = document.createElement("span");
+    markerText.textContent = alt;
+    markerText.style.position = "absolute";
+    markerText.style.left = "18px";
+    markerText.style.top = "50%";
+    markerText.style.transform = "translateY(-50%)";
+    markerText.style.color = "#ffffff";
+    markerText.style.font = "600 13px/1.2 system-ui, sans-serif";
+    markerText.style.textShadow = "0 1px 4px rgba(0, 0, 0, 0.85)";
+    markerText.style.whiteSpace = "nowrap";
+
+    markerElement.append(markerCircle, markerText);
+
+    return markerElement;
+  }
+
+  function addTimelineMarker({ id, coordinates, alt }: ImageMarkerConfig) {
+    if (!map || timelineMarkers.has(id)) return;
 
     const [latitude, longitude] = coordinates;
-    const markerImage = document.createElement("img");
-    markerImage.src = `${baseUrl}img/${imageName}`;
-    markerImage.alt = alt;
-    markerImage.style.width = "15px";
-    markerImage.style.height = "15px";
-    markerImage.style.display = "block";
-    markerImage.style.objectFit = "contain";
+    const markerElement = createTimelineMarkerElement(alt);
 
     const marker = new mapboxgl.Marker({
-      element: markerImage,
+      element: markerElement,
       anchor: "center",
     })
       .setLngLat([longitude, latitude])
       .addTo(map);
 
-    imageMarkers.set(id, marker);
-  };
+    timelineMarkers.set(id, marker);
+  }
 
+  // Data normalization helpers: convert loose imported data into GeoJSON shapes
+  // that Mapbox can render consistently.
   const isGeoJsonData = (value: unknown): value is GeoJSON.GeoJSON => {
     return Boolean(value && typeof value === "object" && "type" in value);
   };
@@ -252,17 +271,13 @@
     });
   };
 
+  // Draws one-off journey routes, such as Barry and Garrett, from GeoJSON lines.
   const animateJourneyLine = ({
     journeyData,
     sourceId,
     lineLayerId,
     lineColor,
-  }: {
-    journeyData: unknown;
-    sourceId: string;
-    lineLayerId: string;
-    lineColor: string;
-  }) => {
+  }: JourneyLineConfig) => {
     if (!map || !styleReady || !map.isStyleLoaded()) return false;
 
     const fullCoords = getLineCoordinates(journeyData);
@@ -346,65 +361,8 @@
     return true;
   };
 
-  $: if (map) {
-    for (const marker of timelineImageMarkers) {
-      if (currentYear >= marker.year) {
-        addImageMarker(marker);
-      }
-    }
-  }
-
-  $: if (
-    map &&
-    styleReady &&
-    currentYear === 1809 &&
-    barryJourneyData &&
-    !hasAnimatedBarryLine
-  ) {
-    hasAnimatedBarryLine = animateJourneyLine({
-      journeyData: barryJourneyData,
-      sourceId: barrySourceId,
-      lineLayerId: barryLineLayerId,
-      lineColor: "white",
-    });
-    map.flyTo({
-      center: [-5.1883, 54.5533],
-      zoom: 5.5,
-      duration: 3000,
-      essential: true,
-    });
-    hasFocusedBarryMilestone = true;
-  }
-
-  $: if (
-    map &&
-    styleReady &&
-    currentYear >= 1862 &&
-    garrettJourneyData &&
-    !hasAnimatedGarrettLine
-  ) {
-    hasAnimatedGarrettLine = animateJourneyLine({
-      journeyData: garrettJourneyData,
-      sourceId: garrettSourceId,
-      lineLayerId: garrettLineLayerId,
-      lineColor: "white",
-    });
-    map.flyTo({
-      center: [-2.1883, 54.5533],
-      duration: 2000,
-      essential: true,
-    });
-  }
-
-  $: if (map && styleReady && currentYear >= 1867) {
-    map.flyTo({
-      center: [-3.1883, 55.9533],
-      zoom: 12,
-      duration: 3000,
-      essential: true,
-    });
-  }
-
+  // Mapbox layer/source helpers. These are deliberately small so timeline
+  // reactions can describe "what happens" without repeating Mapbox plumbing.
   function removeLayerAndSource(sourceId: string, layerId: string) {
     if (!map || !styleReady) return;
 
@@ -415,6 +373,14 @@
     if (map.getSource(sourceId)) {
       map.removeSource(sourceId);
     }
+  }
+
+  function cancelPathAnimation(layerId: string) {
+    const frame = pathAnimationFrames.get(layerId);
+    if (frame === undefined) return;
+
+    cancelAnimationFrame(frame);
+    pathAnimationFrames.delete(layerId);
   }
 
   const getAnimatedLineFeatureCollection = (
@@ -497,11 +463,7 @@
     rawData,
     sourceId,
     layerId,
-  }: {
-    rawData: unknown;
-    sourceId: string;
-    layerId: string;
-  }) {
+  }: DataLayerConfig) {
     if (!map || !styleReady) return false;
 
     const data: GeoJSON.FeatureCollection<GeoJSON.Point> = {
@@ -546,11 +508,7 @@
     rawData,
     sourceId,
     layerId,
-  }: {
-    rawData: unknown;
-    sourceId: string;
-    layerId: string;
-  }) {
+  }: DataLayerConfig) {
     if (!map || !styleReady) return false;
 
     const data: GeoJSON.FeatureCollection<GeoJSON.Point> = {
@@ -602,60 +560,12 @@
     return true;
   }
 
-  function drawGeoJsonLineLayer({
-    rawData,
-    sourceId,
-    layerId,
-  }: {
-    rawData: unknown;
-    sourceId: string;
-    layerId: string;
-  }) {
-    if (!map || !styleReady || !isGeoJsonData(rawData)) {
-      return false;
-    }
-
-    const data = rawData as GeoJSON.GeoJSON;
-    const existingSource = map.getSource(sourceId) as
-      | mapboxgl.GeoJSONSource
-      | undefined;
-
-    if (existingSource) {
-      existingSource.setData(data);
-    } else {
-      map.addSource(sourceId, {
-        type: "geojson",
-        data,
-      });
-    }
-
-    if (!map.getLayer(layerId)) {
-      map.addLayer({
-        id: layerId,
-        type: "line",
-        source: sourceId,
-        layout: { "line-join": "round", "line-cap": "round" },
-        paint: {
-          "line-color": "white",
-          "line-opacity": 0.3,
-        },
-      });
-    }
-
-    return true;
-  }
-
   function animateGeoJsonLineLayer({
     rawData,
     sourceId,
     layerId,
     milestoneYear,
-  }: {
-    rawData: unknown;
-    sourceId: string;
-    layerId: string;
-    milestoneYear: number;
-  }) {
+  }: AnimatedLineConfig) {
     if (!map || !styleReady || !isGeoJsonData(rawData)) {
       return false;
     }
@@ -719,10 +629,88 @@
     return true;
   }
 
+  function syncTimelineMarkers(year: number) {
+    for (const marker of timelineImageMarkers) {
+      if (year >= marker.year) {
+        addTimelineMarker(marker);
+      }
+    }
+  }
+
+  function startBarryJourney() {
+    hasAnimatedBarryLine = animateJourneyLine({
+      journeyData: barryJourneyData,
+      sourceId: barrySourceId,
+      lineLayerId: barryLineLayerId,
+      lineColor: "white",
+    });
+    map.flyTo({
+      center: [-5.1883, 54.5533],
+      zoom: 5.5,
+      duration: 3000,
+      essential: true,
+    });
+  }
+
+  function startGarrettJourney() {
+    hasAnimatedGarrettLine = animateJourneyLine({
+      journeyData: garrettJourneyData,
+      sourceId: garrettSourceId,
+      lineLayerId: garrettLineLayerId,
+      lineColor: "white",
+    });
+    map.flyTo({
+      center: [-2.1883, 54.5533],
+      duration: 2000,
+      essential: true,
+    });
+  }
+
+  function focusEdinburghClasses() {
+    map.flyTo({
+      center: [-3.1883, 55.9533],
+      zoom: 13,
+      duration: 3000,
+      essential: true,
+    });
+  }
+
+  // Timeline reactions
+  // Location labels appear once and stay visible after their timeline year.
+  $: if (map) {
+    syncTimelineMarkers(currentYear);
+  }
+
+  // Journey milestones draw animated routes and move the camera to the route.
   $: if (
     map &&
     styleReady &&
-    currentYear === 1867 &&
+    currentYear === barryJourneyYear &&
+    barryJourneyData &&
+    !hasAnimatedBarryLine
+  ) {
+    startBarryJourney();
+  }
+
+  $: if (
+    map &&
+    styleReady &&
+    currentYear >= garrettJourneyYear &&
+    garrettJourneyData &&
+    !hasAnimatedGarrettLine
+  ) {
+    startGarrettJourney();
+  }
+
+  $: if (map && styleReady && currentYear >= firstClassesYear) {
+    focusEdinburghClasses();
+  }
+
+  // First women attending classes: draw student points and animated walking paths.
+  $: if (
+    map &&
+    styleReady &&
+    currentYear === firstClassesYear &&
     Array.isArray(firstClassesGeoData) &&
     firstClassesGeoData.length > 0
   ) {
@@ -736,7 +724,7 @@
   $: if (
     map &&
     styleReady &&
-    currentYear === 1867 &&
+    currentYear === firstClassesYear &&
     isGeoJsonData(firstClassesPathsData) &&
     !hasAnimatedFirstClassesPaths
   ) {
@@ -744,24 +732,25 @@
       rawData: firstClassesPathsData,
       sourceId: firstClassesPathsSourceId,
       layerId: firstClassesPathsLayerId,
-      milestoneYear: 1867,
+      milestoneYear: firstClassesYear,
     });
   }
 
   $: if (
     map &&
     styleReady &&
-    currentYear === 1867 &&
+    currentYear === firstClassesYear &&
     map.getLayer(firstClassesLayerId) &&
     map.getLayer(firstClassesPathsLayerId)
   ) {
     map.moveLayer(firstClassesLayerId);
   }
 
+  // Physiology students: draw the later student cohort and associated paths.
   $: if (
     map &&
     styleReady &&
-    currentYear === 1875 &&
+    currentYear === physiologyYear &&
     Array.isArray(womenPhysiologyGeoData) &&
     womenPhysiologyGeoData.length > 0
   ) {
@@ -775,7 +764,7 @@
   $: if (
     map &&
     styleReady &&
-    currentYear === 1875 &&
+    currentYear === physiologyYear &&
     isGeoJsonData(physiologyPathsData) &&
     !hasAnimatedPhysiologyPaths
   ) {
@@ -783,24 +772,25 @@
       rawData: physiologyPathsData,
       sourceId: physiologyPathsSourceId,
       layerId: physiologyPathsLayerId,
-      milestoneYear: 1875,
+      milestoneYear: physiologyYear,
     });
   }
 
   $: if (
     map &&
     styleReady &&
-    currentYear === 1875 &&
+    currentYear === physiologyYear &&
     map.getLayer(physiologyStudentsLayerId) &&
     map.getLayer(physiologyPathsLayerId)
   ) {
     map.moveLayer(physiologyStudentsLayerId);
   }
 
+  // Women doctors: show birthplace distribution once enough data is in scope.
   $: if (
     map &&
     styleReady &&
-    currentYear >= 1884 &&
+    currentYear >= womenDoctorsBirthplacesYear &&
     Array.isArray(womenDoctorsData) &&
     womenDoctorsData.length > 0 &&
     !hasDrawnWomenDoctorBirthplaces
@@ -812,51 +802,49 @@
     });
   }
 
-  $: if (map && currentYear < 1862) {
+  // Reset state when the user scrubs backward so route animations can replay.
+  $: if (map && currentYear < garrettJourneyYear) {
     hasAnimatedGarrettLine = false;
   }
 
-  $: if (map && currentYear < 1809) {
+  $: if (map && currentYear < barryJourneyYear) {
     hasAnimatedBarryLine = false;
-    hasFocusedBarryMilestone = false;
   }
 
-  // dimming
-  $: if (map && currentYear >= 1864 && map.getLayer(garrettLineLayerId)) {
+  // Dim completed journeys after their main story beat has passed.
+  $: if (
+    map &&
+    currentYear >= garrettJourneyDimYear &&
+    map.getLayer(garrettLineLayerId)
+  ) {
     map.setPaintProperty(garrettLineLayerId, "line-opacity", 0.3);
   }
 
-  $: if (map && currentYear >= 1810 && map.getLayer(barryLineLayerId)) {
+  $: if (
+    map &&
+    currentYear >= barryJourneyDimYear &&
+    map.getLayer(barryLineLayerId)
+  ) {
     map.setPaintProperty(barryLineLayerId, "line-opacity", 0.3);
   }
 
-  $: if (map && styleReady && currentYear > 1867) {
-    const firstClassesAnimationFrame = pathAnimationFrames.get(
-      firstClassesPathsLayerId,
-    );
-    if (firstClassesAnimationFrame !== undefined) {
-      cancelAnimationFrame(firstClassesAnimationFrame);
-      pathAnimationFrames.delete(firstClassesPathsLayerId);
-    }
+  // Remove transient student/path layers after their focused timeline moment.
+  $: if (map && styleReady && currentYear > firstClassesYear) {
+    cancelPathAnimation(firstClassesPathsLayerId);
     hasAnimatedFirstClassesPaths = false;
     removeLayerAndSource(firstClassesPathsSourceId, firstClassesPathsLayerId);
     removeLayerAndSource(firstClassesSourceId, firstClassesLayerId);
   }
 
-  $: if (map && styleReady && currentYear > 1875) {
-    const physiologyAnimationFrame = pathAnimationFrames.get(
-      physiologyPathsLayerId,
-    );
-    if (physiologyAnimationFrame !== undefined) {
-      cancelAnimationFrame(physiologyAnimationFrame);
-      pathAnimationFrames.delete(physiologyPathsLayerId);
-    }
+  $: if (map && styleReady && currentYear > physiologyYear) {
+    cancelPathAnimation(physiologyPathsLayerId);
     hasAnimatedPhysiologyPaths = false;
     removeLayerAndSource(physiologyPathsSourceId, physiologyPathsLayerId);
     removeLayerAndSource(physiologyStudentsSourceId, physiologyStudentsLayerId);
   }
 
-  $: if (map && styleReady && currentYear < 1884) {
+  // Hide birthplace data when scrubbing before that part of the story.
+  $: if (map && styleReady && currentYear < womenDoctorsBirthplacesYear) {
     hasDrawnWomenDoctorBirthplaces = false;
     hasFocusedWomenDoctorsMilestone = false;
     removeLayerAndSource(
@@ -865,10 +853,15 @@
     );
   }
 
-  $: if (map && currentYear >= 1911 && !hasFocusedWomenDoctorsMilestone) {
+  // Later timeline overview: zoom out to the broader women doctors distribution.
+  $: if (
+    map &&
+    currentYear >= womenDoctorsFocusYear &&
+    !hasFocusedWomenDoctorsMilestone
+  ) {
     map.flyTo({
-      center: [-3.1883, 55.9433],
-      zoom: 1,
+      center: [60.1883, 35.9433],
+      zoom: 2,
       duration: 5000,
       essential: true,
     });
@@ -913,8 +906,8 @@
         cancelAnimationFrame(frame);
       }
       pathAnimationFrames.clear();
-      imageMarkers.forEach((marker) => marker.remove());
-      imageMarkers.clear();
+      timelineMarkers.forEach((marker) => marker.remove());
+      timelineMarkers.clear();
       map.remove();
     };
   });

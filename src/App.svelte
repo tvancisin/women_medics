@@ -12,7 +12,7 @@
 
   const startYear = 1582;
   const endYear = 2026;
-  const stepYears = 20;
+  const stepYears = 100;
   const margin = { top: 20, right: 40, bottom: 30, left: 40 };
   const tickLength = 5;
   const totalRange = endYear - startYear;
