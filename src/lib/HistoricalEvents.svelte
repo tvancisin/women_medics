@@ -7,7 +7,8 @@
 
   export let events: HistoricalEvent[] = [];
   export let currentYear: number;
-  export let startYear: number;
+  export let domainStartYear: number;
+  export let domainEndYear: number;
   export let timelineY: number;
   export let yearToX: (year: number) => number;
 </script>
@@ -15,10 +16,11 @@
 {#each events as event, index (event.description + index)}
   {@const start = event.startYear}
   {@const end = event.endYear}
-  {@const visibleEnd = Math.min(end, currentYear)}
-  {@const isVisible = visibleEnd >= start && visibleEnd >= startYear}
+  {@const visibleStart = Math.max(start, domainStartYear)}
+  {@const visibleEnd = Math.min(end, currentYear, domainEndYear)}
+  {@const isVisible = visibleEnd >= visibleStart}
   {#if isVisible}
-    {@const x1 = yearToX(Math.max(start, startYear))}
+    {@const x1 = yearToX(visibleStart)}
     {@const x2 = yearToX(visibleEnd)}
     <rect
       class="historical-event"
@@ -33,7 +35,7 @@
       class="event-label"
       x={x2 - 5}
       y={80 + index * 20}
-      text-anchor={event.startYear == 1582 ? "start" : "end"}
+      text-anchor={event.startYear <= domainStartYear ? "start" : "end"}
     >
       {event.description}
     </text>

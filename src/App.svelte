@@ -6,16 +6,21 @@
   import Linechart from "./lib/Linechart.svelte";
   import MapView from "./lib/MapView.svelte";
   import BackgroundMap from "./lib/BackgroundMap.svelte";
+  import Doctors from "./lib/Doctors.svelte";
 
   const baseUrl = import.meta.env.BASE_URL;
   const publicUrl = (path: string) => `${baseUrl}${path}`;
 
   const startYear = 1582;
   const endYear = 2026;
-  const stepYears = 100;
+  const stepYears = 50;
+  const timelineZoomTriggerYear = 1884;
+  const timelineResetTriggerYear = 1914;
+  const timelineZoomDomainStart = 1870;
+  const timelineZoomDomainEnd = 1920;
+  const timelineZoomDurationMs = 1600;
   const margin = { top: 20, right: 40, bottom: 30, left: 40 };
   const tickLength = 5;
-  const totalRange = endYear - startYear;
 
   // keeping the detail div inside screen
   const milestoneCardWidth = 400;
@@ -25,7 +30,7 @@
   const collapsedMarkerOverlapThresholdPx = milestoneMarkerSize + 6;
 
   // Anchor cards differently depending on whether the milestone is left or right of center.
-  const card_left = [1726, 1809];
+  const card_left = [1726, 1809, 1886, 1889];
   const clampedLeft = (x: number, year: number) => {
     // return x < width / 2 ? x + 10 : x - milestoneCardWidth - 10;
     if (card_left.includes(year)) {
@@ -40,7 +45,7 @@
   const devRequireClickToResume = true;
 
   const pauseYears = [
-    1583, 1726, 1809, 1862, 1867, 1869, 1875, 1911
+    1583, 1726, 1809, 1862, 1867, 1869, 1875, 1886, 1889, 1911, 1914
   ];
   const milestoneLabels = new Map<number, string>([
     [1583, "University Founded 1583"],
@@ -51,12 +56,12 @@
     [1869, "Edinburgh Seven/Forty 1869"],
     [1875, "Physiology students 1875"],
     // [1884, "Triple Qualification 1884"],
-    // [1886, "School of Medicine for Women 1886"],
-    // [1889, "College of Medicine for Women 1889"],
+    [1886, "School of Medicine for Women 1886"],
+    [1889, "College of Medicine for Women 1889"],
     // [1889, "Universities Scotland Act 1889"],
     // [1892, "Women admitted to universities"],
     [1911, "Women Doctors"],
-    // [1914, "Official female medics"],
+    [1914, "Official female medics"],
   ]);
 
   const splitMilestoneYears = new Set([1809, 1862, 1867, 1875]);
@@ -82,6 +87,11 @@
   let currentYear = startYear;
   let animationStartMs = 0;
   let animationFrameId: number | null = null;
+  let timelineZoomFrameId: number | null = null;
+  let hasZoomedTimeline = false;
+  let hasResetTimeline = false;
+  let timelineDomainStart = startYear;
+  let timelineDomainEnd = endYear;
   let nextPauseIndex = 0;
   let pausedAtYear: number | null = null;
   let pauseStartMs: number | null = null;
@@ -114,6 +124,23 @@
   };
   let firstClassesGeoData: FirstClassesGeoDatum[] = [];
 
+  type WomenDoctorDatum = {
+    source_data?: {
+      "Year of student registration"?: number | string | null;
+    };
+  };
+
+  const getStudentRegistrationYear = (doctor: WomenDoctorDatum) => {
+    const rawYear = doctor.source_data?.["Year of student registration"];
+
+    if (rawYear === null || rawYear === undefined || rawYear === "") {
+      return Number.POSITIVE_INFINITY;
+    }
+
+    const year = Number(rawYear);
+    return Number.isFinite(year) ? year : Number.POSITIVE_INFINITY;
+  };
+
   // Dev-only: remove these two variables with the click-to-resume behavior.
   let awaitingResumeClick = false;
   let resumeRequested = false;
@@ -122,14 +149,11 @@
   $: timelineY = Math.max(margin.top, height - margin.bottom);
 
   $: axisStart = margin.left;
-  $: progressTarget =
-    totalRange > 0 ? (currentYear - startYear) / totalRange : 0;
-  $: clampedProgress = Math.min(1, Math.max(0, progressTarget));
-  $: span = maxSpan * clampedProgress;
-  $: axisEnd = axisStart + span;
+  $: axisRight = axisStart + maxSpan;
+  $: timelineDomainSpan = Math.max(1, timelineDomainEnd - timelineDomainStart);
 
   // adding ticks
-  const buildTickValues = (maxYear: number) => {
+  const buildFullTimelineTickValues = (maxYear: number) => {
     const values = [startYear];
     for (let year = 1600; year <= maxYear; year += 20) {
       values.push(year);
@@ -137,16 +161,77 @@
     return values;
   };
 
-  // calculating x position for a given year
-  $: yearToX = (year: number) => {
-    const currentRange = currentYear - startYear;
-    if (currentRange <= 0) return axisStart;
-    const yearProgress = (year - startYear) / currentRange;
-    return axisStart + yearProgress * span;
+  const buildTimelineTickValues = (maxYear: number) => {
+    return buildFullTimelineTickValues(maxYear);
   };
 
-  $: tickValues = width > 0 && height > 0 ? buildTickValues(currentYear) : [];
+  const timelineZoomEase = (t: number) =>
+    t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+  const startTimelineDomainTransition = (
+    targetStartYear: number,
+    targetEndYear: number,
+    onComplete?: () => void,
+  ) => {
+    if (timelineZoomFrameId !== null) {
+      cancelAnimationFrame(timelineZoomFrameId);
+    }
+
+    const fromStart = timelineDomainStart;
+    const fromEnd = timelineDomainEnd;
+    const startedAt = performance.now();
+
+    const step = (now: number) => {
+      const progress = Math.min(1, (now - startedAt) / timelineZoomDurationMs);
+      const eased = timelineZoomEase(progress);
+
+      timelineDomainStart = fromStart + (targetStartYear - fromStart) * eased;
+      timelineDomainEnd = fromEnd + (targetEndYear - fromEnd) * eased;
+
+      if (progress < 1) {
+        timelineZoomFrameId = requestAnimationFrame(step);
+      } else {
+        timelineDomainStart = targetStartYear;
+        timelineDomainEnd = targetEndYear;
+        timelineZoomFrameId = null;
+        onComplete?.();
+      }
+    };
+
+    timelineZoomFrameId = requestAnimationFrame(step);
+  };
+
+  // calculating x position for a given year
+  $: yearToX = (year: number) => {
+    const yearProgress = (year - timelineDomainStart) / timelineDomainSpan;
+    return axisStart + yearProgress * maxSpan;
+  };
+
+  $: currentYearX = yearToX(currentYear);
+  $: axisEnd = currentYearX;
+  $: isYearInTimelineDomain = (year: number) =>
+    year >= timelineDomainStart && year <= timelineDomainEnd;
+  $: tickValues =
+    width > 0 && height > 0 ? buildTimelineTickValues(currentYear) : [];
   $: displayYear = Math.floor(currentYear);
+
+  $: if (
+    currentYear >= timelineZoomTriggerYear &&
+    currentYear < timelineResetTriggerYear &&
+    !hasZoomedTimeline
+  ) {
+    hasZoomedTimeline = true;
+    startTimelineDomainTransition(
+      timelineZoomDomainStart,
+      timelineZoomDomainEnd,
+    );
+  }
+
+  $: if (currentYear >= timelineResetTriggerYear && !hasResetTimeline) {
+    hasResetTimeline = true;
+    hasZoomedTimeline = false;
+    startTimelineDomainTransition(startYear, endYear);
+  }
 
   let topByYear: Map<number, number> = new Map();
   $: collapsedMarkerTopByYear = (() => {
@@ -265,7 +350,13 @@
         barryJourneyData = rawBarryJourneyData ?? null;
         firstClassesPathsData = rawFirstClassesPaths ?? null;
         physiologyPathsData = rawPhysiologyPaths ?? null;
-        womenDoctorsData = rawWomenDoctors ?? null;
+        womenDoctorsData = Array.isArray(rawWomenDoctors)
+          ? [...(rawWomenDoctors as WomenDoctorDatum[])].sort((a, b) => {
+              return (
+                getStudentRegistrationYear(a) - getStudentRegistrationYear(b)
+              );
+            })
+          : null;
       } catch (error: unknown) {
         console.error("Failed to load timeline JSON data", error);
       }
@@ -350,6 +441,9 @@
       if (animationFrameId !== null) {
         cancelAnimationFrame(animationFrameId);
       }
+      if (timelineZoomFrameId !== null) {
+        cancelAnimationFrame(timelineZoomFrameId);
+      }
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   });
@@ -386,9 +480,18 @@
       <HistoricalEvents
         events={historicalEvents}
         {currentYear}
-        {startYear}
+        domainStartYear={timelineDomainStart}
+        domainEndYear={timelineDomainEnd}
         {timelineY}
         {yearToX}
+      />
+
+      <Doctors
+        {womenDoctorsData}
+        {currentYear}
+        {timelineY}
+        {yearToX}
+        {womenMedicsData}
       />
 
       {#each pauseYears.filter((year) => displayYear >= year && milestoneLabels.has(year)) as year, index (year)}
@@ -410,8 +513,17 @@
           <text x="0" y={tickLength + 12} text-anchor="middle">{year}</text>
         </g>
       {/each}
-      <circle cx={axisEnd} cy={timelineY} r="3" fill="#fff"></circle>
-      <Linechart {currentYear} {timelineY} {yearToX} {womenMedicsData} />
+      {#if isYearInTimelineDomain(currentYear)}
+        <circle cx={currentYearX} cy={timelineY} r="3" fill="#fff"></circle>
+      {/if}
+      <Linechart
+        {currentYear}
+        domainStartYear={timelineDomainStart}
+        domainEndYear={timelineDomainEnd}
+        {timelineY}
+        {yearToX}
+        {womenMedicsData}
+      />
     {/if}
   </svg>
 

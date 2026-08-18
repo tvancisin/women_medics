@@ -4,6 +4,8 @@
   type WomenMedicsDatum = { year: number; number: number };
 
   export let currentYear: number;
+  export let domainStartYear: number;
+  export let domainEndYear: number;
   export let timelineY: number;
   export let yearToX: (year: number) => number;
   export let womenMedicsData: WomenMedicsDatum[] = [];
@@ -36,7 +38,12 @@
   $: projectionVisibleData =
     currentYear <= 1966
       ? []
-      : projectionData.filter((d) => d.year <= currentYear);
+      : projectionData.filter(
+          (d) =>
+            d.year <= currentYear &&
+            d.year >= domainStartYear &&
+            d.year <= domainEndYear,
+        );
 
   $: projectionPath = d3
     .line<WomenMedicsDatum>()
@@ -45,7 +52,12 @@
 
   // Keep values up to the current animated year only.
   $: visibleData = womenMedicsData
-    .filter((d) => d.year <= currentYear)
+    .filter(
+      (d) =>
+        d.year <= currentYear &&
+        d.year >= domainStartYear &&
+        d.year <= domainEndYear,
+    )
     .sort((a, b) => a.year - b.year);
 
   $: sortedData = [...womenMedicsData].sort((a, b) => a.year - b.year);
@@ -101,6 +113,8 @@
   $: markerX = yearToX(currentYear);
   $: markerY = currentValue === null ? timelineY : yScale(currentValue);
   $: markerLabel = currentValue === null ? "" : `${Math.round(currentValue)}`;
+  $: currentYearIsVisible =
+    currentYear >= domainStartYear && currentYear <= domainEndYear;
 </script>
 
 {#if currentYear >= 1914 && visibleData.length > 1 && areaPath}
@@ -108,7 +122,7 @@
   {#if linePath}
     <path d={linePath} class="area-top-line" fill="none" />
   {/if}
-  {#if currentValue !== null && currentYear <= 1966}
+  {#if currentValue !== null && currentYear <= 1966 && currentYearIsVisible}
     <circle class="line-head" cx={markerX} cy={markerY} r="4" />
     <text class="line-head-label" x={markerX + 8} y={markerY + 3}>
       {markerLabel}

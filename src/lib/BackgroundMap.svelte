@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import mapboxgl from "mapbox-gl";
   import MapboxWorker from "mapbox-gl/dist/mapbox-gl-csp-worker?worker";
-  import { timelineImageMarkers, type ImageMarkerConfig } from "../datastore";
+  import { timelineImageMarkers } from "../datastore";
   import "mapbox-gl/dist/mapbox-gl.css";
 
   // Component inputs
@@ -27,7 +27,7 @@
   let hasAnimatedPhysiologyPaths = false;
   let hasDrawnWomenDoctorBirthplaces = false;
   let hasFocusedWomenDoctorsMilestone = false;
-  const timelineMarkers = new Map<string, mapboxgl.Marker>();
+  let timelineMarkersDataKey = "";
 
   // Raw data from JSON/CSV loaders is intentionally typed defensively here.
   // The conversion helpers below validate coordinates before drawing anything.
@@ -101,6 +101,9 @@
   const physiologyPathsLayerId = "physiology-paths-lines";
   const womenDoctorsBirthplacesSourceId = "women-doctors-birthplaces";
   const womenDoctorsBirthplacesLayerId = "women-doctors-birthplaces-circles";
+  const timelineMarkersSourceId = "timeline-location-markers";
+  const timelineMarkersCircleLayerId = "timeline-location-markers-circles";
+  const timelineMarkersTextLayerId = "timeline-location-markers-text";
   const barryJourneyYear = 1809;
   const garrettJourneyYear = 1862;
   const firstClassesYear = 1867;
@@ -109,56 +112,6 @@
   const womenDoctorsFocusYear = 1911;
   const barryJourneyDimYear = 1810;
   const garrettJourneyDimYear = 1864;
-
-  // Timeline location markers are DOM markers rather than Mapbox layers because
-  // they need a text label that stays readable at different zoom levels.
-  function createTimelineMarkerElement(alt: string) {
-    const markerElement = document.createElement("div");
-    markerElement.setAttribute("aria-label", alt);
-    markerElement.style.position = "relative";
-    markerElement.style.width = "12px";
-    markerElement.style.height = "12px";
-    markerElement.style.overflow = "visible";
-
-    const markerCircle = document.createElement("span");
-    markerCircle.style.position = "absolute";
-    markerCircle.style.inset = "0";
-    markerCircle.style.borderRadius = "50%";
-    markerCircle.style.background = "#ffffff";
-    markerCircle.style.border = "2px solid #202020";
-    markerCircle.style.boxShadow = "0 1px 4px rgba(0, 0, 0, 0.35)";
-
-    const markerText = document.createElement("span");
-    markerText.textContent = alt;
-    markerText.style.position = "absolute";
-    markerText.style.left = "18px";
-    markerText.style.top = "50%";
-    markerText.style.transform = "translateY(-50%)";
-    markerText.style.color = "#ffffff";
-    markerText.style.font = "600 13px/1.2 system-ui, sans-serif";
-    markerText.style.textShadow = "0 1px 4px rgba(0, 0, 0, 0.85)";
-    markerText.style.whiteSpace = "nowrap";
-
-    markerElement.append(markerCircle, markerText);
-
-    return markerElement;
-  }
-
-  function addTimelineMarker({ id, coordinates, alt }: ImageMarkerConfig) {
-    if (!map || timelineMarkers.has(id)) return;
-
-    const [latitude, longitude] = coordinates;
-    const markerElement = createTimelineMarkerElement(alt);
-
-    const marker = new mapboxgl.Marker({
-      element: markerElement,
-      anchor: "center",
-    })
-      .setLngLat([longitude, latitude])
-      .addTo(map);
-
-    timelineMarkers.set(id, marker);
-  }
 
   // Data normalization helpers: convert loose imported data into GeoJSON shapes
   // that Mapbox can render consistently.
@@ -269,6 +222,31 @@
 
       return [feature];
     });
+  };
+
+  const getTimelineMarkerFeatures = (
+    year: number,
+  ): GeoJSON.Feature<GeoJSON.Point>[] => {
+    const displayYear = Math.floor(year);
+
+    return timelineImageMarkers
+      .filter((marker) => marker.year === displayYear)
+      .map(({ id, year: markerYear, coordinates, alt }) => {
+        const [latitude, longitude] = coordinates;
+
+        return {
+          type: "Feature",
+          properties: {
+            id,
+            year: markerYear,
+            label: alt,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+        };
+      });
   };
 
   // Draws one-off journey routes, such as Barry and Garrett, from GeoJSON lines.
@@ -504,6 +482,121 @@
     return true;
   }
 
+  function drawTimelineMarkerLayers(year: number) {
+    if (!map || !styleReady) return false;
+
+    const features = getTimelineMarkerFeatures(year);
+    const dataKey = features
+      .map((feature) => String(feature.properties?.id ?? ""))
+      .join("|");
+    const data: GeoJSON.FeatureCollection<GeoJSON.Point> = {
+      type: "FeatureCollection",
+      features,
+    };
+
+    const existingSource = map.getSource(timelineMarkersSourceId) as
+      | mapboxgl.GeoJSONSource
+      | undefined;
+
+    if (existingSource && dataKey !== timelineMarkersDataKey) {
+      existingSource.setData(data);
+      timelineMarkersDataKey = dataKey;
+    } else if (!existingSource) {
+      map.addSource(timelineMarkersSourceId, {
+        type: "geojson",
+        data,
+      });
+      timelineMarkersDataKey = dataKey;
+    }
+
+    if (!map.getLayer(timelineMarkersCircleLayerId)) {
+      map.addLayer({
+        id: timelineMarkersCircleLayerId,
+        type: "circle",
+        source: timelineMarkersSourceId,
+        paint: {
+          "circle-radius": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            2,
+            1,
+            8,
+            3,
+            12,
+            6,
+            14,
+            8,
+          ],
+          "circle-color": "#ffffff",
+          "circle-opacity": 0.95,
+          "circle-stroke-color": "#202020",
+          "circle-stroke-width": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            2,
+            0.25,
+            12,
+            1.5,
+          ],
+        },
+      });
+    }
+
+    if (!map.getLayer(timelineMarkersTextLayerId)) {
+      map.addLayer({
+        id: timelineMarkersTextLayerId,
+        type: "symbol",
+        source: timelineMarkersSourceId,
+        layout: {
+          "text-field": ["get", "label"],
+          "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+          "text-size": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            2,
+            3,
+            8,
+            7,
+            12,
+            13,
+            14,
+            16,
+          ],
+          "text-anchor": "left",
+          "text-offset": [0.8, 0],
+          "text-allow-overlap": true,
+          "text-ignore-placement": true,
+        },
+        paint: {
+          "text-color": "#ffffff",
+          "text-halo-color": "rgba(0, 0, 0, 0.85)",
+          "text-halo-width": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            2,
+            0.25,
+            12,
+            1.5,
+          ],
+        },
+      });
+    }
+
+    if (map.getLayer(timelineMarkersCircleLayerId)) {
+      map.moveLayer(timelineMarkersCircleLayerId);
+    }
+
+    if (map.getLayer(timelineMarkersTextLayerId)) {
+      map.moveLayer(timelineMarkersTextLayerId);
+    }
+
+    return true;
+  }
+
   function drawWomenDoctorBirthplaceLayer({
     rawData,
     sourceId,
@@ -629,14 +722,6 @@
     return true;
   }
 
-  function syncTimelineMarkers(year: number) {
-    for (const marker of timelineImageMarkers) {
-      if (year >= marker.year) {
-        addTimelineMarker(marker);
-      }
-    }
-  }
-
   function startBarryJourney() {
     hasAnimatedBarryLine = animateJourneyLine({
       journeyData: barryJourneyData,
@@ -677,8 +762,8 @@
 
   // Timeline reactions
   // Location labels appear once and stay visible after their timeline year.
-  $: if (map) {
-    syncTimelineMarkers(currentYear);
+  $: if (map && styleReady) {
+    drawTimelineMarkerLayers(currentYear);
   }
 
   // Journey milestones draw animated routes and move the camera to the route.
@@ -702,7 +787,7 @@
     startGarrettJourney();
   }
 
-  $: if (map && styleReady && currentYear >= firstClassesYear) {
+  $: if (map && styleReady && currentYear == firstClassesYear) {
     focusEdinburghClasses();
   }
 
@@ -860,9 +945,9 @@
     !hasFocusedWomenDoctorsMilestone
   ) {
     map.flyTo({
-      center: [60.1883, 35.9433],
+      center: [60.1883, 10.9433],
       zoom: 2,
-      duration: 5000,
+      duration: 2000,
       essential: true,
     });
     hasFocusedWomenDoctorsMilestone = true;
@@ -906,8 +991,6 @@
         cancelAnimationFrame(frame);
       }
       pathAnimationFrames.clear();
-      timelineMarkers.forEach((marker) => marker.remove());
-      timelineMarkers.clear();
       map.remove();
     };
   });
