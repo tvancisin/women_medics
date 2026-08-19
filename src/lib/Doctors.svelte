@@ -34,8 +34,8 @@
     count: number;
   };
 
-  const circleRadius = 4;
-  const stackGap = 1;
+  const circleRadius = 2.5;
+  const stackGap = 0.5;
   const axisOffset = 10;
   const flowStartOffset = 80;
   const chartPaddingTop = 80;

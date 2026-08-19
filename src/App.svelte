@@ -45,7 +45,7 @@
   const devRequireClickToResume = true;
 
   const pauseYears = [
-    1583, 1726, 1809, 1862, 1867, 1869, 1875, 1886, 1889, 1911, 1914
+    1583, 1726, 1809, 1862, 1867, 1869, 1875, 1886, 1889, 1911, 1912, 1914,
   ];
   const milestoneLabels = new Map<number, string>([
     [1583, "University Founded 1583"],
@@ -61,6 +61,7 @@
     // [1889, "Universities Scotland Act 1889"],
     // [1892, "Women admitted to universities"],
     [1911, "Women Doctors"],
+    [1912, "Women Doctors travelling abroad"],
     [1914, "Official female medics"],
   ]);
 
@@ -83,6 +84,7 @@
   let barryJourneyData: unknown = null;
   let firstClassesPathsData: unknown = null;
   let physiologyPathsData: unknown = null;
+  let colonies: unknown = null;
   let womenDoctorsData: unknown = null;
   let currentYear = startYear;
   let animationStartMs = 0;
@@ -328,6 +330,7 @@
           rawFirstClassesPaths,
           rawPhysiologyPaths,
           rawWomenDoctors,
+          rawColonies,
         ] = await getJson([
           publicUrl("data/women_physiology_geo.json"),
           publicUrl("data/geo/garrett_journey.json"),
@@ -336,6 +339,7 @@
           publicUrl("data/geo/walking_paths_first_classes.json"),
           publicUrl("data/geo/walking_paths_physiology.json"),
           publicUrl("data/women_doctors_enhanced.json"),
+          publicUrl("data/geo/colonies_1885.json"),
         ]);
 
         womenPhysiologyGeoData = Array.isArray(rawWomenPhysiologyGeoData)
@@ -350,6 +354,7 @@
         barryJourneyData = rawBarryJourneyData ?? null;
         firstClassesPathsData = rawFirstClassesPaths ?? null;
         physiologyPathsData = rawPhysiologyPaths ?? null;
+        colonies = rawColonies ?? null;
         womenDoctorsData = Array.isArray(rawWomenDoctors)
           ? [...(rawWomenDoctors as WomenDoctorDatum[])].sort((a, b) => {
               return (
@@ -459,6 +464,7 @@
     {firstClassesPathsData}
     {physiologyPathsData}
     {womenDoctorsData}
+    {colonies}
   />
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
   {#if devRequireClickToResume && awaitingResumeClick}

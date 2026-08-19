@@ -2,6 +2,7 @@ html,
 body {
   margin: 0;
   overflow: hidden;
-  background-color: #121212;
+  /* background-color: #121212; */
+  background-color: #1F1F1F;
   font-family: "Montserrat", sans-serif;
 }
