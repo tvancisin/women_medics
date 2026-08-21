@@ -14,10 +14,10 @@
   const startYear = 1582;
   const endYear = 2026;
   const stepYears = 50;
-  const timelineZoomTriggerYear = 1884;
+  const timelineZoomTriggerYear = 1862;
   const timelineResetTriggerYear = 1914;
-  const timelineZoomDomainStart = 1870;
-  const timelineZoomDomainEnd = 1920;
+  const timelineZoomDomainStart = 1850;
+  const timelineZoomDomainEnd = 1930;
   const timelineZoomDurationMs = 1600;
   const margin = { top: 20, right: 40, bottom: 30, left: 40 };
   const tickLength = 5;
@@ -30,7 +30,7 @@
   const collapsedMarkerOverlapThresholdPx = milestoneMarkerSize + 6;
 
   // Anchor cards differently depending on whether the milestone is left or right of center.
-  const card_left = [1726, 1809, 1886, 1889];
+  const card_left = [1726, 1809, 1867, 1869, 1875, 1886, 1889];
   const clampedLeft = (x: number, year: number) => {
     // return x < width / 2 ? x + 10 : x - milestoneCardWidth - 10;
     if (card_left.includes(year)) {
@@ -67,15 +67,7 @@
 
   const splitMilestoneYears = new Set([1809, 1862, 1867, 1875]);
 
-  // Map each pause year to the image shown when the card is shrunk (is-past).
   // Point multiple years at the same path, or leave a year out to show no image.
-  const milestoneImages = new Map<number, string>([
-    // [1809, "/img/uni_logo.jpg"],
-    // [1862, "/img/garrett_pic.jpg"],
-    // [1867, "/img/uni_logo.png"],
-    // [1869, "/img/uni_logo.png"],
-    // [1875, "/img/uni_logo.png"],
-  ]);
   const pauseDurationMs = 1000;
 
   let height = 0;
@@ -213,6 +205,8 @@
   $: axisEnd = currentYearX;
   $: isYearInTimelineDomain = (year: number) =>
     year >= timelineDomainStart && year <= timelineDomainEnd;
+  $: fullTickValues =
+    width > 0 && height > 0 ? buildTimelineTickValues(endYear) : [];
   $: tickValues =
     width > 0 && height > 0 ? buildTimelineTickValues(currentYear) : [];
   $: displayYear = Math.floor(currentYear);
@@ -474,7 +468,33 @@
   {/if}
   <svg {width} {height}>
     {#if width > 0 && height > 0}
-      <!-- howrizontal x axis line -->
+      <!-- background timeline -->
+      <g class="timeline-underlay" aria-hidden="true">
+        <line
+          class="domain"
+          x1={axisStart}
+          y1={timelineY}
+          x2={axisRight}
+          y2={timelineY}
+        ></line>
+
+        {#each fullTickValues as year}
+          <g
+            class="tick"
+            transform={`translate(${yearToX(year)}, ${timelineY})`}
+          >
+            <line x1="0" y1="0" x2="0" y2={tickLength}></line>
+            <text x="0" y={tickLength + 12} text-anchor="middle">{year}</text>
+          </g>
+        {/each}
+      </g>
+
+      <!-- gradual circle indicator -->
+      {#if isYearInTimelineDomain(currentYear)}
+        <circle cx={currentYearX} cy={timelineY} r="4" fill="#fff"></circle>
+      {/if}
+
+      <!-- gradual x axis line -->
       <line
         class="domain"
         x1={axisStart}
@@ -482,6 +502,14 @@
         x2={axisEnd}
         y2={timelineY}
       ></line>
+
+      <!-- gradual x axis ticks and years -->
+      {#each tickValues as year}
+        <g class="tick" transform={`translate(${yearToX(year)}, ${timelineY})`}>
+          <line x1="0" y1="0" x2="0" y2={tickLength}></line>
+          <text x="0" y={tickLength + 12} text-anchor="middle">{year}</text>
+        </g>
+      {/each}
 
       <HistoricalEvents
         events={historicalEvents}
@@ -513,15 +541,6 @@
         />
       {/each}
 
-      {#each tickValues as year}
-        <g class="tick" transform={`translate(${yearToX(year)}, ${timelineY})`}>
-          <line x1="0" y1="0" x2="0" y2={tickLength}></line>
-          <text x="0" y={tickLength + 12} text-anchor="middle">{year}</text>
-        </g>
-      {/each}
-      {#if isYearInTimelineDomain(currentYear)}
-        <circle cx={currentYearX} cy={timelineY} r="3" fill="#fff"></circle>
-      {/if}
       <Linechart
         {currentYear}
         domainStartYear={timelineDomainStart}
@@ -858,8 +877,12 @@
   }
 
   .domain {
-    stroke: gray;
+    stroke: rgb(255, 255, 255);
     stroke-width: 1px;
+  }
+
+  .timeline-underlay {
+    opacity: 0.4;
   }
 
   .tick line {
@@ -868,7 +891,7 @@
 
   .tick text {
     fill: #fff;
-    font-size: 12px;
+    font-size: 14px;
     font-family: Montserrat;
   }
 </style>

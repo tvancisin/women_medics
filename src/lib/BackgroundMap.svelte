@@ -947,8 +947,8 @@
 
   function focusEdinburghClasses() {
     map.flyTo({
-      center: [-3.1883, 55.9533],
-      zoom: 13,
+      center: [-3.23, 55.9533],
+      zoom: 12.5,
       duration: 3000,
       essential: true,
     });
@@ -1191,7 +1191,7 @@
     !hasFocusedWomenDoctorsMilestone
   ) {
     map.flyTo({
-      center: [60.1883, 10.9433],
+      center: [70.1883, 10.9433],
       zoom: 1.5,
       duration: 2000,
       essential: true,
