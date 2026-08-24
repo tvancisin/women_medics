@@ -45,7 +45,7 @@
   const devRequireClickToResume = true;
 
   const pauseYears = [
-    1583, 1726, 1809, 1862, 1867, 1869, 1875, 1886, 1889, 1911, 1912, 1914,
+    1583, 1726, 1809, 1862, 1867, 1869, 1875, 1886, 1889, 1911, 1912, 1914
   ];
   const milestoneLabels = new Map<number, string>([
     [1583, "University Founded 1583"],
@@ -68,7 +68,7 @@
   const splitMilestoneYears = new Set([1809, 1862, 1867, 1875]);
 
   // Point multiple years at the same path, or leave a year out to show no image.
-  const pauseDurationMs = 1000;
+  const pauseDurationMs = 500;
 
   let height = 0;
   let width = 0;
@@ -77,6 +77,7 @@
   let firstClassesPathsData: unknown = null;
   let physiologyPathsData: unknown = null;
   let colonies: unknown = null;
+  let suez: unknown = null;
   let womenDoctorsData: unknown = null;
   let currentYear = startYear;
   let animationStartMs = 0;
@@ -308,6 +309,7 @@
           );
 
         edinburghSevenData = rawEdinburghSevenData;
+
         // firstClassesData = first_classes;
       } catch (error: unknown) {
         console.error("Failed to load", error);
@@ -325,6 +327,7 @@
           rawPhysiologyPaths,
           rawWomenDoctors,
           rawColonies,
+          rawSuez,
         ] = await getJson([
           publicUrl("data/women_physiology_geo.json"),
           publicUrl("data/geo/garrett_journey.json"),
@@ -334,6 +337,7 @@
           publicUrl("data/geo/walking_paths_physiology.json"),
           publicUrl("data/women_doctors_enhanced.json"),
           publicUrl("data/geo/colonies_1885.json"),
+          publicUrl("data/geo/suez_routes.json"),
         ]);
 
         womenPhysiologyGeoData = Array.isArray(rawWomenPhysiologyGeoData)
@@ -349,6 +353,7 @@
         firstClassesPathsData = rawFirstClassesPaths ?? null;
         physiologyPathsData = rawPhysiologyPaths ?? null;
         colonies = rawColonies ?? null;
+        suez = rawSuez ?? null;
         womenDoctorsData = Array.isArray(rawWomenDoctors)
           ? [...(rawWomenDoctors as WomenDoctorDatum[])].sort((a, b) => {
               return (
@@ -459,6 +464,8 @@
     {physiologyPathsData}
     {womenDoctorsData}
     {colonies}
+    {suez}
+    {edinburghSevenData}
   />
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
   {#if devRequireClickToResume && awaitingResumeClick}
@@ -558,10 +565,6 @@
       class:milestone-card--split={splitMilestoneYears.has(year)}
       class:is-active={pausedAtYear === year}
       class:is-past={shrinkEnabledYears.has(year)}
-      style:background-image={shrinkEnabledYears.has(year) &&
-      milestoneImages.has(year)
-        ? `url(${milestoneImages.get(year)})`
-        : undefined}
       style:top={pausedAtYear === year
         ? "15vh"
         : `${collapsedMarkerTopByYear.get(year) ?? height - collapsedMarkerDefaultOffset}px`}

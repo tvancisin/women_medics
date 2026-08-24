@@ -1,41 +1,41 @@
-﻿name,birthplace,nationality,Collection,entry_year,Life,img
-Sophia Louisa Jex-Blake,,,,1869,1840-1912,jex_blake.png
-Isabel Jane Pryer later Thorne,,,,1869,1834-1910,isabel_thorne.png
-Mary Edith Pechey,,,,1869,,edith_pechey.png
-Matilda Charlotte Chaplin,,,,1869,1846-1883,null
-Helen (de Lacy) Evans,,,,1869,1833-1903,null
-Mary Adamson Anderson later Marshall,,,,1869,1837-1910,mary_anderson.png
-Emily Bovell later Sturge,,,,1869,1841-1885,null
-Anne Maria Jane Anderson later Somerville,,,,1869,1847-1935,null
-Annie Reay Barker,,,,1869,1851–1945,null
-Margaret Gillespie Bryson,,,,1869,1853-1939,null
-Mary Cadell,,,,1869,1828-1901,null
-Martha Lilian Cash,,,,1869,1852-1918,null
-Jane (Hume) Clapperton,,,,1869,1832-1914,null
-Elizabeth M[ary] Clark OR Anne Elizabeth Clark,,,,1869,1844-1925,null
-Anna Dahms,,,,1869,1848-1917,null
-Mary Patterson Durham,,,,1869,1844-1937,null
-"Isabella Margaret Hope Johnstone, later Foggo",,,,1869,1841-1891,null
-Mary Green,,,,1869,,null
-Margaret Scott Hume,,,,1869,1839/1900?,null
-Agnes Campbell Imlach,,,,1869,1848-1916,null
-Alexina Christina Emma Ker,,,,1869,1833-1892,null
-Elizabeth Madeline Catherine Ker,,,,1869,1831-1915,null
-Alice Jane Shannon Stewart Ker,,,,1869,1853-1943,alice_ker.png
-Jane Aurelia Macmillan née Anderson?,,,,1869,1841-1908,null
-Elizabeth Marshall,,,,1869,,null
-Emily Rosaline Masson née Orme,,,,1869,1835-1915,emily_orme.png
-Mary F (J?) McCarter,,,,1869,1830-1889,null
-Margaret Constable McDonald,,,,1869,1841-1913,null
-Agnes M'Laren,,,,1869,,agnes_mlaren.png
-Sophie Jane Massingberd Mundy,,,,1869,1845-c1906,null
-Margaret Mather Orr,,,,1869,1825-1910,null
-Mary Emilia Robertson,,,,1869,1845-1907,null
-Caroline Sarah Robertson,,,,1869,1847-1931,null
-Jane Russell Rorison,,,,1869,,null
-Rose Anna Shedlock later Roux,,,,1869,1850-1879,null
-Mary Spalding Roberts Sinclair,,,,1869,1845-1891,null
-Louisa Stevenson,,,,1869,,louisa_stevenson.png
-Flora C Stevenson,,,,1869,,flora_stevenson.png
-Elizabeth Vinson,,,,1869,1841-1926,null
-Eliza Louisa Walker later Dunbar,,,,1869,1845-1925,eliza_dunbar.png
+﻿name,birthplace,lat,lon,nationality,Collection,entry_year,Life,img
+Agnes Campbell Imlach,Edinburgh,55.953252,-3.188267,,,1869,1848-1916,null
+Agnes M'Laren,Edinburgh,55.953252,-3.188267,,,1869,,agnes_mlaren.png
+Alexina Christina Emma Ker,Edinburgh,55.953252,-3.188267,,,1869,1833-1892,null
+Alice Jane Shannon Stewart Ker,,,,,,1869,1853-1943,alice_ker.png
+Anna Dahms,,,,,,1869,1848-1917,null
+Anne Maria Jane Anderson later Somerville,,,,,,1869,1847-1935,null
+Annie Reay Barker,Stoke-on-Trent,53.003337,-2.182741,,,1869,1851–1945,null
+Caroline Sarah Robertson,,,,,,1869,1847-1931,null
+Eliza Louisa Walker later Dunbar,Bombay,18.958235,72.831951,,,1869,1845-1925,eliza_dunbar.png
+Elizabeth M[ary] Clark OR Anne Elizabeth Clark,,,,,,1869,1844-1925,null
+Elizabeth Madeline Catherine Ker,Edinburgh,55.953252,-3.188267,,,1869,1831-1915,null
+Elizabeth Marshall,,,,,,1869,,null
+Elizabeth Vinson,,,,,,1869,1841-1926,null
+Emily Bovell later Sturge,London,51.507218,-0.127586,,,1869,1841-1885,null
+Emily Rosaline Masson née Orme,London,51.507218,-0.127586,,,1869,1835-1915,emily_orme.png
+Flora C Stevenson,Glasgow,55.86167,-4.258334,,,1869,,flora_stevenson.png
+Helen (de Lacy) Evans,"Athy, Ireland",52.992358,-6.983398,,,1869,1833-1903,null
+Isabel Jane Pryer later Thorne,London,51.507218,-0.127586,,,1869,1834-1910,isabel_thorne.png
+"Isabella Margaret Hope Johnstone, later Foggo",,,,,,1869,1841-1891,null
+Jane (Hume) Clapperton,"Saint Cuthberts, Edinburgh",55.949638,-3.205093,,,1869,1832-1914,null
+Jane Aurelia Macmillan née Anderson?,Edinburgh,55.953252,-3.188267,,,1869,1841-1908,null
+Jane Russell Rorison,,,,,,1869,,null
+Louisa Stevenson,Glasgow,,,,,1869,,louisa_stevenson.png
+Margaret Constable McDonald,,,,,,1869,1841-1913,null
+Margaret Gillespie Bryson,"Saint Cuthberts, Edinburgh",55.949638,-3.205093,,,1869,1853-1939,null
+Margaret Mather Orr,,,,,,1869,1825-1910,null
+Margaret Scott Hume,Edinburgh,55.953252,-3.188267,,,1869,1839/1900?,null
+Martha Lilian Cash,Manchester,53.480759,-2.24263,,,1869,1852-1918,null
+Mary Adamson Anderson later Marshall,"Boyndie, Banffshire",57.663491,-2.60311,,,1869,1837-1910,mary_anderson.png
+Mary Cadell,Cockenzie,,,,,1869,1828-1901,martha_cadell.png
+Mary Edith Pechey,Langham,,,,,1869,,edith_pechey.png
+Mary Emilia Robertson,,,,,,1869,1845-1907,null
+Mary F (J?) McCarter,,,,,,1869,1830-1889,null
+Mary Green,,,,,,1869,,null
+Mary Patterson Durham,"Canongate, Edinburgh",55.951498,-3.179381,,,1869,1844-1937,null
+Mary Spalding Roberts Sinclair,,,,,,1869,1845-1891,null
+Matilda Charlotte Chaplin,"Honfleur, France",49.418762,0.233262,,,1869,1846-1883,null
+Rose Anna Shedlock later Roux,,,,,,1869,1850-1879,null
+Sophia Louisa Jex-Blake,Hastings,50.854259,0.573453,,,1869,1840-1912,jex_blake.png
+Sophie Jane Massingberd Mundy,,,,,,1869,1845-c1906,null
