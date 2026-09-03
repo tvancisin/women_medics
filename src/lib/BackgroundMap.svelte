@@ -14,6 +14,7 @@
   export let firstClassesPathsData: unknown = null;
   export let physiologyPathsData: unknown = null;
   export let womenDoctorsData: unknown = null;
+  export let womenCareers1915Data: unknown = null;
   export let colonies: unknown = null;
   export let suez: unknown = null;
   export let edinburghSevenData: unknown = null;
@@ -31,6 +32,7 @@
   let hasAnimatedSuezRoutesReverse = false;
   let hasAnimatedSuezRoutesForward = false;
   let hasDrawnEdinburghSeven = false;
+  let hasDrawnOldMapOverlay = false;
   let hasDrawnWomenDoctorBirthplaces = false;
   let hasDrawnWomenDoctorCareerLocations = false;
   let hasFocusedWomenDoctorsMilestone = false;
@@ -69,15 +71,33 @@
         original_name?: string | null;
         place_name?: string | null;
       } | null;
-      career_locations?: Array<{
+    };
+  };
+
+  type WomenCareer1915Datum = {
+    name?: {
+      original?: string;
+    };
+    source_data?: {
+      "First Qual"?: number | string | null;
+      "Year of student registration"?: number | string | null;
+      name?: string;
+      career_location_1915?: {
         year?: number | string | null;
         country?: string | null;
         country_code?: string | null;
         lat?: number | string | null;
+        location?: string | null;
         lon?: number | string | null;
         original_name?: string | null;
         place_name?: string | null;
-      }> | null;
+        region?: string | null;
+      } | null;
+      forename?: string | null;
+      surname?: string | null;
+      Specialism?: string | null;
+      "Position 1915"?: string | null;
+      "Position codes"?: string | null;
     };
   };
 
@@ -147,16 +167,35 @@
   const timelineMarkersSourceId = "timeline-location-markers";
   const timelineMarkersCircleLayerId = "timeline-location-markers-circles";
   const timelineMarkersTextLayerId = "timeline-location-markers-text";
+  const oldMapOverlaySourceId = "old-map-overlay-1726";
+  const oldMapOverlayLayerId = "old-map-overlay-1726-raster";
   const coloniesSourceId = "colonies-1885";
   const coloniesFillLayerId = "colonies-1885-fill";
   const coloniesLineLayerId = "colonies-1885-line";
   const suezSourceId = "suez-routes";
   const suezLineLayerId = "suez-routes-line";
+  const circleMarkerPaint: Record<string, unknown> = {
+    "circle-radius": [
+      "interpolate",
+      ["linear"],
+      ["zoom"],
+      2,
+      1.7,
+      5,
+      2.3,
+      8,
+      3.4,
+    ],
+    "circle-color": "white",
+    "circle-opacity": 0.8,
+  };
   const barryJourneyYear = 1809;
   const garrettJourneyYear = 1862;
   const firstClassesYear = 1867;
   const edinburghSevenYear = 1869;
   const physiologyYear = 1875;
+  const oldMapOverlayStartYear = 1726;
+  const oldMapOverlayEndYear = 1760;
   const womenDoctorsBirthplacesYear = 1884;
   const womenDoctorsFocusYear = 1911;
   const suezRoutesReverseYear = 1911;
@@ -318,47 +357,44 @@
       return [];
     }
 
-    return (rawData as WomenDoctorDatum[]).flatMap((row) => {
+    return (rawData as WomenCareer1915Datum[]).flatMap((row) => {
       const sourceData = row.source_data;
-      const careerLocations = sourceData?.career_locations;
+      const careerLocation = sourceData?.career_location_1915;
+      const lat = Number(careerLocation?.lat);
+      const lon = Number(careerLocation?.lon);
 
-      if (!Array.isArray(careerLocations)) {
+      if (!careerLocation || !Number.isFinite(lat) || !Number.isFinite(lon)) {
         return [];
       }
 
-      return careerLocations.flatMap((careerLocation, index) => {
-        const lat = Number(careerLocation.lat);
-        const lon = Number(careerLocation.lon);
+      const feature: GeoJSON.Feature<GeoJSON.Point> = {
+        type: "Feature",
+        properties: {
+          name: sourceData?.name ?? row.name?.original ?? "Unknown",
+          first_qual: sourceData?.["First Qual"] ?? null,
+          student_registration:
+            sourceData?.["Year of student registration"] ?? null,
+          career_year: careerLocation.year ?? null,
+          career_location:
+            careerLocation.place_name ??
+            careerLocation.location ??
+            careerLocation.original_name ??
+            "Unknown",
+          career_location_original: careerLocation.original_name ?? "",
+          country: careerLocation.country ?? "",
+          country_code: careerLocation.country_code ?? "",
+          region: careerLocation.region ?? "",
+          specialism: sourceData?.Specialism ?? "",
+          position_1915: sourceData?.["Position 1915"] ?? "",
+          position_codes: sourceData?.["Position codes"] ?? "",
+        },
+        geometry: {
+          type: "Point",
+          coordinates: [lon, lat],
+        },
+      };
 
-        if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
-          return [];
-        }
-
-        const feature: GeoJSON.Feature<GeoJSON.Point> = {
-          type: "Feature",
-          properties: {
-            name: sourceData?.name ?? row.name?.original ?? "Unknown",
-            first_qual: sourceData?.["First Qual"] ?? null,
-            student_registration:
-              sourceData?.["Year of student registration"] ?? null,
-            career_year: careerLocation.year ?? null,
-            career_location:
-              careerLocation.place_name ??
-              careerLocation.original_name ??
-              "Unknown",
-            career_location_original: careerLocation.original_name ?? "",
-            country: careerLocation.country ?? "",
-            country_code: careerLocation.country_code ?? "",
-            location_index: index,
-          },
-          geometry: {
-            type: "Point",
-            coordinates: [lon, lat],
-          },
-        };
-
-        return [feature];
-      });
+      return [feature];
     });
   };
 
@@ -493,6 +529,33 @@
 
   function removeCircleLayer({ sourceId, layerId }: LayerConfig) {
     removeLayerAndSource(sourceId, layerId);
+  }
+
+  function drawOldMapOverlay() {
+    if (!map || !styleReady) return false;
+
+    if (!map.getSource(oldMapOverlaySourceId)) {
+      map.addSource(oldMapOverlaySourceId, {
+        type: "raster",
+        tiles: [
+          `https://api.mapbox.com/v4/tomasvancisin.1popvk/{z}/{x}/{y}.png?access_token=${envToken}`,
+        ],
+        tileSize: 256,
+      });
+    }
+
+    if (!map.getLayer(oldMapOverlayLayerId)) {
+      map.addLayer({
+        id: oldMapOverlayLayerId,
+        type: "raster",
+        source: oldMapOverlaySourceId,
+        paint: {
+          "raster-opacity": 1,
+        },
+      });
+    }
+
+    return true;
   }
 
   function cancelPathAnimation(layerId: string) {
@@ -686,13 +749,7 @@
       features: getStudentPointFeatures(rawData),
       sourceId,
       layerId,
-      paint: {
-        "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 2, 14, 4],
-        "circle-color": "white",
-        "circle-opacity": 0.85,
-        "circle-stroke-color": "#111",
-        "circle-stroke-width": 1,
-      },
+      paint: circleMarkerPaint,
     });
   }
 
@@ -705,22 +762,7 @@
       features: getEdinburghSevenPointFeatures(rawData),
       sourceId,
       layerId,
-      paint: {
-        "circle-radius": ["interpolate", ["linear"], ["zoom"], 2, 2, 8, 5],
-        "circle-color": "#f2c14e",
-        "circle-opacity": 0.9,
-        "circle-stroke-color": "#ffffff",
-        "circle-stroke-opacity": 0.95,
-        "circle-stroke-width": [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          2,
-          0.5,
-          8,
-          1,
-        ],
-      },
+      paint: circleMarkerPaint,
     });
   }
 
@@ -756,33 +798,7 @@
         id: timelineMarkersCircleLayerId,
         type: "circle",
         source: timelineMarkersSourceId,
-        paint: {
-          "circle-radius": [
-            "interpolate",
-            ["linear"],
-            ["zoom"],
-            2,
-            1,
-            8,
-            3,
-            12,
-            6,
-            14,
-            8,
-          ],
-          "circle-color": "#ffffff",
-          "circle-opacity": 0.95,
-          "circle-stroke-color": "#202020",
-          "circle-stroke-width": [
-            "interpolate",
-            ["linear"],
-            ["zoom"],
-            2,
-            0.25,
-            12,
-            1.5,
-          ],
-        },
+        paint: circleMarkerPaint,
       });
     }
 
@@ -848,32 +864,7 @@
       features: getWomenDoctorBirthplaceFeatures(rawData),
       sourceId,
       layerId,
-      paint: {
-        "circle-radius": [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          2,
-          1.5,
-          5,
-          2,
-          8,
-          3,
-        ],
-        "circle-color": "#f2c14e",
-        "circle-opacity": 0.92,
-        "circle-stroke-color": "white",
-        "circle-stroke-opacity": 1,
-        "circle-stroke-width": [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          2,
-          0.6,
-          8,
-          1,
-        ],
-      },
+      paint: circleMarkerPaint,
     });
   }
 
@@ -886,32 +877,7 @@
       features: getWomenDoctorCareerLocationFeatures(rawData),
       sourceId,
       layerId,
-      paint: {
-        "circle-radius": [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          2,
-          1.7,
-          5,
-          2.3,
-          8,
-          3.4,
-        ],
-        "circle-color": "#51d1c2",
-        "circle-opacity": 0.9,
-        "circle-stroke-color": "#ffffff",
-        "circle-stroke-opacity": 0.95,
-        "circle-stroke-width": [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          2,
-          0.5,
-          8,
-          1,
-        ],
-      },
+      paint: circleMarkerPaint,
     });
   }
 
@@ -1029,7 +995,7 @@
   function focusEdinburghClasses() {
     map.flyTo({
       center: [-3.23, 55.9533],
-      zoom: 12.5,
+      zoom: 13.5,
       duration: 3000,
       essential: true,
     });
@@ -1108,6 +1074,25 @@
 
   $: if (map && styleReady && currentYear == firstClassesYear) {
     focusEdinburghClasses();
+  }
+
+  $: if (
+    map &&
+    styleReady &&
+    currentYear >= oldMapOverlayStartYear &&
+    currentYear <= oldMapOverlayEndYear &&
+    !hasDrawnOldMapOverlay
+  ) {
+    hasDrawnOldMapOverlay = drawOldMapOverlay();
+  }
+
+  $: if (
+    map &&
+    styleReady &&
+    (currentYear < oldMapOverlayStartYear || currentYear > oldMapOverlayEndYear)
+  ) {
+    hasDrawnOldMapOverlay = false;
+    removeLayerAndSource(oldMapOverlaySourceId, oldMapOverlayLayerId);
   }
 
   $: if (
@@ -1245,12 +1230,12 @@
     map &&
     styleReady &&
     currentYear >= womenDoctorsCareerLocationsYear &&
-    Array.isArray(womenDoctorsData) &&
-    womenDoctorsData.length > 0 &&
+    Array.isArray(womenCareers1915Data) &&
+    womenCareers1915Data.length > 0 &&
     !hasDrawnWomenDoctorCareerLocations
   ) {
     hasDrawnWomenDoctorCareerLocations = drawWomenDoctorCareerLocationLayer({
-      rawData: womenDoctorsData,
+      rawData: womenCareers1915Data,
       sourceId: womenDoctorsCareerLocationsSourceId,
       layerId: womenDoctorsCareerLocationsLayerId,
     });
@@ -1364,8 +1349,8 @@
 
     map = new mapboxgl.Map({
       container: mapContainer,
-      center: [-3.1883, 55.9533],
-      zoom: 12,
+      center: [-3.2, 55.946],
+      zoom: 14,
       // pitch: 60,
       logoPosition: "top-right",
       style: "mapbox://styles/mapbox/dark-v11",

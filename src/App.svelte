@@ -45,7 +45,7 @@
   const devRequireClickToResume = true;
 
   const pauseYears = [
-    1583, 1726, 1809, 1862, 1867, 1869, 1875, 1886, 1889, 1911, 1912, 1914
+    1583, 1726, 1809, 1862, 1867, 1869, 1875, 1886, 1889, 1911, 1912, 1914,
   ];
   const milestoneLabels = new Map<number, string>([
     [1583, "University Founded 1583"],
@@ -79,6 +79,7 @@
   let colonies: unknown = null;
   let suez: unknown = null;
   let womenDoctorsData: unknown = null;
+  let womenCareers1915Data: unknown = null;
   let currentYear = startYear;
   let animationStartMs = 0;
   let animationFrameId: number | null = null;
@@ -125,6 +126,27 @@
     };
   };
 
+  type WomenCareer1915Datum = {
+    source_data?: {
+      "Position codes"?: string | null;
+      career_location_1915?: {
+        region?: string | null;
+      } | null;
+    };
+  };
+
+  type CareerPositionCount = {
+    code: string;
+    count: number;
+    percent: number;
+  };
+
+  type CareerRegionGroup = {
+    region: string;
+    total: number;
+    positions: CareerPositionCount[];
+  };
+
   const getStudentRegistrationYear = (doctor: WomenDoctorDatum) => {
     const rawYear = doctor.source_data?.["Year of student registration"];
 
@@ -136,9 +158,65 @@
     return Number.isFinite(year) ? year : Number.POSITIVE_INFINITY;
   };
 
+  const displayLabel = (value: unknown, fallback = "Not stated") => {
+    const label = String(value ?? "").trim();
+    return label && label.toLowerCase() !== "null" ? label : fallback;
+  };
+
+  const buildCareerPositionGroups = (
+    rawData: unknown,
+  ): CareerRegionGroup[] => {
+    if (!Array.isArray(rawData)) return [];
+
+    const countsByRegion = new Map<string, Map<string, number>>();
+
+    for (const row of rawData as WomenCareer1915Datum[]) {
+      const sourceData = row.source_data;
+      const region = displayLabel(sourceData?.career_location_1915?.region);
+      const position = displayLabel(sourceData?.["Position codes"]);
+
+      if (!countsByRegion.has(region)) {
+        countsByRegion.set(region, new Map<string, number>());
+      }
+
+      const counts = countsByRegion.get(region);
+      if (!counts) continue;
+
+      counts.set(position, (counts.get(position) ?? 0) + 1);
+    }
+
+    return Array.from(countsByRegion.entries())
+      .map(([region, counts]) => {
+        const entries = Array.from(counts.entries()).sort(
+          ([positionA, countA], [positionB, countB]) =>
+            countB - countA || positionA.localeCompare(positionB),
+        );
+        const topEntries = entries.slice(0, 5);
+        const maxCount = Math.max(...topEntries.map(([, count]) => count), 1);
+        const total = entries.reduce((sum, [, count]) => sum + count, 0);
+
+        return {
+          region,
+          total,
+          positions: topEntries.map(([code, count]) => ({
+            code,
+            count,
+            percent: (count / maxCount) * 100,
+          })),
+        };
+      })
+      .sort(
+        (regionA, regionB) =>
+          regionB.total - regionA.total ||
+          regionA.region.localeCompare(regionB.region),
+      );
+  };
+
   // Dev-only: remove these two variables with the click-to-resume behavior.
   let awaitingResumeClick = false;
   let resumeRequested = false;
+
+  $: careerPositionGroups = buildCareerPositionGroups(womenCareers1915Data);
 
   $: maxSpan = Math.max(0, width - margin.left - margin.right);
   $: timelineY = Math.max(margin.top, height - margin.bottom);
@@ -290,7 +368,7 @@
       try {
         const [rawWomenMedicsData, rawEdinburghSevenData] = (await getCSV([
           publicUrl("data/women_medics_1914_1966.csv"),
-          publicUrl("data/edinburgh_seven.csv"),
+          publicUrl("data/edinburgh_forty.csv"),
         ])) as [
           Array<{ year?: string; number?: string }>,
           Array<Record<string, string>>,
@@ -326,6 +404,7 @@
           rawFirstClassesPaths,
           rawPhysiologyPaths,
           rawWomenDoctors,
+          rawWomenDoctors1915,
           rawColonies,
           rawSuez,
         ] = await getJson([
@@ -336,6 +415,7 @@
           publicUrl("data/geo/walking_paths_first_classes.json"),
           publicUrl("data/geo/walking_paths_physiology.json"),
           publicUrl("data/women_doctors_enhanced.json"),
+          publicUrl("data/women_careers_1915.json"),
           publicUrl("data/geo/colonies_1885.json"),
           publicUrl("data/geo/suez_routes.json"),
         ]);
@@ -360,6 +440,9 @@
                 getStudentRegistrationYear(a) - getStudentRegistrationYear(b)
               );
             })
+          : null;
+        womenCareers1915Data = Array.isArray(rawWomenDoctors1915)
+          ? rawWomenDoctors1915
           : null;
       } catch (error: unknown) {
         console.error("Failed to load timeline JSON data", error);
@@ -463,6 +546,7 @@
     {firstClassesPathsData}
     {physiologyPathsData}
     {womenDoctorsData}
+    {womenCareers1915Data}
     {colonies}
     {suez}
     {edinburghSevenData}
@@ -688,6 +772,45 @@
             </div>
           </div>
         </div>
+      {:else if year === 1912}
+        <div class="career-chart">
+          <div class="career-chart-title">
+            {milestoneLabels.get(year) ?? ""}
+          </div>
+          {#if careerPositionGroups.length > 0}
+            <div class="career-region-list">
+              {#each careerPositionGroups as regionGroup (regionGroup.region)}
+                <section class="career-region">
+                  <div class="career-region-heading">
+                    <span>{regionGroup.region}</span>
+                    <span>{regionGroup.total}</span>
+                  </div>
+                  <div class="career-bars">
+                    {#each regionGroup.positions as position (position.code)}
+                      <div class="career-bar-row">
+                        <div class="career-bar-label" title={position.code}>
+                          {position.code}
+                        </div>
+                        <div
+                          class="career-bar-track"
+                          aria-label={`${position.code}: ${position.count}`}
+                        >
+                          <div
+                            class="career-bar-fill"
+                            style:width={`${position.percent}%`}
+                          ></div>
+                        </div>
+                        <div class="career-bar-value">{position.count}</div>
+                      </div>
+                    {/each}
+                  </div>
+                </section>
+              {/each}
+            </div>
+          {:else}
+            <div class="career-chart-empty">No 1915 career data</div>
+          {/if}
+        </div>
       {:else if year === 1892}
         <div class="milestone-text">{milestoneLabels.get(year) ?? ""}</div>
         <img
@@ -713,6 +836,7 @@
     position: relative;
     z-index: 1;
     display: block;
+    pointer-events: none;
   }
 
   .milestone-card {
@@ -820,6 +944,93 @@
     min-height: 0;
   }
 
+  .career-chart {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 18px;
+    overflow-y: auto;
+    text-align: left;
+  }
+
+  .career-chart-title {
+    margin-bottom: 16px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .career-region-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .career-region {
+    border-top: 1px solid rgba(255, 255, 255, 0.24);
+    padding-top: 10px;
+  }
+
+  .career-region-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .career-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .career-bar-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(90px, 1fr) 26px;
+    gap: 8px;
+    align-items: center;
+    min-height: 18px;
+  }
+
+  .career-bar-label {
+    min-width: 0;
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 10px;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+
+  .career-bar-track {
+    height: 8px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  .career-bar-fill {
+    height: 100%;
+    min-width: 2px;
+    background: #f2c14e;
+  }
+
+  .career-bar-value {
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 10px;
+    line-height: 1;
+    text-align: right;
+  }
+
+  .career-chart-empty {
+    color: rgba(255, 255, 255, 0.74);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
   .edinburgh_forty {
     width: 100%;
     height: 100%;
@@ -845,7 +1056,7 @@
   }
 
   .edinburgh_forty-circle {
-    width: min(36px, 70%);
+    width: min(50px, 70%);
     aspect-ratio: 1;
     border-radius: 50%;
     flex: 0 0 auto;
