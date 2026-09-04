@@ -1,50 +1,48 @@
-import * as d3 from "d3";
-
 export const historicalEvents = [
   {
     startYear: 1740,
     endYear: 1800,
-    description: "Scottish Enlightenment →"
+    description: "Scottish Enlightenment â†’"
   },
   // {
   //   startYear: 1884,
   //   endYear: 1885,
-  //   description: "Triple Qualifications →"
+  //   description: "Triple Qualifications â†’"
   // },
   // {
   //   startYear: 1886,
   //   endYear: 1887,
-  //   description: "School of Medicine for Women →"
+  //   description: "School of Medicine for Women â†’"
   // },
   // {
   //   startYear: 1889,
   //   endYear: 1890,
-  //   description: "College of Medicine for Women →"
+  //   description: "College of Medicine for Women â†’"
   // },
   // {
   //   startYear: 1892,
   //   endYear: 1893,
-  //   description: "Women admitted to universities →"
+  //   description: "Women admitted to universities â†’"
   // },
   // {
   //   startYear: 1832,
   //   endYear: 1903,
-  //   description: "Suffrage →"
+  //   description: "Suffrage â†’"
   // },
   {
     startYear: 1914,
     endYear: 1918,
-    description: "The First World War →"
+    description: "The First World War â†’"
   },
   // {
   //   startYear: 1928,
   //   endYear: 1929,
-  //   description: "Voting Rights →"
+  //   description: "Voting Rights â†’"
   // },
   {
     startYear: 1939,
     endYear: 1945,
-    description: "The Second World War →"
+    description: "The Second World War â†’"
   },
 ];
 
@@ -65,7 +63,7 @@ export const timelineImageMarkers: ImageMarkerConfig[] = [
   {
     id: "school-of-medicine",
     year: 1726,
-    coordinates: [55.94528777582195, -3.190270487035351],
+    coordinates: [55.94741706177913, -3.1872452967325717],
     alt: "School of Medicine",
   },
   {
@@ -93,25 +91,3 @@ export const timelineImageMarkers: ImageMarkerConfig[] = [
     alt: "College of Medicine for Women",
   },
 ];
-
-export async function getIndividualCSV(path: string) {
-  const loadedData = await d3.csv(path);
-  return loadedData;
-}
-
-export async function getCSV(paths: string[]) {
-  const promises = paths.map((path) => getIndividualCSV(path));
-  const results = await Promise.all(promises);
-  return results;
-}
-
-export async function getIndividualJSON(path: string) {
-  const loadedData = await d3.json(path);
-  return loadedData;
-}
-
-export async function getJson(paths: string[]) {
-  const promises = paths.map((path) => getIndividualJSON(path));
-  const results = await Promise.all(promises);
-  return results;
-}

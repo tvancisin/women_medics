@@ -2,7 +2,13 @@
   import { onMount } from "svelte";
   import mapboxgl from "mapbox-gl";
   import MapboxWorker from "mapbox-gl/dist/mapbox-gl-csp-worker?worker";
-  import { timelineImageMarkers } from "../datastore";
+  import {
+    getEdinburghSevenPointFeatures,
+    getStudentPointFeatures,
+    getTimelineMarkerFeatures,
+    getWomenDoctorBirthplaceFeatures,
+    getWomenDoctorCareerLocationFeatures,
+  } from "./map/featureBuilders";
   import "mapbox-gl/dist/mapbox-gl.css";
 
   // Component inputs
@@ -38,80 +44,6 @@
   let hasFocusedWomenDoctorsMilestone = false;
   let hasFocusedOfficialMedicsMilestone = false;
   let timelineMarkersDataKey = "";
-
-  // Raw data from JSON/CSV loaders is intentionally typed defensively here.
-  // The conversion helpers below validate coordinates before drawing anything.
-  type StudentGeoDatum = {
-    source_data?: {
-      entry_year?: number | string;
-      name?: string;
-      lat?: number | string;
-      lon?: number | string;
-      university_address?: {
-        original_name?: string;
-        lat?: number | string;
-        lon?: number | string;
-      };
-    };
-  };
-
-  type WomenDoctorDatum = {
-    name?: {
-      original?: string;
-    };
-    source_data?: {
-      "First Qual"?: number | string | null;
-      "Year of student registration"?: number | string | null;
-      name?: string;
-      birthplace?: {
-        country?: string | null;
-        country_code?: string | null;
-        lat?: number | string | null;
-        lon?: number | string | null;
-        original_name?: string | null;
-        place_name?: string | null;
-      } | null;
-    };
-  };
-
-  type WomenCareer1915Datum = {
-    name?: {
-      original?: string;
-    };
-    source_data?: {
-      "First Qual"?: number | string | null;
-      "Year of student registration"?: number | string | null;
-      name?: string;
-      career_location_1915?: {
-        year?: number | string | null;
-        country?: string | null;
-        country_code?: string | null;
-        lat?: number | string | null;
-        location?: string | null;
-        lon?: number | string | null;
-        original_name?: string | null;
-        place_name?: string | null;
-        region?: string | null;
-      } | null;
-      forename?: string | null;
-      surname?: string | null;
-      Specialism?: string | null;
-      "Position 1915"?: string | null;
-      "Position codes"?: string | null;
-    };
-  };
-
-  type EdinburghSevenDatum = {
-    name?: string;
-    birthplace?: string;
-    lat?: number | string;
-    lon?: number | string;
-    nationality?: string;
-    Collection?: string;
-    entry_year?: number | string;
-    Life?: string;
-    img?: string;
-  };
 
   type LayerConfig = {
     sourceId: string;
@@ -174,21 +106,6 @@
   const coloniesLineLayerId = "colonies-1885-line";
   const suezSourceId = "suez-routes";
   const suezLineLayerId = "suez-routes-line";
-  const circleMarkerPaint: Record<string, unknown> = {
-    "circle-radius": [
-      "interpolate",
-      ["linear"],
-      ["zoom"],
-      2,
-      1.7,
-      5,
-      2.3,
-      8,
-      3.4,
-    ],
-    "circle-color": "white",
-    "circle-opacity": 0.8,
-  };
   const barryJourneyYear = 1809;
   const garrettJourneyYear = 1862;
   const firstClassesYear = 1867;
@@ -204,9 +121,32 @@
   const barryJourneyDimYear = 1810;
   const garrettJourneyDimYear = 1864;
   const officialMedicsYear = 1914;
+  const foregroundMarkerLayerIds = [
+    firstClassesLayerId,
+    edinburghSevenLayerId,
+    physiologyStudentsLayerId,
+    womenDoctorsBirthplacesLayerId,
+    womenDoctorsCareerLocationsLayerId,
+    timelineMarkersCircleLayerId,
+    timelineMarkersTextLayerId,
+  ];
+  const circleMarkerPaint: Record<string, unknown> = {
+    "circle-radius": [
+      "interpolate",
+      ["linear"],
+      ["zoom"],
+      2,
+      3.2,
+      5,
+      2.3,
+      8,
+      3.4,
+    ],
+    "circle-color": "white",
+    "circle-opacity": 0.8,
+  };
 
-  // Data normalization helpers: convert loose imported data into GeoJSON shapes
-  // that Mapbox can render consistently.
+  // GeoJSON guards used by map-specific route and overlay helpers.
   const isGeoJsonData = (value: unknown): value is GeoJSON.GeoJSON => {
     return Boolean(value && typeof value === "object" && "type" in value);
   };
@@ -236,191 +176,6 @@
     }
 
     return null;
-  };
-
-  const getStudentPointFeatures = (
-    rawData: unknown,
-  ): GeoJSON.Feature<GeoJSON.Point>[] => {
-    if (!Array.isArray(rawData)) {
-      return [];
-    }
-
-    return (rawData as StudentGeoDatum[]).flatMap((row) => {
-      const sourceData = row.source_data;
-      const universityAddress = sourceData?.university_address;
-      const directLat = Number(sourceData?.lat);
-      const directLon = Number(sourceData?.lon);
-      const addressLat = Number(universityAddress?.lat);
-      const addressLon = Number(universityAddress?.lon);
-      const lat = Number.isFinite(directLat) ? directLat : addressLat;
-      const lon = Number.isFinite(directLon) ? directLon : addressLon;
-
-      if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
-        return [];
-      }
-
-      const feature: GeoJSON.Feature<GeoJSON.Point> = {
-        type: "Feature",
-        properties: {
-          name: sourceData?.name ?? "Unknown",
-          entry_year: sourceData?.entry_year ?? null,
-          address: universityAddress?.original_name ?? "",
-        },
-        geometry: {
-          type: "Point",
-          coordinates: [lon, lat],
-        },
-      };
-
-      return [feature];
-    });
-  };
-
-  const getEdinburghSevenPointFeatures = (
-    rawData: unknown,
-  ): GeoJSON.Feature<GeoJSON.Point>[] => {
-    if (!Array.isArray(rawData)) {
-      return [];
-    }
-
-    return (rawData as EdinburghSevenDatum[]).flatMap((row) => {
-      const lat = Number(row.lat);
-      const lon = Number(row.lon);
-
-      if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
-        return [];
-      }
-
-      const feature: GeoJSON.Feature<GeoJSON.Point> = {
-        type: "Feature",
-        properties: {
-          name: row.name ?? "Unknown",
-          birthplace: row.birthplace ?? "",
-          entry_year: row.entry_year ?? null,
-          life: row.Life ?? "",
-          img: row.img ?? "",
-        },
-        geometry: {
-          type: "Point",
-          coordinates: [lon, lat],
-        },
-      };
-
-      return [feature];
-    });
-  };
-
-  const getWomenDoctorBirthplaceFeatures = (
-    rawData: unknown,
-  ): GeoJSON.Feature<GeoJSON.Point>[] => {
-    if (!Array.isArray(rawData)) {
-      return [];
-    }
-
-    return (rawData as WomenDoctorDatum[]).flatMap((row) => {
-      const sourceData = row.source_data;
-      const birthplace = sourceData?.birthplace;
-      const lat = Number(birthplace?.lat);
-      const lon = Number(birthplace?.lon);
-
-      if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
-        return [];
-      }
-
-      const feature: GeoJSON.Feature<GeoJSON.Point> = {
-        type: "Feature",
-        properties: {
-          name: sourceData?.name ?? row.name?.original ?? "Unknown",
-          first_qual: sourceData?.["First Qual"] ?? null,
-          student_registration:
-            sourceData?.["Year of student registration"] ?? null,
-          birthplace:
-            birthplace?.place_name ?? birthplace?.original_name ?? "Unknown",
-          birthplace_original: birthplace?.original_name ?? "",
-          country: birthplace?.country ?? "",
-          country_code: birthplace?.country_code ?? "",
-        },
-        geometry: {
-          type: "Point",
-          coordinates: [lon, lat],
-        },
-      };
-
-      return [feature];
-    });
-  };
-
-  const getWomenDoctorCareerLocationFeatures = (
-    rawData: unknown,
-  ): GeoJSON.Feature<GeoJSON.Point>[] => {
-    if (!Array.isArray(rawData)) {
-      return [];
-    }
-
-    return (rawData as WomenCareer1915Datum[]).flatMap((row) => {
-      const sourceData = row.source_data;
-      const careerLocation = sourceData?.career_location_1915;
-      const lat = Number(careerLocation?.lat);
-      const lon = Number(careerLocation?.lon);
-
-      if (!careerLocation || !Number.isFinite(lat) || !Number.isFinite(lon)) {
-        return [];
-      }
-
-      const feature: GeoJSON.Feature<GeoJSON.Point> = {
-        type: "Feature",
-        properties: {
-          name: sourceData?.name ?? row.name?.original ?? "Unknown",
-          first_qual: sourceData?.["First Qual"] ?? null,
-          student_registration:
-            sourceData?.["Year of student registration"] ?? null,
-          career_year: careerLocation.year ?? null,
-          career_location:
-            careerLocation.place_name ??
-            careerLocation.location ??
-            careerLocation.original_name ??
-            "Unknown",
-          career_location_original: careerLocation.original_name ?? "",
-          country: careerLocation.country ?? "",
-          country_code: careerLocation.country_code ?? "",
-          region: careerLocation.region ?? "",
-          specialism: sourceData?.Specialism ?? "",
-          position_1915: sourceData?.["Position 1915"] ?? "",
-          position_codes: sourceData?.["Position codes"] ?? "",
-        },
-        geometry: {
-          type: "Point",
-          coordinates: [lon, lat],
-        },
-      };
-
-      return [feature];
-    });
-  };
-
-  const getTimelineMarkerFeatures = (
-    year: number,
-  ): GeoJSON.Feature<GeoJSON.Point>[] => {
-    const displayYear = Math.floor(year);
-
-    return timelineImageMarkers
-      .filter((marker) => marker.year === displayYear)
-      .map(({ id, year: markerYear, coordinates, alt }) => {
-        const [latitude, longitude] = coordinates;
-
-        return {
-          type: "Feature",
-          properties: {
-            id,
-            year: markerYear,
-            label: alt,
-          },
-          geometry: {
-            type: "Point",
-            coordinates: [longitude, latitude],
-          },
-        };
-      });
   };
 
   // Draws one-off journey routes, such as Barry and Garrett, from GeoJSON lines.
@@ -531,6 +286,14 @@
     removeLayerAndSource(sourceId, layerId);
   }
 
+  function bringForegroundMarkersToFront() {
+    for (const layerId of foregroundMarkerLayerIds) {
+      if (map.getLayer(layerId)) {
+        map.moveLayer(layerId);
+      }
+    }
+  }
+
   function drawOldMapOverlay() {
     if (!map || !styleReady) return false;
 
@@ -550,11 +313,12 @@
         type: "raster",
         source: oldMapOverlaySourceId,
         paint: {
-          "raster-opacity": 1,
+          "raster-opacity": 0.8,
         },
       });
     }
 
+    bringForegroundMarkersToFront();
     return true;
   }
 
@@ -737,6 +501,7 @@
       });
     }
 
+    bringForegroundMarkersToFront();
     return true;
   }
 
@@ -844,13 +609,7 @@
       });
     }
 
-    if (map.getLayer(timelineMarkersCircleLayerId)) {
-      map.moveLayer(timelineMarkersCircleLayerId);
-    }
-
-    if (map.getLayer(timelineMarkersTextLayerId)) {
-      map.moveLayer(timelineMarkersTextLayerId);
-    }
+    bringForegroundMarkersToFront();
 
     return true;
   }
@@ -1012,6 +771,23 @@
     drawTimelineMarkerLayers(currentYear);
   }
 
+  //// year 1726
+  $: if (
+    map &&
+    styleReady &&
+    currentYear >= oldMapOverlayStartYear &&
+    currentYear <= oldMapOverlayEndYear &&
+    !hasDrawnOldMapOverlay
+  ) {
+    hasDrawnOldMapOverlay = drawOldMapOverlay();
+    map.flyTo({
+      center: [-3.192, 55.948],
+      zoom: 15,
+      duration: 1000,
+      essential: true,
+    });
+  }
+
   // Journey milestones draw animated routes and move the camera to the route.
   $: if (
     map &&
@@ -1074,16 +850,6 @@
 
   $: if (map && styleReady && currentYear == firstClassesYear) {
     focusEdinburghClasses();
-  }
-
-  $: if (
-    map &&
-    styleReady &&
-    currentYear >= oldMapOverlayStartYear &&
-    currentYear <= oldMapOverlayEndYear &&
-    !hasDrawnOldMapOverlay
-  ) {
-    hasDrawnOldMapOverlay = drawOldMapOverlay();
   }
 
   $: if (
@@ -1350,8 +1116,7 @@
     map = new mapboxgl.Map({
       container: mapContainer,
       center: [-3.2, 55.946],
-      zoom: 14,
-      // pitch: 60,
+      zoom: 13,
       logoPosition: "top-right",
       style: "mapbox://styles/mapbox/dark-v11",
       projection: "naturalEarth",

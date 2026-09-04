@@ -1,12 +1,14 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { getCSV, getJson, historicalEvents } from "./datastore";
+  import { getCSV, getJson } from "./lib/data/loaders";
+  import { historicalEvents } from "./lib/data/timeline";
   import Path from "./lib/Path.svelte";
   import HistoricalEvents from "./lib/HistoricalEvents.svelte";
   import Linechart from "./lib/Linechart.svelte";
   import MapView from "./lib/MapView.svelte";
   import BackgroundMap from "./lib/BackgroundMap.svelte";
   import Doctors from "./lib/Doctors.svelte";
+  import { normalizeWomenCareer1915Region } from "./lib/map/featureBuilders";
 
   const baseUrl = import.meta.env.BASE_URL;
   const publicUrl = (path: string) => `${baseUrl}${path}`;
@@ -144,6 +146,10 @@
   type CareerRegionGroup = {
     region: string;
     total: number;
+    statedCount: number;
+    notStatedCount: number;
+    statedPercent: number;
+    notStatedPercent: number;
     positions: CareerPositionCount[];
   };
 
@@ -163,41 +169,71 @@
     return label && label.toLowerCase() !== "null" ? label : fallback;
   };
 
+  const isStatedPosition = (position: string) => {
+    return position.trim().toLowerCase() !== "not stated";
+  };
+
   const buildCareerPositionGroups = (
     rawData: unknown,
   ): CareerRegionGroup[] => {
     if (!Array.isArray(rawData)) return [];
 
-    const countsByRegion = new Map<string, Map<string, number>>();
+    const countsByRegion = new Map<
+      string,
+      {
+        counts: Map<string, number>;
+        notStatedCount: number;
+        statedCount: number;
+      }
+    >();
 
     for (const row of rawData as WomenCareer1915Datum[]) {
       const sourceData = row.source_data;
-      const region = displayLabel(sourceData?.career_location_1915?.region);
+      const region = normalizeWomenCareer1915Region(
+        sourceData?.career_location_1915?.region,
+      );
       const position = displayLabel(sourceData?.["Position codes"]);
 
       if (!countsByRegion.has(region)) {
-        countsByRegion.set(region, new Map<string, number>());
+        countsByRegion.set(region, {
+          counts: new Map<string, number>(),
+          notStatedCount: 0,
+          statedCount: 0,
+        });
       }
 
-      const counts = countsByRegion.get(region);
-      if (!counts) continue;
+      const regionCounts = countsByRegion.get(region);
+      if (!regionCounts) continue;
 
-      counts.set(position, (counts.get(position) ?? 0) + 1);
+      if (isStatedPosition(position)) {
+        regionCounts.statedCount += 1;
+        regionCounts.counts.set(
+          position,
+          (regionCounts.counts.get(position) ?? 0) + 1,
+        );
+      } else {
+        regionCounts.notStatedCount += 1;
+      }
     }
 
     return Array.from(countsByRegion.entries())
-      .map(([region, counts]) => {
-        const entries = Array.from(counts.entries()).sort(
+      .map(([region, regionCounts]) => {
+        const entries = Array.from(regionCounts.counts.entries()).sort(
           ([positionA, countA], [positionB, countB]) =>
             countB - countA || positionA.localeCompare(positionB),
         );
         const topEntries = entries.slice(0, 5);
         const maxCount = Math.max(...topEntries.map(([, count]) => count), 1);
-        const total = entries.reduce((sum, [, count]) => sum + count, 0);
+        const total = regionCounts.statedCount + regionCounts.notStatedCount;
 
         return {
           region,
           total,
+          statedCount: regionCounts.statedCount,
+          notStatedCount: regionCounts.notStatedCount,
+          statedPercent: total > 0 ? (regionCounts.statedCount / total) * 100 : 0,
+          notStatedPercent:
+            total > 0 ? (regionCounts.notStatedCount / total) * 100 : 0,
           positions: topEntries.map(([code, count]) => ({
             code,
             count,
@@ -782,28 +818,56 @@
               {#each careerPositionGroups as regionGroup (regionGroup.region)}
                 <section class="career-region">
                   <div class="career-region-heading">
-                    <span>{regionGroup.region}</span>
-                    <span>{regionGroup.total}</span>
-                  </div>
-                  <div class="career-bars">
-                    {#each regionGroup.positions as position (position.code)}
-                      <div class="career-bar-row">
-                        <div class="career-bar-label" title={position.code}>
-                          {position.code}
-                        </div>
-                        <div
-                          class="career-bar-track"
-                          aria-label={`${position.code}: ${position.count}`}
-                        >
+                    <div class="career-region-summary">
+                      <span class="career-region-name">{regionGroup.region}</span>
+                      <div
+                        class="career-statement-indicator"
+                        aria-label={`Stated occupations: ${regionGroup.statedCount}; not stated: ${regionGroup.notStatedCount}`}
+                        title={`Stated occupations: ${regionGroup.statedCount}; not stated: ${regionGroup.notStatedCount}`}
+                      >
+                        <div class="career-statement-track">
                           <div
-                            class="career-bar-fill"
-                            style:width={`${position.percent}%`}
+                            class="career-statement-fill career-statement-fill-stated"
+                            style:width={`${regionGroup.statedPercent}%`}
+                          ></div>
+                          <div
+                            class="career-statement-fill career-statement-fill-not-stated"
+                            style:width={`${regionGroup.notStatedPercent}%`}
                           ></div>
                         </div>
-                        <div class="career-bar-value">{position.count}</div>
+                        <span class="career-statement-count career-statement-count-stated">
+                          {regionGroup.statedCount}
+                        </span>
+                        <span
+                          class="career-statement-count career-statement-count-not-stated"
+                        >
+                          {regionGroup.notStatedCount}
+                        </span>
                       </div>
-                    {/each}
+                    </div>
+                    <span class="career-region-total">{regionGroup.total}</span>
                   </div>
+                  {#if regionGroup.positions.length > 0}
+                    <div class="career-bars">
+                      {#each regionGroup.positions as position (position.code)}
+                        <div class="career-bar-row">
+                          <div class="career-bar-label" title={position.code}>
+                            {position.code}
+                          </div>
+                          <div
+                            class="career-bar-track"
+                            aria-label={`${position.code}: ${position.count}`}
+                          >
+                            <div
+                              class="career-bar-fill"
+                              style:width={`${position.percent}%`}
+                            ></div>
+                          </div>
+                          <div class="career-bar-value">{position.count}</div>
+                        </div>
+                      {/each}
+                    </div>
+                  {/if}
                 </section>
               {/each}
             </div>
@@ -974,7 +1038,7 @@
 
   .career-region-heading {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     gap: 12px;
     margin-bottom: 8px;
@@ -982,6 +1046,78 @@
     font-size: 13px;
     font-weight: 700;
     line-height: 1.2;
+  }
+
+  .career-region-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .career-region-name {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .career-region-total {
+    flex: 0 0 auto;
+  }
+
+  .career-statement-indicator {
+    display: grid;
+    grid-template-columns: 70px auto auto;
+    align-items: center;
+    gap: 5px;
+    flex: 0 0 auto;
+  }
+
+  .career-statement-track {
+    display: flex;
+    width: 70px;
+    height: 8px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  .career-statement-fill {
+    height: 100%;
+  }
+
+  .career-statement-fill-stated {
+    background: #f2c14e;
+  }
+
+  .career-statement-fill-not-stated {
+    background: rgba(255, 255, 255, 0.38);
+  }
+
+  .career-statement-count {
+    position: relative;
+    padding-left: 7px;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 9px;
+    line-height: 1;
+  }
+
+  .career-statement-count::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 4px;
+    height: 4px;
+    transform: translateY(-50%);
+    background: currentColor;
+  }
+
+  .career-statement-count-stated::before {
+    color: #f2c14e;
+  }
+
+  .career-statement-count-not-stated::before {
+    color: rgba(255, 255, 255, 0.46);
   }
 
   .career-bars {
