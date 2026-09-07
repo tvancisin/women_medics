@@ -29,7 +29,6 @@
   let map: mapboxgl.Map;
   let mapContainer: HTMLDivElement;
   let styleReady = false;
-  let animationFrame: number;
   const pathAnimationFrames = new Map<string, number>();
   let hasAnimatedBarryLine = false;
   let hasAnimatedGarrettLine = false;
@@ -37,8 +36,11 @@
   let hasAnimatedPhysiologyPaths = false;
   let hasAnimatedSuezRoutesReverse = false;
   let hasAnimatedSuezRoutesForward = false;
+  let hasDrawnFoundedMapOverlay = false;
+  let foundedMapOverlayFadeTimeout: ReturnType<typeof setTimeout> | null = null;
   let hasDrawnEdinburghSeven = false;
   let hasDrawnOldMapOverlay = false;
+  let oldMapOverlayFadeTimeout: ReturnType<typeof setTimeout> | null = null;
   let hasDrawnWomenDoctorBirthplaces = false;
   let hasDrawnWomenDoctorCareerLocations = false;
   let hasFocusedWomenDoctorsMilestone = false;
@@ -99,6 +101,8 @@
   const timelineMarkersSourceId = "timeline-location-markers";
   const timelineMarkersCircleLayerId = "timeline-location-markers-circles";
   const timelineMarkersTextLayerId = "timeline-location-markers-text";
+  const foundedMapOverlaySourceId = "founded-map-overlay-1583";
+  const foundedMapOverlayLayerId = "founded-map-overlay-1583-raster";
   const oldMapOverlaySourceId = "old-map-overlay-1726";
   const oldMapOverlayLayerId = "old-map-overlay-1726-raster";
   const coloniesSourceId = "colonies-1885";
@@ -111,15 +115,17 @@
   const firstClassesYear = 1867;
   const edinburghSevenYear = 1869;
   const physiologyYear = 1875;
+  const foundedMapOverlayStartYear = 1583;
+  const foundedMapOverlayEndYear = 1600;
   const oldMapOverlayStartYear = 1726;
   const oldMapOverlayEndYear = 1760;
+  const historicalMapOverlayOpacity = 0.8;
+  const historicalMapOverlayFadeDurationMs = 900;
   const womenDoctorsBirthplacesYear = 1884;
   const womenDoctorsFocusYear = 1911;
   const suezRoutesReverseYear = 1911;
   const suezRoutesForwardYear = 1912;
   const womenDoctorsCareerLocationsYear = 1912;
-  const barryJourneyDimYear = 1810;
-  const garrettJourneyDimYear = 1864;
   const officialMedicsYear = 1914;
   const foregroundMarkerLayerIds = [
     firstClassesLayerId,
@@ -144,6 +150,9 @@
     ],
     "circle-color": "white",
     "circle-opacity": 0.8,
+    "circle-stroke-color": "black",
+    "circle-stroke-width": 1,
+    "circle-stroke-opacity": 0.8,
   };
 
   // GeoJSON guards used by map-specific route and overlay helpers.
@@ -190,7 +199,7 @@
     const fullCoords = getLineCoordinates(journeyData);
     if (!fullCoords || fullCoords.length < 2) return false;
 
-    if (animationFrame) cancelAnimationFrame(animationFrame);
+    cancelPathAnimation(lineLayerId);
 
     // Start with a zero-length line so the animation visibly draws from the first waypoint.
     if (!map.getSource(sourceId)) {
@@ -261,10 +270,10 @@
       });
 
       frame++;
-      animationFrame = requestAnimationFrame(step);
+      pathAnimationFrames.set(lineLayerId, requestAnimationFrame(step));
     };
 
-    animationFrame = requestAnimationFrame(step);
+    pathAnimationFrames.set(lineLayerId, requestAnimationFrame(step));
     return true;
   };
 
@@ -294,8 +303,68 @@
     }
   }
 
+  function clearFoundedMapOverlayFade() {
+    if (foundedMapOverlayFadeTimeout === null) return;
+
+    clearTimeout(foundedMapOverlayFadeTimeout);
+    foundedMapOverlayFadeTimeout = null;
+  }
+
+  function clearOldMapOverlayFade() {
+    if (oldMapOverlayFadeTimeout === null) return;
+
+    clearTimeout(oldMapOverlayFadeTimeout);
+    oldMapOverlayFadeTimeout = null;
+  }
+
+  function removeFoundedMapOverlay() {
+    clearFoundedMapOverlayFade();
+    hasDrawnFoundedMapOverlay = false;
+    removeLayerAndSource(foundedMapOverlaySourceId, foundedMapOverlayLayerId);
+  }
+
+  function removeOldMapOverlay() {
+    clearOldMapOverlayFade();
+    hasDrawnOldMapOverlay = false;
+    removeLayerAndSource(oldMapOverlaySourceId, oldMapOverlayLayerId);
+  }
+
+  function fadeOutFoundedMapOverlay() {
+    if (!map || !styleReady || foundedMapOverlayFadeTimeout !== null) return;
+
+    if (!map.getLayer(foundedMapOverlayLayerId)) {
+      removeFoundedMapOverlay();
+      return;
+    }
+
+    map.setPaintProperty(foundedMapOverlayLayerId, "raster-opacity", 0);
+    foundedMapOverlayFadeTimeout = setTimeout(() => {
+      foundedMapOverlayFadeTimeout = null;
+      hasDrawnFoundedMapOverlay = false;
+      removeLayerAndSource(foundedMapOverlaySourceId, foundedMapOverlayLayerId);
+    }, historicalMapOverlayFadeDurationMs);
+  }
+
+  function fadeOutOldMapOverlay() {
+    if (!map || !styleReady || oldMapOverlayFadeTimeout !== null) return;
+
+    if (!map.getLayer(oldMapOverlayLayerId)) {
+      removeOldMapOverlay();
+      return;
+    }
+
+    map.setPaintProperty(oldMapOverlayLayerId, "raster-opacity", 0);
+    oldMapOverlayFadeTimeout = setTimeout(() => {
+      oldMapOverlayFadeTimeout = null;
+      hasDrawnOldMapOverlay = false;
+      removeLayerAndSource(oldMapOverlaySourceId, oldMapOverlayLayerId);
+    }, historicalMapOverlayFadeDurationMs);
+  }
+
   function drawOldMapOverlay() {
     if (!map || !styleReady) return false;
+
+    clearOldMapOverlayFade();
 
     if (!map.getSource(oldMapOverlaySourceId)) {
       map.addSource(oldMapOverlaySourceId, {
@@ -313,10 +382,58 @@
         type: "raster",
         source: oldMapOverlaySourceId,
         paint: {
-          "raster-opacity": 0.8,
+          "raster-opacity": historicalMapOverlayOpacity,
+          "raster-opacity-transition": {
+            duration: historicalMapOverlayFadeDurationMs,
+          },
         },
       });
     }
+
+    map.setPaintProperty(
+      oldMapOverlayLayerId,
+      "raster-opacity",
+      historicalMapOverlayOpacity,
+    );
+
+    bringForegroundMarkersToFront();
+    return true;
+  }
+
+  function drawFoundedMapOverlay() {
+    if (!map || !styleReady) return false;
+
+    clearFoundedMapOverlayFade();
+
+    if (!map.getSource(foundedMapOverlaySourceId)) {
+      map.addSource(foundedMapOverlaySourceId, {
+        type: "raster",
+        tiles: [
+          `https://api.mapbox.com/v4/tomasvancisin.vvitm5/{z}/{x}/{y}.png?access_token=${envToken}`,
+        ],
+        tileSize: 256,
+      });
+    }
+
+    if (!map.getLayer(foundedMapOverlayLayerId)) {
+      map.addLayer({
+        id: foundedMapOverlayLayerId,
+        type: "raster",
+        source: foundedMapOverlaySourceId,
+        paint: {
+          "raster-opacity": historicalMapOverlayOpacity,
+          "raster-opacity-transition": {
+            duration: historicalMapOverlayFadeDurationMs,
+          },
+        },
+      });
+    }
+
+    map.setPaintProperty(
+      foundedMapOverlayLayerId,
+      "raster-opacity",
+      historicalMapOverlayOpacity,
+    );
 
     bringForegroundMarkersToFront();
     return true;
@@ -753,8 +870,8 @@
 
   function focusEdinburghClasses() {
     map.flyTo({
-      center: [-3.23, 55.9533],
-      zoom: 13.5,
+      center: [-3.21, 55.9533],
+      zoom: 13,
       duration: 3000,
       essential: true,
     });
@@ -771,21 +888,56 @@
     drawTimelineMarkerLayers(currentYear);
   }
 
+  //// year 1583
+  $: if (
+    map &&
+    styleReady &&
+    currentYear >= foundedMapOverlayStartYear &&
+    currentYear < foundedMapOverlayEndYear &&
+    (!hasDrawnFoundedMapOverlay ||
+      foundedMapOverlayFadeTimeout !== null ||
+      !map.getLayer(foundedMapOverlayLayerId))
+  ) {
+    hasDrawnFoundedMapOverlay = drawFoundedMapOverlay();
+  }
+
   //// year 1726
   $: if (
     map &&
     styleReady &&
     currentYear >= oldMapOverlayStartYear &&
     currentYear <= oldMapOverlayEndYear &&
-    !hasDrawnOldMapOverlay
+    (!hasDrawnOldMapOverlay ||
+      oldMapOverlayFadeTimeout !== null ||
+      !map.getLayer(oldMapOverlayLayerId))
   ) {
     hasDrawnOldMapOverlay = drawOldMapOverlay();
     map.flyTo({
       center: [-3.192, 55.948],
-      zoom: 15,
+      zoom: 14.5,
       duration: 1000,
       essential: true,
     });
+  }
+
+  $: if (
+    map &&
+    styleReady &&
+    currentYear < foundedMapOverlayStartYear &&
+    (hasDrawnFoundedMapOverlay ||
+      map.getLayer(foundedMapOverlayLayerId) ||
+      map.getSource(foundedMapOverlaySourceId))
+  ) {
+    removeFoundedMapOverlay();
+  }
+
+  $: if (
+    map &&
+    styleReady &&
+    currentYear >= foundedMapOverlayEndYear &&
+    (hasDrawnFoundedMapOverlay || map.getLayer(foundedMapOverlayLayerId))
+  ) {
+    fadeOutFoundedMapOverlay();
   }
 
   // Journey milestones draw animated routes and move the camera to the route.
@@ -855,10 +1007,21 @@
   $: if (
     map &&
     styleReady &&
-    (currentYear < oldMapOverlayStartYear || currentYear > oldMapOverlayEndYear)
+    currentYear < oldMapOverlayStartYear &&
+    (hasDrawnOldMapOverlay ||
+      map.getLayer(oldMapOverlayLayerId) ||
+      map.getSource(oldMapOverlaySourceId))
   ) {
-    hasDrawnOldMapOverlay = false;
-    removeLayerAndSource(oldMapOverlaySourceId, oldMapOverlayLayerId);
+    removeOldMapOverlay();
+  }
+
+  $: if (
+    map &&
+    styleReady &&
+    currentYear > oldMapOverlayEndYear &&
+    (hasDrawnOldMapOverlay || map.getLayer(oldMapOverlayLayerId))
+  ) {
+    fadeOutOldMapOverlay();
   }
 
   $: if (
@@ -1024,21 +1187,25 @@
     });
   }
 
-  // Dim completed journeys after their main story beat has passed.
+  // Remove one-off journey routes after their focused timeline moment.
   $: if (
     map &&
-    currentYear >= garrettJourneyDimYear &&
-    map.getLayer(garrettLineLayerId)
+    styleReady &&
+    currentYear > barryJourneyYear &&
+    (map.getLayer(barryLineLayerId) || map.getSource(barrySourceId))
   ) {
-    map.setPaintProperty(garrettLineLayerId, "line-opacity", 0.3);
+    cancelPathAnimation(barryLineLayerId);
+    removeLayerAndSource(barrySourceId, barryLineLayerId);
   }
 
   $: if (
     map &&
-    currentYear >= barryJourneyDimYear &&
-    map.getLayer(barryLineLayerId)
+    styleReady &&
+    currentYear > garrettJourneyYear &&
+    (map.getLayer(garrettLineLayerId) || map.getSource(garrettSourceId))
   ) {
-    map.setPaintProperty(barryLineLayerId, "line-opacity", 0.3);
+    cancelPathAnimation(garrettLineLayerId);
+    removeLayerAndSource(garrettSourceId, garrettLineLayerId);
   }
 
   // Remove transient student/path layers after their focused timeline moment.
@@ -1116,9 +1283,10 @@
     map = new mapboxgl.Map({
       container: mapContainer,
       center: [-3.2, 55.946],
-      zoom: 13,
+      zoom: 13.5,
       logoPosition: "top-right",
       style: "mapbox://styles/mapbox/dark-v11",
+      attributionControl: false,
       projection: "naturalEarth",
     });
 
@@ -1139,7 +1307,8 @@
 
     return () => {
       window.removeEventListener("resize", handleResize);
-      if (animationFrame) cancelAnimationFrame(animationFrame);
+      clearFoundedMapOverlayFade();
+      clearOldMapOverlayFade();
       for (const frame of pathAnimationFrames.values()) {
         cancelAnimationFrame(frame);
       }

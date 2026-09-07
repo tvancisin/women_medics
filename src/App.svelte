@@ -107,7 +107,6 @@
     const src = publicUrl(normalizedPath);
     return `url("${src}")`;
   };
-
   type PhysiologyGeoDatum = {
     source_data?: {
       entry_year?: number | string;
@@ -883,7 +882,7 @@
           alt="Women Admitted to Universities"
         />
       {:else}
-        {milestoneLabels.get(year) ?? ""}
+        <!-- {milestoneLabels.get(year) ?? ""} -->
       {/if}
     </div>
   {/each}
@@ -1192,7 +1191,7 @@
   }
 
   .edinburgh_forty-circle {
-    width: min(50px, 70%);
+    width: min(40px, 70%);
     aspect-ratio: 1;
     border-radius: 50%;
     flex: 0 0 auto;
