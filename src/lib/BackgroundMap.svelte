@@ -36,8 +36,6 @@
   let hasAnimatedPhysiologyPaths = false;
   let hasAnimatedSuezRoutesReverse = false;
   let hasAnimatedSuezRoutesForward = false;
-  let hasDrawnFoundedMapOverlay = false;
-  let foundedMapOverlayFadeTimeout: ReturnType<typeof setTimeout> | null = null;
   let hasDrawnEdinburghSeven = false;
   let hasDrawnOldMapOverlay = false;
   let oldMapOverlayFadeTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -101,8 +99,6 @@
   const timelineMarkersSourceId = "timeline-location-markers";
   const timelineMarkersCircleLayerId = "timeline-location-markers-circles";
   const timelineMarkersTextLayerId = "timeline-location-markers-text";
-  const foundedMapOverlaySourceId = "founded-map-overlay-1583";
-  const foundedMapOverlayLayerId = "founded-map-overlay-1583-raster";
   const oldMapOverlaySourceId = "old-map-overlay-1726";
   const oldMapOverlayLayerId = "old-map-overlay-1726-raster";
   const coloniesSourceId = "colonies-1885";
@@ -115,13 +111,11 @@
   const firstClassesYear = 1867;
   const edinburghSevenYear = 1869;
   const physiologyYear = 1875;
-  const foundedMapOverlayStartYear = 1583;
-  const foundedMapOverlayEndYear = 1600;
   const oldMapOverlayStartYear = 1726;
   const oldMapOverlayEndYear = 1760;
   const historicalMapOverlayOpacity = 0.8;
   const historicalMapOverlayFadeDurationMs = 900;
-  const womenDoctorsBirthplacesYear = 1884;
+  const womenDoctorsBirthplacesYear = 1911;
   const womenDoctorsFocusYear = 1911;
   const suezRoutesReverseYear = 1911;
   const suezRoutesForwardYear = 1912;
@@ -303,13 +297,6 @@
     }
   }
 
-  function clearFoundedMapOverlayFade() {
-    if (foundedMapOverlayFadeTimeout === null) return;
-
-    clearTimeout(foundedMapOverlayFadeTimeout);
-    foundedMapOverlayFadeTimeout = null;
-  }
-
   function clearOldMapOverlayFade() {
     if (oldMapOverlayFadeTimeout === null) return;
 
@@ -317,32 +304,10 @@
     oldMapOverlayFadeTimeout = null;
   }
 
-  function removeFoundedMapOverlay() {
-    clearFoundedMapOverlayFade();
-    hasDrawnFoundedMapOverlay = false;
-    removeLayerAndSource(foundedMapOverlaySourceId, foundedMapOverlayLayerId);
-  }
-
   function removeOldMapOverlay() {
     clearOldMapOverlayFade();
     hasDrawnOldMapOverlay = false;
     removeLayerAndSource(oldMapOverlaySourceId, oldMapOverlayLayerId);
-  }
-
-  function fadeOutFoundedMapOverlay() {
-    if (!map || !styleReady || foundedMapOverlayFadeTimeout !== null) return;
-
-    if (!map.getLayer(foundedMapOverlayLayerId)) {
-      removeFoundedMapOverlay();
-      return;
-    }
-
-    map.setPaintProperty(foundedMapOverlayLayerId, "raster-opacity", 0);
-    foundedMapOverlayFadeTimeout = setTimeout(() => {
-      foundedMapOverlayFadeTimeout = null;
-      hasDrawnFoundedMapOverlay = false;
-      removeLayerAndSource(foundedMapOverlaySourceId, foundedMapOverlayLayerId);
-    }, historicalMapOverlayFadeDurationMs);
   }
 
   function fadeOutOldMapOverlay() {
@@ -392,45 +357,6 @@
 
     map.setPaintProperty(
       oldMapOverlayLayerId,
-      "raster-opacity",
-      historicalMapOverlayOpacity,
-    );
-
-    bringForegroundMarkersToFront();
-    return true;
-  }
-
-  function drawFoundedMapOverlay() {
-    if (!map || !styleReady) return false;
-
-    clearFoundedMapOverlayFade();
-
-    if (!map.getSource(foundedMapOverlaySourceId)) {
-      map.addSource(foundedMapOverlaySourceId, {
-        type: "raster",
-        tiles: [
-          `https://api.mapbox.com/v4/tomasvancisin.vvitm5/{z}/{x}/{y}.png?access_token=${envToken}`,
-        ],
-        tileSize: 256,
-      });
-    }
-
-    if (!map.getLayer(foundedMapOverlayLayerId)) {
-      map.addLayer({
-        id: foundedMapOverlayLayerId,
-        type: "raster",
-        source: foundedMapOverlaySourceId,
-        paint: {
-          "raster-opacity": historicalMapOverlayOpacity,
-          "raster-opacity-transition": {
-            duration: historicalMapOverlayFadeDurationMs,
-          },
-        },
-      });
-    }
-
-    map.setPaintProperty(
-      foundedMapOverlayLayerId,
       "raster-opacity",
       historicalMapOverlayOpacity,
     );
@@ -888,19 +814,6 @@
     drawTimelineMarkerLayers(currentYear);
   }
 
-  //// year 1583
-  $: if (
-    map &&
-    styleReady &&
-    currentYear >= foundedMapOverlayStartYear &&
-    currentYear < foundedMapOverlayEndYear &&
-    (!hasDrawnFoundedMapOverlay ||
-      foundedMapOverlayFadeTimeout !== null ||
-      !map.getLayer(foundedMapOverlayLayerId))
-  ) {
-    hasDrawnFoundedMapOverlay = drawFoundedMapOverlay();
-  }
-
   //// year 1726
   $: if (
     map &&
@@ -918,26 +831,6 @@
       duration: 1000,
       essential: true,
     });
-  }
-
-  $: if (
-    map &&
-    styleReady &&
-    currentYear < foundedMapOverlayStartYear &&
-    (hasDrawnFoundedMapOverlay ||
-      map.getLayer(foundedMapOverlayLayerId) ||
-      map.getSource(foundedMapOverlaySourceId))
-  ) {
-    removeFoundedMapOverlay();
-  }
-
-  $: if (
-    map &&
-    styleReady &&
-    currentYear >= foundedMapOverlayEndYear &&
-    (hasDrawnFoundedMapOverlay || map.getLayer(foundedMapOverlayLayerId))
-  ) {
-    fadeOutFoundedMapOverlay();
   }
 
   // Journey milestones draw animated routes and move the camera to the route.
@@ -1283,7 +1176,7 @@
     map = new mapboxgl.Map({
       container: mapContainer,
       center: [-3.2, 55.946],
-      zoom: 13.5,
+      zoom: 14,
       logoPosition: "top-right",
       style: "mapbox://styles/mapbox/dark-v11",
       attributionControl: false,
@@ -1307,7 +1200,6 @@
 
     return () => {
       window.removeEventListener("resize", handleResize);
-      clearFoundedMapOverlayFade();
       clearOldMapOverlayFade();
       for (const frame of pathAnimationFrames.values()) {
         cancelAnimationFrame(frame);

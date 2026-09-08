@@ -1,9 +1,9 @@
 export const historicalEvents = [
-  {
-    startYear: 1740,
-    endYear: 1800,
-    description: "Scottish Enlightenment"
-  },
+  // {
+  //   startYear: 1740,
+  //   endYear: 1800,
+  //   description: "Scottish Enlightenment"
+  // },
   // {
   //   startYear: 1884,
   //   endYear: 1885,

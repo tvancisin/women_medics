@@ -50,7 +50,7 @@
     1583, 1726, 1809, 1862, 1867, 1869, 1875, 1886, 1889, 1911, 1912, 1914,
   ];
   const milestoneLabels = new Map<number, string>([
-    [1583, "University Founded 1583"],
+    [1583, "Foundation of the University"],
     [1726, "School of Medicine 1726"],
     [1809, "Margaret Bulkley / James Barry 1809"],
     [1862, "Elizabeth Garrett 1862"],
@@ -107,6 +107,7 @@
     const src = publicUrl(normalizedPath);
     return `url("${src}")`;
   };
+  const universityFoundedBackgroundImage = `url("${publicUrl("img/edinburgh_1583.jpg")}")`;
   type PhysiologyGeoDatum = {
     source_data?: {
       entry_year?: number | string;
@@ -172,9 +173,7 @@
     return position.trim().toLowerCase() !== "not stated";
   };
 
-  const buildCareerPositionGroups = (
-    rawData: unknown,
-  ): CareerRegionGroup[] => {
+  const buildCareerPositionGroups = (rawData: unknown): CareerRegionGroup[] => {
     if (!Array.isArray(rawData)) return [];
 
     const countsByRegion = new Map<
@@ -230,7 +229,8 @@
           total,
           statedCount: regionCounts.statedCount,
           notStatedCount: regionCounts.notStatedCount,
-          statedPercent: total > 0 ? (regionCounts.statedCount / total) * 100 : 0,
+          statedPercent:
+            total > 0 ? (regionCounts.statedCount / total) * 100 : 0,
           notStatedPercent:
             total > 0 ? (regionCounts.notStatedCount / total) * 100 : 0,
           positions: topEntries.map(([code, count]) => ({
@@ -681,6 +681,8 @@
   {#each pauseYears as year (year)}
     <div
       class="milestone-card"
+      class:milestone-card--university-founded={year === 1583}
+      class:milestone-card--text-only={year === 1726}
       class:milestone-card--split={splitMilestoneYears.has(year)}
       class:is-active={pausedAtYear === year}
       class:is-past={shrinkEnabledYears.has(year)}
@@ -691,7 +693,22 @@
         ? clampedLeft(yearToX(year), year)
         : centeredMarkerLeft(yearToX(year))}px"
     >
-      {#if year === 1809}
+      {#if year === 1583}
+        <div
+          class="university-founded-card-image"
+          style:background-image={universityFoundedBackgroundImage}
+        ></div>
+        <div class="university-founded-card-text">
+          The University (and the map above) was created in 1582
+        </div>
+      {:else if year === 1726}
+        <div class="milestone-card-text-only">
+          <div class="milestone-card-title">
+            In 1726, when the School of Medicine was established, the population
+            of Edinburgh was roughly 40,000 people.
+          </div>
+        </div>
+      {:else if year === 1809}
         <div class="milestone-card-split-layout">
           <div class="milestone-card-split-half milestone-card-split-image">
             <img
@@ -702,16 +719,16 @@
           </div>
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
-              James Barry (born Margaret Anne Bulkley, or Bulkeley; c. 1789[a] –
-              25 July 1865) was a military surgeon in the British Army.
-              Originally from the city of Cork in Ireland, Barry obtained a
-              medical degree from the University of Edinburgh Medical School,
-              then served first in Cape Town, South Africa, and subsequently in
-              many parts of the British Empire. <a
-                href="https://en.wikipedia.org/wiki/James_Barry_(surgeon)"
+              james barry (born margaret anne bulkley, or bulkeley; c. 1789[a] –
+              25 july 1865) was a military surgeon in the british army.
+              originally from the city of cork in ireland, barry obtained a
+              medical degree from the university of edinburgh medical school,
+              then served first in cape town, south africa, and subsequently in
+              many parts of the british empire. <a
+                href="https://en.wikipedia.org/wiki/james_barry_(surgeon)"
                 target="_blank"
                 rel="noopener noreferrer"
-                style="color: white">More info</a
+                style="color: white">more info</a
               >
             </div>
           </div>
@@ -818,7 +835,9 @@
                 <section class="career-region">
                   <div class="career-region-heading">
                     <div class="career-region-summary">
-                      <span class="career-region-name">{regionGroup.region}</span>
+                      <span class="career-region-name"
+                        >{regionGroup.region}</span
+                      >
                       <div
                         class="career-statement-indicator"
                         aria-label={`Stated occupations: ${regionGroup.statedCount}; not stated: ${regionGroup.notStatedCount}`}
@@ -834,7 +853,9 @@
                             style:width={`${regionGroup.notStatedPercent}%`}
                           ></div>
                         </div>
-                        <span class="career-statement-count career-statement-count-stated">
+                        <span
+                          class="career-statement-count career-statement-count-stated"
+                        >
                           {regionGroup.statedCount}
                         </span>
                         <span
@@ -943,6 +964,52 @@
 
   .milestone-card--split {
     padding: 0;
+  }
+
+  .milestone-card--text-only {
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 30px;
+    text-align: left;
+  }
+
+  .milestone-card-text-only {
+    width: 100%;
+  }
+
+  .milestone-card--university-founded {
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 0;
+    background-color: #000;
+  }
+
+  .milestone-card--university-founded.is-active {
+    width: min(80vw, 720px);
+    height: min(75vh, calc(min(80vw, 720px) * 0.751 + 52px));
+    flex-direction: column;
+  }
+
+  .university-founded-card-image {
+    width: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
+    background-color: #000;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+
+  .university-founded-card-text {
+    width: 100%;
+    box-sizing: border-box;
+    flex: 0 0 52px;
+    padding: 12px 16px 14px;
+    background: rgba(0, 0, 0, 0.88);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.25;
+    text-align: left;
   }
 
   .milestone-card--split .milestone-card-split-layout {
