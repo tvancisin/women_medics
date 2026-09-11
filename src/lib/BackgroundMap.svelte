@@ -44,6 +44,7 @@
   let hasFocusedWomenDoctorsMilestone = false;
   let hasFocusedOfficialMedicsMilestone = false;
   let timelineMarkersDataKey = "";
+  const timelineLabelMarkers = new Map<string, mapboxgl.Marker>();
 
   type LayerConfig = {
     sourceId: string;
@@ -146,7 +147,11 @@
     "circle-opacity": 0.8,
     "circle-stroke-color": "black",
     "circle-stroke-width": 1,
-    "circle-stroke-opacity": 0.8,
+    "circle-stroke-opacity": 1,
+  };
+  const timelineMarkerCirclePaint: Record<string, unknown> = {
+    ...circleMarkerPaint,
+    "circle-color": "#f2c14e",
   };
 
   // GeoJSON guards used by map-specific route and overlay helpers.
@@ -574,6 +579,47 @@
     });
   }
 
+  function syncTimelineMarkerLabels(
+    features: GeoJSON.Feature<GeoJSON.Point>[],
+  ) {
+    if (!map) return;
+
+    const activeMarkerKeys = new Set<string>();
+
+    for (const feature of features) {
+      const [longitude, latitude] = feature.geometry.coordinates;
+      const label = String(feature.properties?.label ?? "");
+      const markerKey = `${feature.properties?.id ?? ""}-${longitude}-${latitude}`;
+      activeMarkerKeys.add(markerKey);
+
+      const existingMarker = timelineLabelMarkers.get(markerKey);
+      if (existingMarker) {
+        existingMarker.getElement().textContent = label;
+        continue;
+      }
+
+      const element = document.createElement("div");
+      element.className = "timeline-image-marker-label";
+      element.textContent = label;
+
+      const marker = new mapboxgl.Marker({
+        element,
+        anchor: "left",
+        offset: [8, 0],
+      })
+        .setLngLat([longitude, latitude])
+        .addTo(map);
+      timelineLabelMarkers.set(markerKey, marker);
+    }
+
+    for (const [markerKey, marker] of timelineLabelMarkers) {
+      if (!activeMarkerKeys.has(markerKey)) {
+        marker.remove();
+        timelineLabelMarkers.delete(markerKey);
+      }
+    }
+  }
+
   function drawTimelineMarkerLayers(year: number) {
     if (!map || !styleReady) return false;
 
@@ -606,51 +652,15 @@
         id: timelineMarkersCircleLayerId,
         type: "circle",
         source: timelineMarkersSourceId,
-        paint: circleMarkerPaint,
+        paint: timelineMarkerCirclePaint,
       });
     }
 
-    if (!map.getLayer(timelineMarkersTextLayerId)) {
-      map.addLayer({
-        id: timelineMarkersTextLayerId,
-        type: "symbol",
-        source: timelineMarkersSourceId,
-        layout: {
-          "text-field": ["get", "label"],
-          "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-          "text-size": [
-            "interpolate",
-            ["linear"],
-            ["zoom"],
-            2,
-            3,
-            8,
-            7,
-            12,
-            13,
-            14,
-            16,
-          ],
-          "text-anchor": "left",
-          "text-offset": [0.8, 0],
-          "text-allow-overlap": true,
-          "text-ignore-placement": true,
-        },
-        paint: {
-          "text-color": "#ffffff",
-          "text-halo-color": "rgba(0, 0, 0, 0.85)",
-          "text-halo-width": [
-            "interpolate",
-            ["linear"],
-            ["zoom"],
-            2,
-            0.25,
-            12,
-            1.5,
-          ],
-        },
-      });
+    if (map.getLayer(timelineMarkersTextLayerId)) {
+      map.removeLayer(timelineMarkersTextLayerId);
     }
+
+    syncTimelineMarkerLabels(features);
 
     bringForegroundMarkersToFront();
 
@@ -1175,8 +1185,8 @@
 
     map = new mapboxgl.Map({
       container: mapContainer,
-      center: [-3.2, 55.946],
-      zoom: 14,
+      center: [-3.25, 55.95],
+      zoom: 12,
       logoPosition: "top-right",
       style: "mapbox://styles/mapbox/dark-v11",
       attributionControl: false,
@@ -1205,6 +1215,10 @@
         cancelAnimationFrame(frame);
       }
       pathAnimationFrames.clear();
+      for (const marker of timelineLabelMarkers.values()) {
+        marker.remove();
+      }
+      timelineLabelMarkers.clear();
       map.remove();
     };
   });
@@ -1228,5 +1242,19 @@
     inset: 0;
     width: 100%;
     height: 100%;
+  }
+
+  :global(.timeline-image-marker-label) {
+    box-sizing: border-box;
+    padding: 3px 6px;
+    background: #000;
+    color: #fff;
+    font-family: "Arial Unicode MS", Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    pointer-events: none;
+    border-radius: 3px;
   }
 </style>

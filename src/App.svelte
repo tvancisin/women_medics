@@ -1,19 +1,14 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { getCSV, getJson } from "./lib/data/loaders";
-  import { historicalEvents } from "./lib/data/timeline";
-  import Path from "./lib/Path.svelte";
-  import HistoricalEvents from "./lib/HistoricalEvents.svelte";
-  import Linechart from "./lib/Linechart.svelte";
-  import MapView from "./lib/MapView.svelte";
   import BackgroundMap from "./lib/BackgroundMap.svelte";
-  import Doctors from "./lib/Doctors.svelte";
+  import MainTimeline from "./lib/MainTimeline.svelte";
   import { normalizeWomenCareer1915Region } from "./lib/map/featureBuilders";
 
   const baseUrl = import.meta.env.BASE_URL;
   const publicUrl = (path: string) => `${baseUrl}${path}`;
 
-  const startYear = 1582;
+  const startYear = 1550;
   const endYear = 2026;
   const stepYears = 50;
   const timelineZoomTriggerYear = 1862;
@@ -22,7 +17,6 @@
   const timelineZoomDomainEnd = 1930;
   const timelineZoomDurationMs = 1600;
   const margin = { top: 20, right: 40, bottom: 30, left: 40 };
-  const tickLength = 5;
 
   // keeping the detail div inside screen
   const milestoneCardWidth = 400;
@@ -50,7 +44,7 @@
     1583, 1726, 1809, 1862, 1867, 1869, 1875, 1886, 1889, 1911, 1912, 1914,
   ];
   const milestoneLabels = new Map<number, string>([
-    [1583, "Foundation of the University"],
+    [1583, "Foundation of the University 1582"],
     [1726, "School of Medicine 1726"],
     [1809, "Margaret Bulkley / James Barry 1809"],
     [1862, "Elizabeth Garrett 1862"],
@@ -97,24 +91,6 @@
   let womenMedicsData: Array<{ year: number; number: number }> = [];
   let edinburghSevenData: Array<Record<string, string>> = [];
 
-  const edinburghFortyImageUrl = (img?: string) => {
-    const fileName = String(img ?? "").trim();
-    if (!fileName || fileName.toLowerCase() === "null") return undefined;
-
-    const normalizedPath = fileName.startsWith("/")
-      ? fileName.slice(1)
-      : `img/edin_forty/${fileName}`;
-    const src = publicUrl(normalizedPath);
-    return `url("${src}")`;
-  };
-  const universityFoundedBackgroundImage = `url("${publicUrl("img/edinburgh_1583.jpg")}")`;
-  type PhysiologyGeoDatum = {
-    source_data?: {
-      entry_year?: number | string;
-    };
-  };
-  let womenPhysiologyGeoData: PhysiologyGeoDatum[] = [];
-
   type FirstClassesGeoDatum = {
     source_data?: {
       entry_year?: number | string;
@@ -152,6 +128,25 @@
     notStatedPercent: number;
     positions: CareerPositionCount[];
   };
+
+  const edinburghFortyImageUrl = (img?: string) => {
+    const fileName = String(img ?? "").trim();
+    if (!fileName || fileName.toLowerCase() === "null") return undefined;
+
+    const normalizedPath = fileName.startsWith("/")
+      ? fileName.slice(1)
+      : `img/edin_forty/${fileName}`;
+    const src = publicUrl(normalizedPath);
+    return `url("${src}")`;
+  };
+
+  const universityFoundedBackgroundImage = `url("${publicUrl("img/edinburgh_1583.jpg")}")`;
+  type PhysiologyGeoDatum = {
+    source_data?: {
+      entry_year?: number | string;
+    };
+  };
+  let womenPhysiologyGeoData: PhysiologyGeoDatum[] = [];
 
   const getStudentRegistrationYear = (doctor: WomenDoctorDatum) => {
     const rawYear = doctor.source_data?.["Year of student registration"];
@@ -260,19 +255,6 @@
   $: axisRight = axisStart + maxSpan;
   $: timelineDomainSpan = Math.max(1, timelineDomainEnd - timelineDomainStart);
 
-  // adding ticks
-  const buildFullTimelineTickValues = (maxYear: number) => {
-    const values = [startYear];
-    for (let year = 1600; year <= maxYear; year += 20) {
-      values.push(year);
-    }
-    return values;
-  };
-
-  const buildTimelineTickValues = (maxYear: number) => {
-    return buildFullTimelineTickValues(maxYear);
-  };
-
   const timelineZoomEase = (t: number) =>
     t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
@@ -315,16 +297,6 @@
     return axisStart + yearProgress * maxSpan;
   };
 
-  $: currentYearX = yearToX(currentYear);
-  $: axisEnd = currentYearX;
-  $: isYearInTimelineDomain = (year: number) =>
-    year >= timelineDomainStart && year <= timelineDomainEnd;
-  $: fullTickValues =
-    width > 0 && height > 0 ? buildTimelineTickValues(endYear) : [];
-  $: tickValues =
-    width > 0 && height > 0 ? buildTimelineTickValues(currentYear) : [];
-  $: displayYear = Math.floor(currentYear);
-
   $: if (
     currentYear >= timelineZoomTriggerYear &&
     currentYear < timelineResetTriggerYear &&
@@ -343,6 +315,7 @@
     startTimelineDomainTransition(startYear, endYear);
   }
 
+  // milestone divs
   let topByYear: Map<number, number> = new Map();
   $: collapsedMarkerTopByYear = (() => {
     topByYear = new Map<number, number>();
@@ -393,11 +366,7 @@
     awaitingResumeClick = false;
   };
 
-  const getPhysiologyDataForYear = (year: number) =>
-    womenPhysiologyGeoData.filter(
-      (d) => Number(d.source_data?.entry_year) === year,
-    );
-
+  // init
   onMount(() => {
     const loadCsvData = async () => {
       try {
@@ -592,91 +561,25 @@
       Continue
     </button>
   {/if}
-  <svg {width} {height}>
-    {#if width > 0 && height > 0}
-      <!-- background timeline -->
-      <g class="timeline-underlay" aria-hidden="true">
-        <line
-          class="domain"
-          x1={axisStart}
-          y1={timelineY}
-          x2={axisRight}
-          y2={timelineY}
-        ></line>
-
-        {#each fullTickValues as year}
-          <g
-            class="tick"
-            transform={`translate(${yearToX(year)}, ${timelineY})`}
-          >
-            <line x1="0" y1="0" x2="0" y2={tickLength}></line>
-            <text x="0" y={tickLength + 12} text-anchor="middle">{year}</text>
-          </g>
-        {/each}
-      </g>
-
-      <!-- gradual circle indicator -->
-      {#if isYearInTimelineDomain(currentYear)}
-        <circle cx={currentYearX} cy={timelineY} r="4" fill="#fff"></circle>
-      {/if}
-
-      <!-- gradual x axis line -->
-      <line
-        class="domain"
-        x1={axisStart}
-        y1={timelineY}
-        x2={axisEnd}
-        y2={timelineY}
-      ></line>
-
-      <!-- gradual x axis ticks and years -->
-      {#each tickValues as year}
-        <g class="tick" transform={`translate(${yearToX(year)}, ${timelineY})`}>
-          <line x1="0" y1="0" x2="0" y2={tickLength}></line>
-          <text x="0" y={tickLength + 12} text-anchor="middle">{year}</text>
-        </g>
-      {/each}
-
-      <HistoricalEvents
-        events={historicalEvents}
-        {currentYear}
-        domainStartYear={timelineDomainStart}
-        domainEndYear={timelineDomainEnd}
-        {timelineY}
-        {yearToX}
-      />
-
-      <Doctors
-        {womenDoctorsData}
-        {currentYear}
-        {timelineY}
-        {yearToX}
-        {womenMedicsData}
-      />
-
-      {#each pauseYears.filter((year) => displayYear >= year && milestoneLabels.has(year)) as year, index (year)}
-        <!-- vertical path indicator -->
-        <Path
-          x={yearToX(year)}
-          {year}
-          {height}
-          label={milestoneLabels.get(year) ?? ""}
-          labelIndex={index + 1}
-          shrink={shrinkEnabledYears.has(year)}
-          {topByYear}
-        />
-      {/each}
-
-      <Linechart
-        {currentYear}
-        domainStartYear={timelineDomainStart}
-        domainEndYear={timelineDomainEnd}
-        {timelineY}
-        {yearToX}
-        {womenMedicsData}
-      />
-    {/if}
-  </svg>
+  <MainTimeline
+    {width}
+    {height}
+    {currentYear}
+    {startYear}
+    {endYear}
+    {timelineDomainStart}
+    {timelineDomainEnd}
+    {timelineY}
+    {axisStart}
+    {axisRight}
+    {pauseYears}
+    {milestoneLabels}
+    {shrinkEnabledYears}
+    {topByYear}
+    {womenDoctorsData}
+    {womenMedicsData}
+    {yearToX}
+  />
 
   {#each pauseYears as year (year)}
     <div
@@ -699,13 +602,20 @@
           style:background-image={universityFoundedBackgroundImage}
         ></div>
         <div class="university-founded-card-text">
-          The University (and the map above) was created in 1582
+          <em
+            >Edenburgum Scotiae Metropolis Cologne: G. Braun & F. Hogenberg, ca.
+            1582</em
+          >
+          <br />
+          The University was founded in 1582, the same year as the map shown above.
         </div>
       {:else if year === 1726}
         <div class="milestone-card-text-only">
           <div class="milestone-card-title">
             In 1726, when the School of Medicine was established, the population
-            of Edinburgh was roughly 40,000 people.
+            of Edinburgh was roughly 40,000 people. The education took place at
+            the Old College (currently School of Law) as well as at the Old
+            Surgeon's Hall.
           </div>
         </div>
       {:else if year === 1809}
@@ -719,17 +629,9 @@
           </div>
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
-              james barry (born margaret anne bulkley, or bulkeley; c. 1789[a] –
-              25 july 1865) was a military surgeon in the british army.
-              originally from the city of cork in ireland, barry obtained a
-              medical degree from the university of edinburgh medical school,
-              then served first in cape town, south africa, and subsequently in
-              many parts of the british empire. <a
-                href="https://en.wikipedia.org/wiki/james_barry_(surgeon)"
-                target="_blank"
-                rel="noopener noreferrer"
-                style="color: white">more info</a
-              >
+              Margaret Anne Bulkley (1789 - 1865), lived as James Barry
+              throughout his medical education and career. In 1809, he travelled
+              from London to Edinburgh to study medicine and graduated in 1812.
             </div>
           </div>
         </div>
@@ -744,19 +646,11 @@
           </div>
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
-              Elizabeth Garrett Anderson (9 June 1836 – 17 December 1917) was an
-              English physician and suffragist. She is known for being the first
-              woman to qualify in Britain as a physician and surgeon and as a
-              co-founder and dean of the London School of Medicine for Women,
-              which was the first medical school in Britain to train women as
-              doctors. She was the first female dean of a British medical
-              school, the first woman in Britain to be elected to a school board
-              and, as mayor of Aldeburgh, the first female mayor in Britain. <a
-                href="https://en.wikipedia.org/wiki/Elizabeth_Garrett_Anderson"
-                target="_blank"
-                rel="noopener noreferrer"
-                style="color: white">More info</a
-              >
+              Elizabeth Garrett Anderson (1836 - 1917) came to Edinburgh in
+              1862, trying to enroll at the School of Medicine. She also tried
+              to enroll at Universities of Cambridge, Glasgow, Oxford, and St
+              Andrews, but was rejected by all. She eventually became the first
+              woman to qualify as a physician and surgeon.
             </div>
           </div>
         </div>
@@ -771,19 +665,10 @@
           </div>
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
-              David Mather Masson (1822 – 1907), was a Scottish academic,
-              supporter of women's suffrage, literary critic and historian. In
-              1865 he was selected for the chair of rhetoric and English
-              literature at Edinburgh, and during the early years of his
-              professorship actively promoted the movement for the university
-              education of women. He also supported his wife Emily Rosaline Orme
-              and two of their daughters in the women's suffrage movement,
-              speaking at events in Edinburgh and London. <a
-                href="https://en.wikipedia.org/wiki/David_Masson"
-                target="_blank"
-                rel="noopener noreferrer"
-                style="color: white">More info</a
-              >
+              The very first classes women could attend at the University were
+              David Mather Masson's (1822 – 1907) English literature classes. A
+              supporter of women's suffrage, Masson started teching women in
+              1867 at Hopetoun Rooms (67-73 Queen Street)
             </div>
           </div>
         </div>
@@ -916,13 +801,6 @@
     position: relative;
   }
 
-  svg {
-    position: relative;
-    z-index: 1;
-    display: block;
-    pointer-events: none;
-  }
-
   .milestone-card {
     position: absolute;
     z-index: 2;
@@ -988,6 +866,7 @@
     width: min(80vw, 720px);
     height: min(75vh, calc(min(80vw, 720px) * 0.751 + 52px));
     flex-direction: column;
+    padding: 5px;
   }
 
   .university-founded-card-image {
@@ -1004,9 +883,9 @@
     width: 100%;
     box-sizing: border-box;
     flex: 0 0 52px;
-    padding: 12px 16px 14px;
+    padding: 10px 10px 14px;
     background: rgba(0, 0, 0, 0.88);
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 700;
     line-height: 1.25;
     text-align: left;
@@ -1040,7 +919,9 @@
 
   .milestone-card-title {
     font-size: 12px;
-    line-height: 1.3;
+    font-weight: 700;
+    line-height: 1.25;
+    text-align: left;
   }
 
   .milestone-card.is-past {
@@ -1290,24 +1171,5 @@
     color: #fff;
     font: inherit;
     cursor: pointer;
-  }
-
-  .domain {
-    stroke: rgb(255, 255, 255);
-    stroke-width: 1px;
-  }
-
-  .timeline-underlay {
-    opacity: 0.4;
-  }
-
-  .tick line {
-    stroke: #fff;
-  }
-
-  .tick text {
-    fill: #fff;
-    font-size: 14px;
-    font-family: Montserrat;
   }
 </style>

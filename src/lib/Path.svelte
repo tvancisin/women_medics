@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import { cubicOut } from "svelte/easing";
   import { tweened } from "svelte/motion";
 
@@ -12,7 +12,12 @@
   export let topByYear: Map<number, number> = new Map();
 
   const fallbackShrinkLength = 40;
+  const labelPaddingX = 4;
+  const labelBackgroundHeight = 16;
+  let labelTextElement: SVGTextElement | null = null;
+  let labelWidth = 0;
   $: markerTop = topByYear.get(year);
+  $: labelBackgroundWidth = Math.ceil(labelWidth) + labelPaddingX * 2;
 
   const pathLengthPx = tweened(0, {
     duration: 400,
@@ -45,37 +50,49 @@
     markerSizePx.set(10);
   }
 
-  // $: labelYOffset =
-  //   labelIndex >= 4 && labelIndex <=7 ? -4 + (labelIndex - 3) * 12 : -4;
-  // $: markerY = shrink ? endY + labelYOffset : endY;
-  // $: labelY = markerY;
-  // $: pathD = `M ${x} ${startY} L ${x} ${markerY}`;
   $: pathD = `M ${x} ${startY} L ${x} ${endY}`;
+
+  async function updateLabelWidth() {
+    await tick();
+
+    if (!labelTextElement) {
+      labelWidth = 0;
+      return;
+    }
+
+    labelWidth = labelTextElement.getComputedTextLength();
+  }
+
+  $: if (label) {
+    updateLabelWidth();
+  }
 </script>
 
 <path class="event-path" d={pathD} fill="none" />
-<!-- <rect
-  class="event-marker"
-  x={x - $markerSizePx / 2}
-  // y={markerY - 5}
-  y={endY - $markerSizePx / 2}
-  width={$markerSizePx}
-  height={$markerSizePx}
-  fill="white"
-  rx="2"
-/> -->
 {#if label}
-  <text
-    class="event-label"
-    x={x + 20}
-    // y={labelY}
-    y={endY + 2}
+  <g
     transform="rotate(-90, {x}, {endY})"
-    text-anchor="start"
     opacity={label === "First classes for women 1867" ? 0.5 : 1}
   >
-    {label}
-  </text>
+    <rect
+      class="event-label-background"
+      x={x + 16}
+      y={endY - 10}
+      width={labelBackgroundWidth}
+      height={labelBackgroundHeight}
+      rx="2"
+    />
+    <text
+      bind:this={labelTextElement}
+      class="event-label"
+      x={x + 20}
+      // y={labelY}
+      y={endY + 2}
+      text-anchor="start"
+    >
+      {label}
+    </text>
+  </g>
 {/if}
 
 <style>
@@ -86,9 +103,16 @@
     pointer-events: none;
   }
 
+  .event-label-background {
+    fill: #000;
+    pointer-events: none;
+  }
+
   .event-label {
-    fill: #fff;
-    font-size: 10px;
+    fill: #fafafa;
+    font-size: 12px;
+    font-family: "Montserrat";
+    font-weight: 500;
     pointer-events: none;
   }
 </style>

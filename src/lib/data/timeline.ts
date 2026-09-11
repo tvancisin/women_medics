@@ -67,16 +67,22 @@ export const timelineImageMarkers: ImageMarkerConfig[] = [
     alt: "School of Medicine",
   },
   {
+    id: "school-of-medicine",
+    year: 1726,
+    coordinates: [55.94843874572865, -3.1832826837322448],
+    alt: "Old Surgeon's Hall",
+  },
+  {
     id: "first-classes",
     year: 1867,
     coordinates: [55.953587, -3.205565],
-    alt: "First Classes",
+    alt: "68-73 Queen Street",
   },
   {
     id: "physiology",
     year: 1875,
     coordinates: [55.96018424065475, -3.1874283008879383],
-    alt: "First Physiology Classes",
+    alt: "18 East London Street",
   },
   {
     id: "school",
