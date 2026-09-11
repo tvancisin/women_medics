@@ -666,9 +666,9 @@
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
               The very first classes women could attend at the University were
-              David Mather Masson's (1822 – 1907) English literature classes. A
+              David Masson's (1822 – 1907) English Literature classes. A
               supporter of women's suffrage, Masson started teching women in
-              1867 at Hopetoun Rooms (67-73 Queen Street)
+              1867 at Hopetoun Rooms (67-73 Queen Street).
             </div>
           </div>
         </div>

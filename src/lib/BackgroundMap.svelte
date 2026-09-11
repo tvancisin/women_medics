@@ -9,7 +9,6 @@
     getWomenDoctorBirthplaceFeatures,
     getWomenDoctorCareerLocationFeatures,
   } from "./map/featureBuilders";
-  import "mapbox-gl/dist/mapbox-gl.css";
 
   // Component inputs
   export let currentYear: number;
@@ -45,6 +44,7 @@
   let hasFocusedOfficialMedicsMilestone = false;
   let timelineMarkersDataKey = "";
   const timelineLabelMarkers = new Map<string, mapboxgl.Marker>();
+  const edinburghSevenMarkers = new Map<string, mapboxgl.Marker>();
 
   type LayerConfig = {
     sourceId: string;
@@ -87,8 +87,6 @@
   const physiologyStudentsLayerId = "physiology-students-circles";
   const firstClassesSourceId = "first-classes";
   const firstClassesLayerId = "first-classes-circles";
-  const edinburghSevenSourceId = "edinburgh-seven";
-  const edinburghSevenLayerId = "edinburgh-seven-circles";
   const firstClassesPathsSourceId = "first-classes-paths";
   const firstClassesPathsLayerId = "first-classes-paths-lines";
   const physiologyPathsSourceId = "physiology-paths";
@@ -124,7 +122,6 @@
   const officialMedicsYear = 1914;
   const foregroundMarkerLayerIds = [
     firstClassesLayerId,
-    edinburghSevenLayerId,
     physiologyStudentsLayerId,
     womenDoctorsBirthplacesLayerId,
     womenDoctorsCareerLocationsLayerId,
@@ -566,17 +563,67 @@
     });
   }
 
-  function drawEdinburghSevenLayer({
-    rawData,
-    sourceId,
-    layerId,
-  }: DataLayerConfig) {
-    return drawCircleLayer({
-      features: getEdinburghSevenPointFeatures(rawData),
-      sourceId,
-      layerId,
-      paint: circleMarkerPaint,
-    });
+  function edinburghSevenImageUrl(img: unknown) {
+    const fileName = String(img ?? "").trim();
+    if (!fileName || fileName.toLowerCase() === "null") return "";
+
+    // The portraits are static files in public/, so this also works when the
+    // site is deployed below a sub-path (for example, on GitHub Pages).
+    return `${import.meta.env.BASE_URL}img/edin_forty/${encodeURIComponent(fileName)}`;
+  }
+
+  function clearEdinburghSevenMarkers() {
+    for (const marker of edinburghSevenMarkers.values()) {
+      marker.remove();
+    }
+    edinburghSevenMarkers.clear();
+  }
+
+  function drawEdinburghSevenMarkers(rawData: unknown) {
+    if (!map || !styleReady) return false;
+
+    const features = getEdinburghSevenPointFeatures(rawData);
+    if (features.length === 0) return false;
+
+    const activeMarkerKeys = new Set<string>();
+
+    for (const [index, feature] of features.entries()) {
+      const [longitude, latitude] = feature.geometry.coordinates;
+      const name = String(feature.properties?.name ?? "Unknown");
+      const markerKey = `${index}-${longitude}-${latitude}`;
+      const imageUrl = edinburghSevenImageUrl(feature.properties?.img);
+      activeMarkerKeys.add(markerKey);
+
+      const existingMarker = edinburghSevenMarkers.get(markerKey);
+      if (existingMarker) {
+        existingMarker.getElement().style.backgroundImage = imageUrl
+          ? `url("${imageUrl}")`
+          : "";
+        continue;
+      }
+
+      const element = document.createElement("div");
+      element.className = "edinburgh-seven-marker";
+      element.title = name;
+      element.setAttribute("aria-label", `${name}'s birthplace`);
+      if (imageUrl) {
+        element.style.backgroundImage = `url("${imageUrl}")`;
+      }
+
+      const marker = new mapboxgl.Marker({ element, anchor: "center" })
+        .setLngLat([longitude, latitude])
+        .addTo(map);
+      edinburghSevenMarkers.set(markerKey, marker);
+    }
+
+    for (const [markerKey, marker] of edinburghSevenMarkers) {
+      if (!activeMarkerKeys.has(markerKey)) {
+        marker.remove();
+        edinburghSevenMarkers.delete(markerKey);
+      }
+    }
+
+    return true;
   }
 
   function syncTimelineMarkerLabels(
@@ -977,7 +1024,7 @@
     map.moveLayer(firstClassesLayerId);
   }
 
-  // Edinburgh Seven/Forty: draw birthplace circles at the 1869 milestone.
+  // Edinburgh Seven/Forty: show birthplace markers at the 1869 milestone.
   $: if (
     map &&
     styleReady &&
@@ -986,11 +1033,7 @@
     edinburghSevenData.length > 0 &&
     !hasDrawnEdinburghSeven
   ) {
-    hasDrawnEdinburghSeven = drawEdinburghSevenLayer({
-      rawData: edinburghSevenData,
-      sourceId: edinburghSevenSourceId,
-      layerId: edinburghSevenLayerId,
-    });
+    hasDrawnEdinburghSeven = drawEdinburghSevenMarkers(edinburghSevenData);
     map.flyTo({
       center: [20.1883, 40.9433],
       zoom: 3,
@@ -1084,10 +1127,7 @@
 
   $: if (map && styleReady && currentYear !== edinburghSevenYear) {
     hasDrawnEdinburghSeven = false;
-    removeCircleLayer({
-      sourceId: edinburghSevenSourceId,
-      layerId: edinburghSevenLayerId,
-    });
+    clearEdinburghSevenMarkers();
   }
 
   // Remove one-off journey routes after their focused timeline moment.
@@ -1219,6 +1259,7 @@
         marker.remove();
       }
       timelineLabelMarkers.clear();
+      clearEdinburghSevenMarkers();
       map.remove();
     };
   });
@@ -1249,12 +1290,27 @@
     padding: 3px 6px;
     background: #000;
     color: #fff;
-    font-family: "Arial Unicode MS", Arial, sans-serif;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 500;
     line-height: 1.2;
     white-space: nowrap;
     pointer-events: none;
     border-radius: 3px;
+  }
+
+  /* These DOM markers allow portraits to be cropped into circles. Markers
+   * without an image leave background-image unset and use this grey fallback.
+   */
+  :global(.edinburgh-seven-marker) {
+    width: 30px;
+    height: 30px;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.9);
+    border-radius: 50%;
+    background-color: #777;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   }
 </style>

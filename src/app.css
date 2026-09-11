@@ -1,8 +1,54 @@
-html,
-body {
-  margin: 0;
-  overflow: hidden;
-  /* background-color: #121212; */
-  background-color: #1F1F1F;
-  font-family: "Montserrat", sans-serif;
+/*
+ * CSS layers set the priority of whole groups of styles. Later layers win
+ * over earlier ones, regardless of which stylesheet Vite happens to load last.
+ */
+@layer reset, vendor, base;
+
+/* Keep third-party styles in the lowest-priority layer.
+ * Add other library styles here too, rather than importing them in components.
+ */
+@import "mapbox-gl/dist/mapbox-gl.css" layer(vendor);
+
+@layer reset {
+  /* Make element dimensions predictable throughout the app. */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+}
+
+@layer base {
+  /* The single source of truth for the app's default typeface.
+   * Montserrat itself is loaded in index.html.
+   */
+  :root {
+    --font-sans: "Montserrat", sans-serif;
+    font-family: var(--font-sans);
+  }
+
+  /* Force all regular HTML/SVG elements to inherit the root font.
+   * This deliberately beats font declarations in the lower `vendor` layer
+   * (such as Mapbox's Helvetica default), so component styles need not repeat
+   * `font-family`. A component can still set its own font family explicitly.
+   */
+  *,
+  *::before,
+  *::after {
+    font-family: inherit;
+  }
+
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: #1f1f1f;
+  }
+
+  /* Form controls often use a browser-defined font unless told to inherit. */
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
 }

@@ -72,7 +72,6 @@
 {#if label}
   <g
     transform="rotate(-90, {x}, {endY})"
-    opacity={label === "First classes for women 1867" ? 0.5 : 1}
   >
     <rect
       class="event-label-background"
@@ -86,7 +85,6 @@
       bind:this={labelTextElement}
       class="event-label"
       x={x + 20}
-      // y={labelY}
       y={endY + 2}
       text-anchor="start"
     >
