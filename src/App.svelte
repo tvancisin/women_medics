@@ -74,6 +74,7 @@
   let physiologyPathsData: unknown = null;
   let colonies: unknown = null;
   let suez: unknown = null;
+  let edinburghRoutes: unknown = null;
   let womenDoctorsData: unknown = null;
   let womenCareers1915Data: unknown = null;
   let currentYear = startYear;
@@ -411,6 +412,7 @@
           rawWomenDoctors1915,
           rawColonies,
           rawSuez,
+          rawEdinburghRoutes,
         ] = await getJson([
           publicUrl("data/women_physiology_geo.json"),
           publicUrl("data/geo/garrett_journey.json"),
@@ -422,6 +424,7 @@
           publicUrl("data/women_careers_1915.json"),
           publicUrl("data/geo/colonies_1885.json"),
           publicUrl("data/geo/suez_routes.json"),
+          publicUrl("data/geo/edinburgh_routes.json"),
         ]);
 
         womenPhysiologyGeoData = Array.isArray(rawWomenPhysiologyGeoData)
@@ -438,6 +441,7 @@
         physiologyPathsData = rawPhysiologyPaths ?? null;
         colonies = rawColonies ?? null;
         suez = rawSuez ?? null;
+        edinburghRoutes = rawEdinburghRoutes ?? null;
         womenDoctorsData = Array.isArray(rawWomenDoctors)
           ? [...(rawWomenDoctors as WomenDoctorDatum[])].sort((a, b) => {
               return (
@@ -553,6 +557,7 @@
     {womenCareers1915Data}
     {colonies}
     {suez}
+    {edinburghRoutes}
     {edinburghSevenData}
   />
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
@@ -629,9 +634,10 @@
           </div>
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
-              Margaret Anne Bulkley (1789 - 1865), lived as James Barry
-              throughout his medical education and career. In 1809, he travelled
-              from London to Edinburgh to study medicine and graduated in 1812.
+              Born as Margaret Anne Bulkley (1789 - 1865), James Barry lived as
+              a man throughout his medical education and career. In 1809, he
+              travelled from London to Edinburgh by boat (~9 days of travel) to
+              study medicine and graduated in 1812.
             </div>
           </div>
         </div>
@@ -646,7 +652,8 @@
           </div>
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
-              Elizabeth Garrett Anderson (1836 - 1917) came to Edinburgh in
+              Elizabeth Garrett Anderson (1836 - 1917) came to Edinburgh (most
+              likely by train, North British Railway was completed in 1846) in
               1862, trying to enroll at the School of Medicine. She also tried
               to enroll at Universities of Cambridge, Glasgow, Oxford, and St
               Andrews, but was rejected by all. She eventually became the first
@@ -659,16 +666,17 @@
           <div class="milestone-card-split-half milestone-card-split-image">
             <img
               class="milestone-image"
-              src={publicUrl("img/masson.jpg")}
+              src={publicUrl("img/first_english_classes_building.jpg")}
               alt="David Masson"
             />
           </div>
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
-              The very first classes women could attend at the University were
-              David Masson's (1822 – 1907) English Literature classes. A
-              supporter of women's suffrage, Masson started teching women in
-              1867 at Hopetoun Rooms (67-73 Queen Street).
+              The very first classes women could attend at the University (2
+              years before Edinburgh Seven's enrollment) were David Masson's
+              (1822 – 1907) English Literature classes. A supporter of women's
+              suffrage, Masson started teching women in 1867 at Hopetoun Rooms
+              (67-73 Queen Street).
             </div>
           </div>
         </div>

@@ -22,6 +22,7 @@
   export let womenCareers1915Data: unknown = null;
   export let colonies: unknown = null;
   export let suez: unknown = null;
+  export let edinburghRoutes: unknown = null;
   export let edinburghSevenData: unknown = null;
 
   // Local Mapbox state
@@ -36,6 +37,7 @@
   let hasAnimatedSuezRoutesReverse = false;
   let hasAnimatedSuezRoutesForward = false;
   let hasDrawnEdinburghSeven = false;
+  let hasAnimatedEdinburghRoutes = false;
   let hasDrawnOldMapOverlay = false;
   let oldMapOverlayFadeTimeout: ReturnType<typeof setTimeout> | null = null;
   let hasDrawnWomenDoctorBirthplaces = false;
@@ -105,6 +107,8 @@
   const coloniesLineLayerId = "colonies-1885-line";
   const suezSourceId = "suez-routes";
   const suezLineLayerId = "suez-routes-line";
+  const edinburghRoutesSourceId = "edinburgh-routes";
+  const edinburghRoutesLineLayerId = "edinburgh-routes-line";
   const barryJourneyYear = 1809;
   const garrettJourneyYear = 1862;
   const firstClassesYear = 1867;
@@ -1029,6 +1033,21 @@
     map &&
     styleReady &&
     currentYear === edinburghSevenYear &&
+    edinburghRoutes &&
+    !hasAnimatedEdinburghRoutes
+  ) {
+    hasAnimatedEdinburghRoutes = animateGeoJsonLineLayer({
+      rawData: edinburghRoutes,
+      sourceId: edinburghRoutesSourceId,
+      layerId: edinburghRoutesLineLayerId,
+      milestoneYear: edinburghSevenYear,
+    });
+  }
+
+  $: if (
+    map &&
+    styleReady &&
+    currentYear === edinburghSevenYear &&
     Array.isArray(edinburghSevenData) &&
     edinburghSevenData.length > 0 &&
     !hasDrawnEdinburghSeven
@@ -1128,6 +1147,9 @@
   $: if (map && styleReady && currentYear !== edinburghSevenYear) {
     hasDrawnEdinburghSeven = false;
     clearEdinburghSevenMarkers();
+    cancelPathAnimation(edinburghRoutesLineLayerId);
+    hasAnimatedEdinburghRoutes = false;
+    removeLayerAndSource(edinburghRoutesSourceId, edinburghRoutesLineLayerId);
   }
 
   // Remove one-off journey routes after their focused timeline moment.
