@@ -716,27 +716,10 @@
         ]
       },
       "properties": {
-        "third_ac": 1,
-        "arrival": "03:45:00",
-        "from_station_code": "DBG",
-        "name": "Ghazipur to Edinburgh",
-        "zone": "CR",
-        "chair_car": 0,
-        "first_class": 0,
-        "duration_m": 55,
-        "sleeper": 1,
-        "from_station_name": "DARBHANGA JN",
-        "number": "11062",
-        "departure": "15:50:00",
-        "return_train": "11061",
-        "to_station_code": "LTT",
-        "second_ac": 1,
-        "classes": "",
-        "to_station_name": "LOKMANYA TILAK TERM",
-        "duration_h": 35,
-        "type": "Exp",
-        "first_ac": 0,
-        "distance": 1791
+        "name": "Caroline Sarah Robertson",
+        "birthplace": "Ghazipur, India",
+        "entry_year": 1869,
+        "life": "1847-1931"
       }
     }
   ]

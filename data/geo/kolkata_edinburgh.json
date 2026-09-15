@@ -849,27 +849,10 @@
         ]
       },
       "properties": {
-        "third_ac": 1,
-        "arrival": "11:25:00",
-        "from_station_code": "HWH",
-        "name": "Kolkata to Edinburgh",
-        "zone": "ER",
-        "chair_car": 0,
-        "first_class": 0,
-        "duration_m": 25,
-        "sleeper": 1,
-        "from_station_name": "HOWRAH JN",
-        "number": "12321",
-        "departure": "22:00:00",
-        "return_train": "12322",
-        "to_station_code": "CSTM",
-        "second_ac": 1,
-        "classes": "",
-        "to_station_name": "MUMBAI CST",
-        "duration_h": 37,
-        "type": "SF",
-        "first_ac": 1,
-        "distance": 2177
+        "name": "Isabella Margaret Hope Johnstone",
+        "birthplace": "Dum Dum, Bengal",
+        "entry_year": 1869,
+        "life": "1841-1891"
       }
     }
   ]
