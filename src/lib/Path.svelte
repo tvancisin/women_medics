@@ -4,51 +4,39 @@
   import { tweened } from "svelte/motion";
 
   export let x = 0;
-  export let year = 0;
   export let height = 0;
   export let label = "";
-  export let labelIndex = 1;
-  export let shrink = false;
-  export let topByYear: Map<number, number> = new Map();
+  export let active = false;
 
-  const fallbackShrinkLength = 40;
-  const labelPaddingX = 4;
-  const labelBackgroundHeight = 16;
+  const collapsedPathLength = 20;
+  $: labelPaddingX = active ? 4 : 3;
+  $: labelBackgroundHeight = active ? 16 : 14;
+  $: labelBackgroundOffsetX = active ? 16 : 8;
+  $: labelTextOffsetX = active ? 20 : 11;
+  $: labelBackgroundCenterOffsetY = active ? 2 : 1;
   let labelTextElement: SVGTextElement | null = null;
   let labelWidth = 0;
-  $: markerTop = topByYear.get(year);
   $: labelBackgroundWidth = Math.ceil(labelWidth) + labelPaddingX * 2;
 
   const pathLengthPx = tweened(0, {
     duration: 400,
     easing: cubicOut,
   });
-  const markerSizePx = tweened(5, {
-    duration: 500,
-    easing: cubicOut,
-  });
-
   $: startY = height - 30;
-  $: middleY = height - 100;
+  $: middleY = height - 80;
   $: fullLength = Math.max(0, startY - middleY);
 
   onMount(() => {
     pathLengthPx.set(fullLength);
-    markerSizePx.set(50);
   });
 
-  // path rises
-  $: endY = startY - $pathLengthPx;
-
-  $: shrinkLength =
-    markerTop === undefined
-      ? fallbackShrinkLength
-      : Math.max(0, startY - markerTop - 20);
-
-  $: if (shrink) {
-    pathLengthPx.set(shrinkLength);
-    markerSizePx.set(10);
+  $: if (active) {
+    pathLengthPx.set(fullLength);
+  } else {
+    pathLengthPx.set(Math.min(fullLength, collapsedPathLength));
   }
+
+  $: endY = startY - $pathLengthPx;
 
   $: pathD = `M ${x} ${startY} L ${x} ${endY}`;
 
@@ -63,20 +51,21 @@
     labelWidth = labelTextElement.getComputedTextLength();
   }
 
-  $: if (label) {
+  // The inactive label has a smaller font, so remeasure after its class changes.
+  $: if (label && typeof active === "boolean") {
     updateLabelWidth();
   }
 </script>
 
-<path class="event-path" d={pathD} fill="none" />
+<path class="event-path" class:inactive={!active} d={pathD} fill="none" />
 {#if label}
   <g
     transform="rotate(-90, {x}, {endY})"
   >
     <rect
       class="event-label-background"
-      x={x + 16}
-      y={endY - 10}
+      x={x + labelBackgroundOffsetX}
+      y={endY - labelBackgroundCenterOffsetY - labelBackgroundHeight / 2}
       width={labelBackgroundWidth}
       height={labelBackgroundHeight}
       rx="2"
@@ -84,7 +73,8 @@
     <text
       bind:this={labelTextElement}
       class="event-label"
-      x={x + 20}
+      class:inactive={!active}
+      x={x + labelTextOffsetX}
       y={endY + 2}
       text-anchor="start"
     >
@@ -101,6 +91,10 @@
     pointer-events: none;
   }
 
+  .event-path.inactive {
+    stroke: #999;
+  }
+
   .event-label-background {
     fill: #000;
     pointer-events: none;
@@ -112,5 +106,10 @@
     font-family: "Montserrat";
     font-weight: 500;
     pointer-events: none;
+  }
+
+  .event-label.inactive {
+    fill: #999;
+    font-size: 10px;
   }
 </style>

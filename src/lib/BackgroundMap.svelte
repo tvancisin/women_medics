@@ -25,6 +25,8 @@
   export let edinburghRoutes: unknown = null;
   export let edinburghSevenData: unknown = null;
 
+  $: console.log(edinburghSevenData);
+
   // Local Mapbox state
   let map: mapboxgl.Map;
   let mapContainer: HTMLDivElement;
@@ -46,7 +48,6 @@
   let hasFocusedOfficialMedicsMilestone = false;
   let timelineMarkersDataKey = "";
   const timelineLabelMarkers = new Map<string, mapboxgl.Marker>();
-  const edinburghSevenMarkers = new Map<string, mapboxgl.Marker>();
 
   type LayerConfig = {
     sourceId: string;
@@ -87,6 +88,8 @@
   const garrettLineLayerId = "garrett-journey-line";
   const physiologyStudentsSourceId = "physiology-students";
   const physiologyStudentsLayerId = "physiology-students-circles";
+  const edinburghSevenSourceId = "edinburgh-seven";
+  const edinburghSevenLayerId = "edinburgh-seven-circles";
   const firstClassesSourceId = "first-classes";
   const firstClassesLayerId = "first-classes-circles";
   const firstClassesPathsSourceId = "first-classes-paths";
@@ -118,6 +121,7 @@
   const oldMapOverlayEndYear = 1760;
   const historicalMapOverlayOpacity = 0.8;
   const historicalMapOverlayFadeDurationMs = 900;
+  const animatedLineDurationMs = 20_000;
   const womenDoctorsBirthplacesYear = 1911;
   const womenDoctorsFocusYear = 1911;
   const suezRoutesReverseYear = 1911;
@@ -127,6 +131,7 @@
   const foregroundMarkerLayerIds = [
     firstClassesLayerId,
     physiologyStudentsLayerId,
+    edinburghSevenLayerId,
     womenDoctorsBirthplacesLayerId,
     womenDoctorsCareerLocationsLayerId,
     timelineMarkersCircleLayerId,
@@ -398,10 +403,6 @@
               ? (feature.geometry.coordinates as GeoJSON.Position[][])
               : [];
 
-        if (coordinateSets.length === 0) {
-          return [];
-        }
-
         return coordinateSets.flatMap((rawCoordinates) => {
           if (rawCoordinates.length === 0) return [];
 
@@ -427,23 +428,19 @@
               {
                 type: "Feature",
                 properties: feature.properties ?? {},
-                geometry: {
-                  type: "LineString",
-                  coordinates,
-                },
+                geometry: { type: "LineString", coordinates },
               } satisfies GeoJSON.Feature<GeoJSON.LineString>,
             ];
           }
 
           const scaledIndex = clampedProgress * (coordinates.length - 1);
           const segmentIndex = Math.floor(scaledIndex);
-          const t = scaledIndex - segmentIndex;
+          const segmentProgress = scaledIndex - segmentIndex;
           const from = coordinates[segmentIndex];
-          const to =
-            coordinates[Math.min(segmentIndex + 1, coordinates.length - 1)];
+          const to = coordinates[segmentIndex + 1];
           const interpolated: GeoJSON.Position = [
-            from[0] + (to[0] - from[0]) * t,
-            from[1] + (to[1] - from[1]) * t,
+            from[0] + (to[0] - from[0]) * segmentProgress,
+            from[1] + (to[1] - from[1]) * segmentProgress,
           ];
 
           return [
@@ -463,10 +460,7 @@
       },
     );
 
-    return {
-      type: "FeatureCollection",
-      features,
-    };
+    return { type: "FeatureCollection", features };
   };
 
   function drawColoniesLayer(rawData: unknown) {
@@ -567,67 +561,13 @@
     });
   }
 
-  function edinburghSevenImageUrl(img: unknown) {
-    const fileName = String(img ?? "").trim();
-    if (!fileName || fileName.toLowerCase() === "null") return "";
-
-    // The portraits are static files in public/, so this also works when the
-    // site is deployed below a sub-path (for example, on GitHub Pages).
-    return `${import.meta.env.BASE_URL}img/edin_forty/${encodeURIComponent(fileName)}`;
-  }
-
-  function clearEdinburghSevenMarkers() {
-    for (const marker of edinburghSevenMarkers.values()) {
-      marker.remove();
-    }
-    edinburghSevenMarkers.clear();
-  }
-
-  function drawEdinburghSevenMarkers(rawData: unknown) {
-    if (!map || !styleReady) return false;
-
-    const features = getEdinburghSevenPointFeatures(rawData);
-    if (features.length === 0) return false;
-
-    const activeMarkerKeys = new Set<string>();
-
-    for (const [index, feature] of features.entries()) {
-      const [longitude, latitude] = feature.geometry.coordinates;
-      const name = String(feature.properties?.name ?? "Unknown");
-      const markerKey = `${index}-${longitude}-${latitude}`;
-      const imageUrl = edinburghSevenImageUrl(feature.properties?.img);
-      activeMarkerKeys.add(markerKey);
-
-      const existingMarker = edinburghSevenMarkers.get(markerKey);
-      if (existingMarker) {
-        existingMarker.getElement().style.backgroundImage = imageUrl
-          ? `url("${imageUrl}")`
-          : "";
-        continue;
-      }
-
-      const element = document.createElement("div");
-      element.className = "edinburgh-seven-marker";
-      element.title = name;
-      element.setAttribute("aria-label", `${name}'s birthplace`);
-      if (imageUrl) {
-        element.style.backgroundImage = `url("${imageUrl}")`;
-      }
-
-      const marker = new mapboxgl.Marker({ element, anchor: "center" })
-        .setLngLat([longitude, latitude])
-        .addTo(map);
-      edinburghSevenMarkers.set(markerKey, marker);
-    }
-
-    for (const [markerKey, marker] of edinburghSevenMarkers) {
-      if (!activeMarkerKeys.has(markerKey)) {
-        marker.remove();
-        edinburghSevenMarkers.delete(markerKey);
-      }
-    }
-
-    return true;
+  function drawEdinburghSevenLayer(rawData: unknown) {
+    return drawCircleLayer({
+      features: getEdinburghSevenPointFeatures(rawData),
+      sourceId: edinburghSevenSourceId,
+      layerId: edinburghSevenLayerId,
+      paint: circleMarkerPaint,
+    });
   }
 
   function syncTimelineMarkerLabels(
@@ -798,11 +738,10 @@
     }
 
     const source = map.getSource(sourceId) as mapboxgl.GeoJSONSource;
-    const durationMs = 10000;
     const startedAt = performance.now();
 
     const step = (now: number) => {
-      const progress = Math.min(1, (now - startedAt) / durationMs);
+      const progress = Math.min(1, (now - startedAt) / animatedLineDurationMs);
       const nextData = getAnimatedLineFeatureCollection(
         rawData,
         progress,
@@ -834,8 +773,8 @@
       lineColor: "white",
     });
     map.flyTo({
-      center: [-5.1883, 54.5533],
-      zoom: 5.5,
+      center: [-5.1883, 54.1533],
+      zoom: 6,
       duration: 3000,
       essential: true,
     });
@@ -857,7 +796,7 @@
 
   function focusEdinburghClasses() {
     map.flyTo({
-      center: [-3.21, 55.9533],
+      center: [-3.18, 55.95],
       zoom: 13,
       duration: 3000,
       essential: true,
@@ -1052,11 +991,11 @@
     edinburghSevenData.length > 0 &&
     !hasDrawnEdinburghSeven
   ) {
-    hasDrawnEdinburghSeven = drawEdinburghSevenMarkers(edinburghSevenData);
+    hasDrawnEdinburghSeven = drawEdinburghSevenLayer(edinburghSevenData);
     map.flyTo({
-      center: [20.1883, 40.9433],
-      zoom: 3,
+      center: [7.1883, 54.5533],
       duration: 2000,
+      zoom: 5,
       essential: true,
     });
   }
@@ -1146,7 +1085,10 @@
 
   $: if (map && styleReady && currentYear !== edinburghSevenYear) {
     hasDrawnEdinburghSeven = false;
-    clearEdinburghSevenMarkers();
+    removeCircleLayer({
+      sourceId: edinburghSevenSourceId,
+      layerId: edinburghSevenLayerId,
+    });
     cancelPathAnimation(edinburghRoutesLineLayerId);
     hasAnimatedEdinburghRoutes = false;
     removeLayerAndSource(edinburghRoutesSourceId, edinburghRoutesLineLayerId);
@@ -1281,7 +1223,10 @@
         marker.remove();
       }
       timelineLabelMarkers.clear();
-      clearEdinburghSevenMarkers();
+      removeCircleLayer({
+        sourceId: edinburghSevenSourceId,
+        layerId: edinburghSevenLayerId,
+      });
       map.remove();
     };
   });
@@ -1318,21 +1263,5 @@
     white-space: nowrap;
     pointer-events: none;
     border-radius: 3px;
-  }
-
-  /* These DOM markers allow portraits to be cropped into circles. Markers
-   * without an image leave background-image unset and use this grey fallback.
-   */
-  :global(.edinburgh-seven-marker) {
-    width: 30px;
-    height: 30px;
-    box-sizing: border-box;
-    border: 1px solid rgba(0, 0, 0, 0.9);
-    border-radius: 50%;
-    background-color: #777;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   }
 </style>

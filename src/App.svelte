@@ -14,19 +14,17 @@
   const timelineZoomTriggerYear = 1862;
   const timelineResetTriggerYear = 1914;
   const timelineZoomDomainStart = 1850;
-  const timelineZoomDomainEnd = 1930;
+  const timelineZoomDomainEnd = 1915;
   const timelineZoomDurationMs = 1600;
+  // Set to false to keep the timeline at its full 1550–2026 range.
+  const enableTimelineSpreading = false;
   const margin = { top: 20, right: 40, bottom: 30, left: 40 };
 
   // keeping the detail div inside screen
   const milestoneCardWidth = 400;
-  const milestoneMarkerSize = 20;
-  const collapsedMarkerDefaultOffset = 90;
-  const collapsedMarkerOverlapOffset = 110;
-  const collapsedMarkerOverlapThresholdPx = milestoneMarkerSize + 6;
 
   // Anchor cards differently depending on whether the milestone is left or right of center.
-  const card_left = [1726, 1809, 1867, 1869, 1875, 1886, 1889];
+  const card_left = [1726, 1809];
   const clampedLeft = (x: number, year: number) => {
     // return x < width / 2 ? x + 10 : x - milestoneCardWidth - 10;
     if (card_left.includes(year)) {
@@ -35,7 +33,6 @@
       return x + 15;
     }
   };
-  const centeredMarkerLeft = (x: number) => x - milestoneMarkerSize / 2;
 
   // Dev-only: set to false or remove this flag and the related blocks below to restore auto-resume.
   const devRequireClickToResume = true;
@@ -88,7 +85,6 @@
   let nextPauseIndex = 0;
   let pausedAtYear: number | null = null;
   let pauseStartMs: number | null = null;
-  let shrinkEnabledYears = new Set<number>();
   let womenMedicsData: Array<{ year: number; number: number }> = [];
   let edinburghSevenData: Array<Record<string, string>> = [];
 
@@ -299,6 +295,7 @@
   };
 
   $: if (
+    enableTimelineSpreading &&
     currentYear >= timelineZoomTriggerYear &&
     currentYear < timelineResetTriggerYear &&
     !hasZoomedTimeline
@@ -310,59 +307,18 @@
     );
   }
 
-  $: if (currentYear >= timelineResetTriggerYear && !hasResetTimeline) {
+  $: if (
+    enableTimelineSpreading &&
+    currentYear >= timelineResetTriggerYear &&
+    !hasResetTimeline
+  ) {
     hasResetTimeline = true;
     hasZoomedTimeline = false;
     startTimelineDomainTransition(startYear, endYear);
   }
 
-  // milestone divs
-  let topByYear: Map<number, number> = new Map();
-  $: collapsedMarkerTopByYear = (() => {
-    topByYear = new Map<number, number>();
-    let previousCollapsedYear: number | null = null;
-
-    for (const year of pauseYears) {
-      if (!shrinkEnabledYears.has(year)) {
-        continue;
-      }
-
-      const defaultTop = height - collapsedMarkerDefaultOffset;
-      const overlapTop = height - collapsedMarkerOverlapOffset;
-
-      if (previousCollapsedYear === null) {
-        topByYear.set(year, defaultTop);
-        previousCollapsedYear = year;
-        continue;
-      }
-
-      const markerX = centeredMarkerLeft(yearToX(year));
-      const previousX = centeredMarkerLeft(yearToX(previousCollapsedYear));
-      const previousTop = topByYear.get(previousCollapsedYear) ?? defaultTop;
-      const isClose =
-        Math.abs(markerX - previousX) < collapsedMarkerOverlapThresholdPx;
-
-      if (isClose) {
-        topByYear.set(
-          year,
-          previousTop === overlapTop ? defaultTop : overlapTop,
-        );
-      } else {
-        topByYear.set(year, defaultTop);
-      }
-
-      previousCollapsedYear = year;
-    }
-    return topByYear;
-  })();
-
   // Dev-only: remove this handler together with the Continue button markup.
   const handleResumeClick = () => {
-    if (pausedAtYear !== null) {
-      const nextShrinkYears = new Set(shrinkEnabledYears);
-      nextShrinkYears.add(pausedAtYear);
-      shrinkEnabledYears = nextShrinkYears;
-    }
     resumeRequested = true;
     awaitingResumeClick = false;
   };
@@ -477,10 +433,6 @@
 
           // Trigger path shrink for the milestone we're leaving — works
           // whether the button triggered this or the timer fired automatically.
-          const nextShrinkYears = new Set(shrinkEnabledYears);
-          nextShrinkYears.add(pausedAtYear);
-          shrinkEnabledYears = nextShrinkYears;
-
           // Keep timeline speed consistent by discounting time spent paused.
           animationStartMs += pausedMs;
           // Clear pause state so normal timeline movement can continue.
@@ -579,8 +531,6 @@
     {axisRight}
     {pauseYears}
     {milestoneLabels}
-    {shrinkEnabledYears}
-    {topByYear}
     {womenDoctorsData}
     {womenMedicsData}
     {yearToX}
@@ -593,13 +543,8 @@
       class:milestone-card--text-only={year === 1726}
       class:milestone-card--split={splitMilestoneYears.has(year)}
       class:is-active={pausedAtYear === year}
-      class:is-past={shrinkEnabledYears.has(year)}
-      style:top={pausedAtYear === year
-        ? "15vh"
-        : `${collapsedMarkerTopByYear.get(year) ?? height - collapsedMarkerDefaultOffset}px`}
-      style:left="{pausedAtYear === year
-        ? clampedLeft(yearToX(year), year)
-        : centeredMarkerLeft(yearToX(year))}px"
+      style:top="15vh"
+      style:left={`${clampedLeft(yearToX(year), year)}px`}
     >
       {#if year === 1583}
         <div
@@ -697,23 +642,17 @@
           <div class="milestone-card-split-half milestone-card-split-image">
             <img
               class="milestone-image"
-              src={publicUrl("img/mckendrick.jpg")}
+              src={publicUrl("img/gayfield_house.jpg")}
               alt="John Gray McKendrick"
             />
           </div>
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
-              John Gray McKendrick (1841 – 1926) was a Scottish physiologist. He
-              served as Regius Professor of Physiology at the University of
-              Glasgow from 1876 to 1906, and was co-founder of the Physiological
-              Society. When he was John Hughes Bennett's assistant, he taught
-              physiology to the women medical students in 1871–72, including
-              Sophia Jex-Blake. <a
-                href="https://en.wikipedia.org/wiki/John_Gray_McKendrick"
-                target="_blank"
-                rel="noopener noreferrer"
-                style="color: white">More info</a
-              >
+              After Edinburgh Seven/Forty were refused graduation and a general
+              backlash against women studying medicine, there were still
+              professors who supported women in this regard. One of them was
+              John Gray McKendrick (1841-1926), who started teaching pyhsiology
+              to women at Gayfield House (18 East London Street) in 1875.
             </div>
           </div>
         </div>
@@ -824,27 +763,17 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
     background-color: rgb(0, 0, 0);
     opacity: 0;
-    transform: translateY(8px);
-    transition:
-      width 260ms ease,
-      height 260ms ease,
-      top 260ms ease,
-      left 260ms ease,
-      opacity 260ms ease,
-      transform 260ms ease;
     pointer-events: none;
     overflow: hidden;
   }
 
-  .milestone-card.is-active,
-  .milestone-card.is-past {
+  .milestone-card.is-active {
     opacity: 1;
   }
 
   .milestone-card.is-active {
     width: 400px;
     height: 75vh;
-    transform: translateY(8px);
     pointer-events: auto;
   }
 
@@ -930,21 +859,6 @@
     font-weight: 700;
     line-height: 1.25;
     text-align: left;
-  }
-
-  .milestone-card.is-past {
-    width: 20px;
-    height: 20px;
-    padding: 0;
-    gap: 0;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    font-size: 0;
-  }
-
-  .milestone-card.is-past > * {
-    display: none;
   }
 
   .milestone-text {

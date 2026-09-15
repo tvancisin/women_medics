@@ -19,8 +19,6 @@
   export let axisRight: number;
   export let pauseYears: number[] = [];
   export let milestoneLabels: Map<number, string> = new Map();
-  export let shrinkEnabledYears: Set<number> = new Set();
-  export let topByYear: Map<number, number> = new Map();
   export let womenDoctorsData: unknown = [];
   export let womenMedicsData: WomenMedicsDatum[] = [];
   export let yearToX: (year: number) => number;
@@ -102,23 +100,20 @@
       {yearToX}
     />
 
-    <Doctors
+    <!-- <Doctors
       {womenDoctorsData}
       {currentYear}
       {timelineY}
       {yearToX}
       {womenMedicsData}
-    />
+    /> -->
 
-    {#each visibleMilestoneYears as year, index (year)}
+    {#each visibleMilestoneYears as year (year)}
       <Path
         x={yearToX(year)}
-        {year}
         {height}
         label={milestoneLabels.get(year) ?? ""}
-        labelIndex={index + 1}
-        shrink={shrinkEnabledYears.has(year)}
-        {topByYear}
+        active={currentYear === year}
       />
     {/each}
 

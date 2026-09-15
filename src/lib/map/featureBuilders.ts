@@ -146,10 +146,23 @@ export const getEdinburghSevenPointFeatures = (
   }
 
   return (rawData as EdinburghSevenDatum[]).flatMap((row) => {
+    const hasLatitude =
+      row.lat !== undefined &&
+      row.lat !== null &&
+      (typeof row.lat !== "string" || row.lat.trim() !== "");
+    const hasLongitude =
+      row.lon !== undefined &&
+      row.lon !== null &&
+      (typeof row.lon !== "string" || row.lon.trim() !== "");
     const lat = Number(row.lat);
     const lon = Number(row.lon);
 
-    if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+    if (
+      !hasLatitude ||
+      !hasLongitude ||
+      !Number.isFinite(lat) ||
+      !Number.isFinite(lon)
+    ) {
       return [];
     }
 
