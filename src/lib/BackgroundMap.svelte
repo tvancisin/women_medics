@@ -42,6 +42,14 @@
   let hasAnimatedEdinburghRoutes = false;
   let hasDrawnOldMapOverlay = false;
   let oldMapOverlayFadeTimeout: ReturnType<typeof setTimeout> | null = null;
+  let hasDrawnFirstClassesMapOverlay = false;
+  let firstClassesMapOverlayFadeTimeout: ReturnType<typeof setTimeout> | null =
+    null;
+  let hasDrawnPhysiologyMapOverlay = false;
+  let physiologyMapOverlayFadeTimeout: ReturnType<typeof setTimeout> | null =
+    null;
+  let hasDrawn1886MapOverlay = false;
+  let mapOverlay1886FadeTimeout: ReturnType<typeof setTimeout> | null = null;
   let hasDrawnWomenDoctorBirthplaces = false;
   let hasDrawnWomenDoctorCareerLocations = false;
   let hasFocusedWomenDoctorsMilestone = false;
@@ -105,6 +113,13 @@
   const timelineMarkersTextLayerId = "timeline-location-markers-text";
   const oldMapOverlaySourceId = "old-map-overlay-1726";
   const oldMapOverlayLayerId = "old-map-overlay-1726-raster";
+  const firstClassesMapOverlaySourceId = "first-classes-map-overlay-1867";
+  const firstClassesMapOverlayLayerId =
+    "first-classes-map-overlay-1867-raster";
+  const physiologyMapOverlaySourceId = "physiology-map-overlay-1875";
+  const physiologyMapOverlayLayerId = "physiology-map-overlay-1875-raster";
+  const mapOverlay1886SourceId = "map-overlay-1886";
+  const mapOverlay1886LayerId = "map-overlay-1886-raster";
   const coloniesSourceId = "colonies-1885";
   const coloniesFillLayerId = "colonies-1885-fill";
   const coloniesLineLayerId = "colonies-1885-line";
@@ -119,6 +134,10 @@
   const physiologyYear = 1875;
   const oldMapOverlayStartYear = 1726;
   const oldMapOverlayEndYear = 1760;
+  const firstClassesMapOverlayYear = 1867;
+  const physiologyMapOverlayYear = 1875;
+  const mapOverlay1886Year = 1886;
+  const mapOverlay1886EndYear = 1889;
   const historicalMapOverlayOpacity = 0.8;
   const historicalMapOverlayFadeDurationMs = 900;
   const animatedLineDurationMs = 20_000;
@@ -126,8 +145,7 @@
   const womenDoctorsFocusYear = 1911;
   const suezRoutesReverseYear = 1911;
   const suezRoutesForwardYear = 1912;
-  const womenDoctorsCareerLocationsYear = 1912;
-  const officialMedicsYear = 1914;
+  const womenDoctorsCareerLocationsYear = 1915;
   const foregroundMarkerLayerIds = [
     firstClassesLayerId,
     physiologyStudentsLayerId,
@@ -368,6 +386,230 @@
 
     map.setPaintProperty(
       oldMapOverlayLayerId,
+      "raster-opacity",
+      historicalMapOverlayOpacity,
+    );
+
+    bringForegroundMarkersToFront();
+    return true;
+  }
+
+  function clearFirstClassesMapOverlayFade() {
+    if (firstClassesMapOverlayFadeTimeout === null) return;
+
+    clearTimeout(firstClassesMapOverlayFadeTimeout);
+    firstClassesMapOverlayFadeTimeout = null;
+  }
+
+  function removeFirstClassesMapOverlay() {
+    clearFirstClassesMapOverlayFade();
+    hasDrawnFirstClassesMapOverlay = false;
+    removeLayerAndSource(
+      firstClassesMapOverlaySourceId,
+      firstClassesMapOverlayLayerId,
+    );
+  }
+
+  function fadeOutFirstClassesMapOverlay() {
+    if (
+      !map ||
+      !styleReady ||
+      firstClassesMapOverlayFadeTimeout !== null
+    ) {
+      return;
+    }
+
+    if (!map.getLayer(firstClassesMapOverlayLayerId)) {
+      removeFirstClassesMapOverlay();
+      return;
+    }
+
+    map.setPaintProperty(firstClassesMapOverlayLayerId, "raster-opacity", 0);
+    firstClassesMapOverlayFadeTimeout = setTimeout(() => {
+      firstClassesMapOverlayFadeTimeout = null;
+      hasDrawnFirstClassesMapOverlay = false;
+      removeLayerAndSource(
+        firstClassesMapOverlaySourceId,
+        firstClassesMapOverlayLayerId,
+      );
+    }, historicalMapOverlayFadeDurationMs);
+  }
+
+  function drawFirstClassesMapOverlay() {
+    if (!map || !styleReady) return false;
+
+    clearFirstClassesMapOverlayFade();
+
+    if (!map.getSource(firstClassesMapOverlaySourceId)) {
+      map.addSource(firstClassesMapOverlaySourceId, {
+        type: "raster",
+        tiles: [
+          `https://api.mapbox.com/v4/tomasvancisin.rezmqd/{z}/{x}/{y}.png?access_token=${envToken}`,
+        ],
+        tileSize: 256,
+      });
+    }
+
+    if (!map.getLayer(firstClassesMapOverlayLayerId)) {
+      map.addLayer({
+        id: firstClassesMapOverlayLayerId,
+        type: "raster",
+        source: firstClassesMapOverlaySourceId,
+        paint: {
+          "raster-opacity": historicalMapOverlayOpacity,
+          "raster-opacity-transition": {
+            duration: historicalMapOverlayFadeDurationMs,
+          },
+        },
+      });
+    }
+
+    map.setPaintProperty(
+      firstClassesMapOverlayLayerId,
+      "raster-opacity",
+      historicalMapOverlayOpacity,
+    );
+
+    bringForegroundMarkersToFront();
+    return true;
+  }
+
+  function clearPhysiologyMapOverlayFade() {
+    if (physiologyMapOverlayFadeTimeout === null) return;
+
+    clearTimeout(physiologyMapOverlayFadeTimeout);
+    physiologyMapOverlayFadeTimeout = null;
+  }
+
+  function removePhysiologyMapOverlay() {
+    clearPhysiologyMapOverlayFade();
+    hasDrawnPhysiologyMapOverlay = false;
+    removeLayerAndSource(
+      physiologyMapOverlaySourceId,
+      physiologyMapOverlayLayerId,
+    );
+  }
+
+  function fadeOutPhysiologyMapOverlay() {
+    if (!map || !styleReady || physiologyMapOverlayFadeTimeout !== null) {
+      return;
+    }
+
+    if (!map.getLayer(physiologyMapOverlayLayerId)) {
+      removePhysiologyMapOverlay();
+      return;
+    }
+
+    map.setPaintProperty(physiologyMapOverlayLayerId, "raster-opacity", 0);
+    physiologyMapOverlayFadeTimeout = setTimeout(() => {
+      physiologyMapOverlayFadeTimeout = null;
+      hasDrawnPhysiologyMapOverlay = false;
+      removeLayerAndSource(
+        physiologyMapOverlaySourceId,
+        physiologyMapOverlayLayerId,
+      );
+    }, historicalMapOverlayFadeDurationMs);
+  }
+
+  function drawPhysiologyMapOverlay() {
+    if (!map || !styleReady) return false;
+
+    clearPhysiologyMapOverlayFade();
+
+    if (!map.getSource(physiologyMapOverlaySourceId)) {
+      map.addSource(physiologyMapOverlaySourceId, {
+        type: "raster",
+        tiles: [
+          `https://api.mapbox.com/v4/tomasvancisin.sq1kxl/{z}/{x}/{y}.png?access_token=${envToken}`,
+        ],
+        tileSize: 256,
+      });
+    }
+
+    if (!map.getLayer(physiologyMapOverlayLayerId)) {
+      map.addLayer({
+        id: physiologyMapOverlayLayerId,
+        type: "raster",
+        source: physiologyMapOverlaySourceId,
+        paint: {
+          "raster-opacity": historicalMapOverlayOpacity,
+          "raster-opacity-transition": {
+            duration: historicalMapOverlayFadeDurationMs,
+          },
+        },
+      });
+    }
+
+    map.setPaintProperty(
+      physiologyMapOverlayLayerId,
+      "raster-opacity",
+      historicalMapOverlayOpacity,
+    );
+
+    bringForegroundMarkersToFront();
+    return true;
+  }
+
+  function clear1886MapOverlayFade() {
+    if (mapOverlay1886FadeTimeout === null) return;
+
+    clearTimeout(mapOverlay1886FadeTimeout);
+    mapOverlay1886FadeTimeout = null;
+  }
+
+  function remove1886MapOverlay() {
+    clear1886MapOverlayFade();
+    hasDrawn1886MapOverlay = false;
+    removeLayerAndSource(mapOverlay1886SourceId, mapOverlay1886LayerId);
+  }
+
+  function fadeOut1886MapOverlay() {
+    if (!map || !styleReady || mapOverlay1886FadeTimeout !== null) return;
+
+    if (!map.getLayer(mapOverlay1886LayerId)) {
+      remove1886MapOverlay();
+      return;
+    }
+
+    map.setPaintProperty(mapOverlay1886LayerId, "raster-opacity", 0);
+    mapOverlay1886FadeTimeout = setTimeout(() => {
+      mapOverlay1886FadeTimeout = null;
+      hasDrawn1886MapOverlay = false;
+      removeLayerAndSource(mapOverlay1886SourceId, mapOverlay1886LayerId);
+    }, historicalMapOverlayFadeDurationMs);
+  }
+
+  function draw1886MapOverlay() {
+    if (!map || !styleReady) return false;
+
+    clear1886MapOverlayFade();
+
+    if (!map.getSource(mapOverlay1886SourceId)) {
+      map.addSource(mapOverlay1886SourceId, {
+        type: "raster",
+        tiles: [
+          `https://api.mapbox.com/v4/tomasvancisin.dobh64/{z}/{x}/{y}.png?access_token=${envToken}`,
+        ],
+        tileSize: 256,
+      });
+    }
+
+    if (!map.getLayer(mapOverlay1886LayerId)) {
+      map.addLayer({
+        id: mapOverlay1886LayerId,
+        type: "raster",
+        source: mapOverlay1886SourceId,
+        paint: {
+          "raster-opacity": historicalMapOverlayOpacity,
+          "raster-opacity-transition": {
+            duration: historicalMapOverlayFadeDurationMs,
+          },
+        },
+      });
+    }
+
+    map.setPaintProperty(
+      mapOverlay1886LayerId,
       "raster-opacity",
       historicalMapOverlayOpacity,
     );
@@ -814,7 +1056,7 @@
     drawTimelineMarkerLayers(currentYear);
   }
 
-  //// year 1726
+  //// 1726
   $: if (
     map &&
     styleReady &&
@@ -833,7 +1075,7 @@
     });
   }
 
-  // Journey milestones draw animated routes and move the camera to the route.
+  //// 1809 
   $: if (
     map &&
     styleReady &&
@@ -844,6 +1086,7 @@
     startBarryJourney();
   }
 
+  //// 1862
   $: if (
     map &&
     styleReady &&
@@ -853,46 +1096,8 @@
   ) {
     startGarrettJourney();
   }
-
-  $: if (
-    map &&
-    styleReady &&
-    currentYear >= suezRoutesReverseYear &&
-    suez &&
-    !hasAnimatedSuezRoutesReverse
-  ) {
-    hasAnimatedSuezRoutesReverse = animateGeoJsonLineLayer({
-      rawData: suez,
-      sourceId: suezSourceId,
-      layerId: suezLineLayerId,
-      milestoneYear: suezRoutesReverseYear,
-      continueAfterMilestone: true,
-      lineColor: "#51d1c2",
-      lineOpacity: 0.58,
-      lineWidth: 1.4,
-      reverse: true,
-    });
-  }
-
-  $: if (
-    map &&
-    styleReady &&
-    currentYear >= suezRoutesForwardYear &&
-    suez &&
-    !hasAnimatedSuezRoutesForward
-  ) {
-    hasAnimatedSuezRoutesForward = animateGeoJsonLineLayer({
-      rawData: suez,
-      sourceId: suezSourceId,
-      layerId: suezLineLayerId,
-      milestoneYear: suezRoutesForwardYear,
-      continueAfterMilestone: true,
-      lineColor: "#51d1c2",
-      lineOpacity: 0.58,
-      lineWidth: 1.4,
-    });
-  }
-
+ 
+  //// 1867 
   $: if (map && styleReady && currentYear == firstClassesYear) {
     focusEdinburghClasses();
   }
@@ -900,12 +1105,34 @@
   $: if (
     map &&
     styleReady &&
-    currentYear < oldMapOverlayStartYear &&
-    (hasDrawnOldMapOverlay ||
-      map.getLayer(oldMapOverlayLayerId) ||
-      map.getSource(oldMapOverlaySourceId))
+    currentYear === firstClassesMapOverlayYear &&
+    (!hasDrawnFirstClassesMapOverlay ||
+      firstClassesMapOverlayFadeTimeout !== null ||
+      !map.getLayer(firstClassesMapOverlayLayerId))
   ) {
-    removeOldMapOverlay();
+    hasDrawnFirstClassesMapOverlay = drawFirstClassesMapOverlay();
+  }
+
+  $: if (
+    map &&
+    styleReady &&
+    currentYear === physiologyMapOverlayYear &&
+    (!hasDrawnPhysiologyMapOverlay ||
+      physiologyMapOverlayFadeTimeout !== null ||
+      !map.getLayer(physiologyMapOverlayLayerId))
+  ) {
+    hasDrawnPhysiologyMapOverlay = drawPhysiologyMapOverlay();
+  }
+
+  $: if (
+    map &&
+    styleReady &&
+    currentYear === mapOverlay1886Year &&
+    (!hasDrawn1886MapOverlay ||
+      mapOverlay1886FadeTimeout !== null ||
+      !map.getLayer(mapOverlay1886LayerId))
+  ) {
+    hasDrawn1886MapOverlay = draw1886MapOverlay();
   }
 
   $: if (
@@ -920,11 +1147,29 @@
   $: if (
     map &&
     styleReady &&
-    currentYear >= officialMedicsYear &&
-    !hasFocusedOfficialMedicsMilestone
+    currentYear > firstClassesMapOverlayYear &&
+    (hasDrawnFirstClassesMapOverlay ||
+      map.getLayer(firstClassesMapOverlayLayerId))
   ) {
-    focusEdinburghClasses();
-    hasFocusedOfficialMedicsMilestone = true;
+    fadeOutFirstClassesMapOverlay();
+  }
+
+  $: if (
+    map &&
+    styleReady &&
+    currentYear > physiologyMapOverlayYear &&
+    (hasDrawnPhysiologyMapOverlay || map.getLayer(physiologyMapOverlayLayerId))
+  ) {
+    fadeOutPhysiologyMapOverlay();
+  }
+
+  $: if (
+    map &&
+    styleReady &&
+    currentYear > mapOverlay1886EndYear &&
+    (hasDrawn1886MapOverlay || map.getLayer(mapOverlay1886LayerId))
+  ) {
+    fadeOut1886MapOverlay();
   }
 
   // First women attending classes: draw student points and animated walking paths.
@@ -1058,6 +1303,46 @@
     });
   }
 
+
+  // $: if (
+  //   map &&
+  //   styleReady &&
+  //   currentYear >= suezRoutesReverseYear &&
+  //   suez &&
+  //   !hasAnimatedSuezRoutesReverse
+  // ) {
+  //   hasAnimatedSuezRoutesReverse = animateGeoJsonLineLayer({
+  //     rawData: suez,
+  //     sourceId: suezSourceId,
+  //     layerId: suezLineLayerId,
+  //     milestoneYear: suezRoutesReverseYear,
+  //     continueAfterMilestone: true,
+  //     lineColor: "#51d1c2",
+  //     lineOpacity: 0.58,
+  //     lineWidth: 1.4,
+  //     reverse: true,
+  //   });
+  // }
+
+  // $: if (
+  //   map &&
+  //   styleReady &&
+  //   currentYear >= suezRoutesForwardYear &&
+  //   suez &&
+  //   !hasAnimatedSuezRoutesForward
+  // ) {
+  //   hasAnimatedSuezRoutesForward = animateGeoJsonLineLayer({
+  //     rawData: suez,
+  //     sourceId: suezSourceId,
+  //     layerId: suezLineLayerId,
+  //     milestoneYear: suezRoutesForwardYear,
+  //     continueAfterMilestone: true,
+  //     lineColor: "#51d1c2",
+  //     lineOpacity: 0.58,
+  //     lineWidth: 1.4,
+  //   });
+  // }
+
   // Career locations replace birthplace distribution at the next story beat.
   $: if (
     map &&
@@ -1162,10 +1447,6 @@
     });
   }
 
-  $: if (map && styleReady && currentYear < officialMedicsYear) {
-    hasFocusedOfficialMedicsMilestone = false;
-  }
-
   // Later timeline overview: zoom out to the broader women doctors distribution.
   $: if (
     map &&
@@ -1215,6 +1496,9 @@
     return () => {
       window.removeEventListener("resize", handleResize);
       clearOldMapOverlayFade();
+      clearFirstClassesMapOverlayFade();
+      clearPhysiologyMapOverlayFade();
+      clear1886MapOverlayFade();
       for (const frame of pathAnimationFrames.values()) {
         cancelAnimationFrame(frame);
       }

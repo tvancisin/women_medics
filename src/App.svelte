@@ -38,7 +38,7 @@
   const devRequireClickToResume = true;
 
   const pauseYears = [
-    1583, 1726, 1809, 1862, 1867, 1869, 1875, 1886, 1889, 1911, 1912, 1914,
+    1583, 1726, 1809, 1862, 1867, 1869, 1875, 1886, 1889, 1911, 1915,
   ];
   const milestoneLabels = new Map<number, string>([
     [1583, "Foundation of the University 1582"],
@@ -53,12 +53,22 @@
     [1889, "College of Medicine for Women 1889"],
     // [1889, "Universities Scotland Act 1889"],
     // [1892, "Women admitted to universities"],
-    [1911, "Women Doctors"],
-    [1912, "Women Doctors travelling abroad"],
-    [1914, "Official female medics"],
+    [1911, "School and College Students 1911"],
+    [1915, "Women Doctors abroad in 1915"],
   ]);
 
   const splitMilestoneYears = new Set([1809, 1862, 1867, 1875]);
+  const milestone1915CardCount = 3;
+  const additional1915Cards = [
+    {
+      title: "1915 milestone — card two",
+      text: "Temporary placeholder text for the second 1915 milestone card.",
+    },
+    {
+      title: "1915 milestone — card three",
+      text: "Temporary placeholder text for the third 1915 milestone card.",
+    },
+  ];
 
   // Point multiple years at the same path, or leave a year out to show no image.
   const pauseDurationMs = 500;
@@ -242,8 +252,14 @@
   // Dev-only: remove these two variables with the click-to-resume behavior.
   let awaitingResumeClick = false;
   let resumeRequested = false;
+  let active1915CardIndex = 0;
 
   $: careerPositionGroups = buildCareerPositionGroups(womenCareers1915Data);
+
+  // Reset the 1915 sequence whenever this milestone is no longer active.
+  $: if (pausedAtYear !== 1915) {
+    active1915CardIndex = 0;
+  }
 
   $: maxSpan = Math.max(0, width - margin.left - margin.right);
   $: timelineY = Math.max(margin.top, height - margin.bottom);
@@ -319,6 +335,15 @@
 
   // Dev-only: remove this handler together with the Continue button markup.
   const handleResumeClick = () => {
+    if (
+      pausedAtYear === 1915 &&
+      active1915CardIndex < milestone1915CardCount - 1
+    ) {
+      active1915CardIndex += 1;
+      awaitingResumeClick = false;
+      return;
+    }
+
     resumeRequested = true;
     awaitingResumeClick = false;
   };
@@ -431,6 +456,16 @@
             return;
           }
 
+          // In production, use the regular timed pause between each 1915 card.
+          if (
+            pausedAtYear === 1915 &&
+            active1915CardIndex < milestone1915CardCount - 1
+          ) {
+            active1915CardIndex += 1;
+            pauseStartMs = Date.now();
+            return;
+          }
+
           // Trigger path shrink for the milestone we're leaving — works
           // whether the button triggered this or the timer fired automatically.
           // Keep timeline speed consistent by discounting time spent paused.
@@ -515,7 +550,9 @@
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
   {#if devRequireClickToResume && awaitingResumeClick}
     <button class="resume-button" type="button" on:click={handleResumeClick}>
-      Continue
+      {pausedAtYear === 1915 && active1915CardIndex < milestone1915CardCount - 1
+        ? "Next"
+        : "Continue"}
     </button>
   {/if}
   <MainTimeline
@@ -540,7 +577,7 @@
     <div
       class="milestone-card"
       class:milestone-card--university-founded={year === 1583}
-      class:milestone-card--text-only={year === 1726}
+      class:milestone-card--text-only={year === 1726 || year === 1911}
       class:milestone-card--split={splitMilestoneYears.has(year)}
       class:is-active={pausedAtYear === year}
       style:top="15vh"
@@ -656,77 +693,92 @@
             </div>
           </div>
         </div>
-      {:else if year === 1912}
-        <div class="career-chart">
-          <div class="career-chart-title">
-            {milestoneLabels.get(year) ?? ""}
+      {:else if year === 1911}
+        <div class="milestone-card-text-only">
+          <div class="milestone-card-title">
+            By 1911, 360 women have studied medicine at the School of Medicine
+            and College of Medicine for Women.
           </div>
-          {#if careerPositionGroups.length > 0}
-            <div class="career-region-list">
-              {#each careerPositionGroups as regionGroup (regionGroup.region)}
-                <section class="career-region">
-                  <div class="career-region-heading">
-                    <div class="career-region-summary">
-                      <span class="career-region-name"
-                        >{regionGroup.region}</span
-                      >
-                      <div
-                        class="career-statement-indicator"
-                        aria-label={`Stated occupations: ${regionGroup.statedCount}; not stated: ${regionGroup.notStatedCount}`}
-                        title={`Stated occupations: ${regionGroup.statedCount}; not stated: ${regionGroup.notStatedCount}`}
-                      >
-                        <div class="career-statement-track">
-                          <div
-                            class="career-statement-fill career-statement-fill-stated"
-                            style:width={`${regionGroup.statedPercent}%`}
-                          ></div>
-                          <div
-                            class="career-statement-fill career-statement-fill-not-stated"
-                            style:width={`${regionGroup.notStatedPercent}%`}
-                          ></div>
-                        </div>
-                        <span
-                          class="career-statement-count career-statement-count-stated"
+        </div>
+      {:else if year === 1915}
+        {#if active1915CardIndex === 0}
+          <div class="career-chart">
+            <div class="career-chart-title">
+              {milestoneLabels.get(year) ?? ""}
+            </div>
+            {#if careerPositionGroups.length > 0}
+              <div class="career-region-list">
+                {#each careerPositionGroups as regionGroup (regionGroup.region)}
+                  <section class="career-region">
+                    <div class="career-region-heading">
+                      <div class="career-region-summary">
+                        <span class="career-region-name"
+                          >{regionGroup.region}</span
                         >
-                          {regionGroup.statedCount}
-                        </span>
-                        <span
-                          class="career-statement-count career-statement-count-not-stated"
+                        <div
+                          class="career-statement-indicator"
+                          aria-label={`Stated occupations: ${regionGroup.statedCount}; not stated: ${regionGroup.notStatedCount}`}
+                          title={`Stated occupations: ${regionGroup.statedCount}; not stated: ${regionGroup.notStatedCount}`}
                         >
-                          {regionGroup.notStatedCount}
-                        </span>
-                      </div>
-                    </div>
-                    <span class="career-region-total">{regionGroup.total}</span>
-                  </div>
-                  {#if regionGroup.positions.length > 0}
-                    <div class="career-bars">
-                      {#each regionGroup.positions as position (position.code)}
-                        <div class="career-bar-row">
-                          <div class="career-bar-label" title={position.code}>
-                            {position.code}
-                          </div>
-                          <div
-                            class="career-bar-track"
-                            aria-label={`${position.code}: ${position.count}`}
-                          >
+                          <div class="career-statement-track">
                             <div
-                              class="career-bar-fill"
-                              style:width={`${position.percent}%`}
+                              class="career-statement-fill career-statement-fill-stated"
+                              style:width={`${regionGroup.statedPercent}%`}
+                            ></div>
+                            <div
+                              class="career-statement-fill career-statement-fill-not-stated"
+                              style:width={`${regionGroup.notStatedPercent}%`}
                             ></div>
                           </div>
-                          <div class="career-bar-value">{position.count}</div>
+                          <span
+                            class="career-statement-count career-statement-count-stated"
+                          >
+                            {regionGroup.statedCount}
+                          </span>
+                          <span
+                            class="career-statement-count career-statement-count-not-stated"
+                          >
+                            {regionGroup.notStatedCount}
+                          </span>
                         </div>
-                      {/each}
+                      </div>
+                      <span class="career-region-total">{regionGroup.total}</span>
                     </div>
-                  {/if}
-                </section>
-              {/each}
-            </div>
-          {:else}
-            <div class="career-chart-empty">No 1915 career data</div>
-          {/if}
-        </div>
+                    {#if regionGroup.positions.length > 0}
+                      <div class="career-bars">
+                        {#each regionGroup.positions as position (position.code)}
+                          <div class="career-bar-row">
+                            <div class="career-bar-label" title={position.code}>
+                              {position.code}
+                            </div>
+                            <div
+                              class="career-bar-track"
+                              aria-label={`${position.code}: ${position.count}`}
+                            >
+                              <div
+                                class="career-bar-fill"
+                                style:width={`${position.percent}%`}
+                              ></div>
+                            </div>
+                            <div class="career-bar-value">{position.count}</div>
+                          </div>
+                        {/each}
+                      </div>
+                    {/if}
+                  </section>
+                {/each}
+              </div>
+            {:else}
+              <div class="career-chart-empty">No 1915 career data</div>
+            {/if}
+          </div>
+        {:else}
+          {@const card = additional1915Cards[active1915CardIndex - 1]}
+          <div class="milestone-card-placeholder">
+            <div class="milestone-card-title">{card.title}</div>
+            <p>{card.text}</p>
+          </div>
+        {/if}
       {:else if year === 1892}
         <div class="milestone-text">{milestoneLabels.get(year) ?? ""}</div>
         <img
@@ -859,6 +911,19 @@
     font-weight: 700;
     line-height: 1.25;
     text-align: left;
+  }
+
+  .milestone-card-placeholder {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 30px;
+    text-align: left;
+  }
+
+  .milestone-card-placeholder p {
+    margin: 14px 0 0;
+    font-size: 12px;
+    line-height: 1.5;
   }
 
   .milestone-text {
