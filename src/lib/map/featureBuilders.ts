@@ -74,6 +74,13 @@ type EdinburghSevenDatum = {
   img?: string;
 };
 
+type WomenDoctorsWarDatum = {
+  location?: string;
+  lat?: number | string;
+  lon?: number | string;
+  value?: number | string;
+};
+
 export const normalizeWomenCareer1915Region = (region: unknown) => {
   const normalizedRegion = String(region ?? "").trim().toLowerCase();
 
@@ -270,6 +277,48 @@ export const getWomenDoctorCareerLocationFeatures = (
     };
 
     return [feature];
+  });
+};
+
+export const getWomenDoctorsWarLocationFeatures = (
+  rawData: unknown,
+  year: number,
+): GeoJSON.Feature<GeoJSON.Point>[] => {
+  if (!rawData || typeof rawData !== "object") {
+    return [];
+  }
+
+  const entries = (rawData as Record<string, unknown>)[String(year)];
+  if (!Array.isArray(entries)) {
+    return [];
+  }
+
+  return (entries as WomenDoctorsWarDatum[]).flatMap((entry) => {
+    const lat = Number(entry.lat);
+    const lon = Number(entry.lon);
+    const value = Number(entry.value);
+
+    if (
+      !Number.isFinite(lat) ||
+      !Number.isFinite(lon) ||
+      !Number.isFinite(value)
+    ) {
+      return [];
+    }
+
+    return [
+      {
+        type: "Feature",
+        properties: {
+          location: entry.location ?? "Unknown",
+          value,
+        },
+        geometry: {
+          type: "Point",
+          coordinates: [lon, lat],
+        },
+      } satisfies GeoJSON.Feature<GeoJSON.Point>,
+    ];
   });
 };
 

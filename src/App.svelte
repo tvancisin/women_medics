@@ -38,7 +38,21 @@
   const devRequireClickToResume = true;
 
   const pauseYears = [
-    1583, 1726, 1809, 1862, 1867, 1869, 1875, 1886, 1889, 1911, 1915,
+    1583,
+    1726,
+    1809,
+    1862,
+    1867,
+    1869,
+    1875,
+    1886,
+    1889,
+    1911,
+    1915,
+    1916,
+    1917,
+    1918,
+    1919,
   ];
   const milestoneLabels = new Map<number, string>([
     [1583, "Foundation of the University 1582"],
@@ -55,18 +69,23 @@
     // [1892, "Women admitted to universities"],
     [1911, "School and College Students 1911"],
     [1915, "Women Doctors abroad in 1915"],
+    [1916, "Women doctors at war in 1916"],
+    [1917, "Women doctors at war in 1917"],
+    [1918, "Women doctors at war in 1918"],
+    [1919, "Women doctors at war in 1919"],
   ]);
 
   const splitMilestoneYears = new Set([1809, 1862, 1867, 1875]);
   const milestone1915CardCount = 3;
+  const womenDoctorsWarMilestoneYears = new Set([1916, 1917, 1918, 1919]);
   const additional1915Cards = [
     {
       title: "1915 milestone — card two",
       text: "Temporary placeholder text for the second 1915 milestone card.",
     },
     {
-      title: "1915 milestone — card three",
-      text: "Temporary placeholder text for the third 1915 milestone card.",
+      title: "Women doctors at war, 1915",
+      text: "Circle size shows the recorded number of women doctors at each location.",
     },
   ];
 
@@ -82,6 +101,7 @@
   let colonies: unknown = null;
   let suez: unknown = null;
   let edinburghRoutes: unknown = null;
+  let womenDoctorsWarData: unknown = null;
   let womenDoctorsData: unknown = null;
   let womenCareers1915Data: unknown = null;
   let currentYear = startYear;
@@ -394,6 +414,7 @@
           rawColonies,
           rawSuez,
           rawEdinburghRoutes,
+          rawWomenWarData,
         ] = await getJson([
           publicUrl("data/women_physiology_geo.json"),
           publicUrl("data/geo/garrett_journey.json"),
@@ -406,6 +427,7 @@
           publicUrl("data/geo/colonies_1885.json"),
           publicUrl("data/geo/suez_routes.json"),
           publicUrl("data/geo/edinburgh_routes.json"),
+          publicUrl("data/women_war.json"),
         ]);
 
         womenPhysiologyGeoData = Array.isArray(rawWomenPhysiologyGeoData)
@@ -423,6 +445,7 @@
         colonies = rawColonies ?? null;
         suez = rawSuez ?? null;
         edinburghRoutes = rawEdinburghRoutes ?? null;
+        womenDoctorsWarData = rawWomenWarData ?? null;
         womenDoctorsData = Array.isArray(rawWomenDoctors)
           ? [...(rawWomenDoctors as WomenDoctorDatum[])].sort((a, b) => {
               return (
@@ -546,6 +569,17 @@
     {suez}
     {edinburghRoutes}
     {edinburghSevenData}
+    {womenDoctorsWarData}
+    showWomenDoctorCareerLocations={pausedAtYear === 1915 &&
+      active1915CardIndex === 0}
+    showWomenDoctorsWarLocations={(pausedAtYear === 1915 &&
+      active1915CardIndex === milestone1915CardCount - 1) ||
+      womenDoctorsWarMilestoneYears.has(pausedAtYear ?? 0)}
+    womenDoctorsWarYear={pausedAtYear === 1915
+      ? 1915
+      : womenDoctorsWarMilestoneYears.has(pausedAtYear ?? 0)
+        ? pausedAtYear
+        : null}
   />
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
   {#if devRequireClickToResume && awaitingResumeClick}
@@ -742,7 +776,9 @@
                           </span>
                         </div>
                       </div>
-                      <span class="career-region-total">{regionGroup.total}</span>
+                      <span class="career-region-total"
+                        >{regionGroup.total}</span
+                      >
                     </div>
                     {#if regionGroup.positions.length > 0}
                       <div class="career-bars">
@@ -779,6 +815,16 @@
             <p>{card.text}</p>
           </div>
         {/if}
+      {:else if womenDoctorsWarMilestoneYears.has(year)}
+        <div class="milestone-card-placeholder">
+          <div class="milestone-card-title">
+            {milestoneLabels.get(year) ?? ""}
+          </div>
+          <p>
+            Circle size shows the recorded number of women doctors at each
+            location.
+          </p>
+        </div>
       {:else if year === 1892}
         <div class="milestone-text">{milestoneLabels.get(year) ?? ""}</div>
         <img

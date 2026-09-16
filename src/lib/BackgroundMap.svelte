@@ -8,6 +8,7 @@
     getTimelineMarkerFeatures,
     getWomenDoctorBirthplaceFeatures,
     getWomenDoctorCareerLocationFeatures,
+    getWomenDoctorsWarLocationFeatures,
   } from "./map/featureBuilders";
 
   // Component inputs
@@ -24,8 +25,13 @@
   export let suez: unknown = null;
   export let edinburghRoutes: unknown = null;
   export let edinburghSevenData: unknown = null;
+  export let womenDoctorsWarData: unknown = null;
+  export let showWomenDoctorCareerLocations = false;
+  export let showWomenDoctorsWarLocations = false;
+  export let womenDoctorsWarYear: number | null = null;
 
-  $: console.log(edinburghSevenData);
+  console.log(womenDoctorsWarData);
+  
 
   // Local Mapbox state
   let map: mapboxgl.Map;
@@ -52,10 +58,13 @@
   let mapOverlay1886FadeTimeout: ReturnType<typeof setTimeout> | null = null;
   let hasDrawnWomenDoctorBirthplaces = false;
   let hasDrawnWomenDoctorCareerLocations = false;
+  let hasDrawnWomenDoctorsWarLocations = false;
+  let drawnWomenDoctorsWarYear: number | null = null;
   let hasFocusedWomenDoctorsMilestone = false;
   let hasFocusedOfficialMedicsMilestone = false;
   let timelineMarkersDataKey = "";
   const timelineLabelMarkers = new Map<string, mapboxgl.Marker>();
+  const womenDoctorsWarLabelMarkers = new Map<string, mapboxgl.Marker>();
 
   type LayerConfig = {
     sourceId: string;
@@ -108,6 +117,8 @@
   const womenDoctorsBirthplacesLayerId = "women-doctors-birthplaces-circles";
   const womenDoctorsCareerLocationsSourceId = "women-doctors-careers";
   const womenDoctorsCareerLocationsLayerId = "women-doctors-careers-circles";
+  const womenDoctorsWarLocationsSourceId = "women-doctors-war-locations";
+  const womenDoctorsWarLocationsLayerId = "women-doctors-war-locations-circles";
   const timelineMarkersSourceId = "timeline-location-markers";
   const timelineMarkersCircleLayerId = "timeline-location-markers-circles";
   const timelineMarkersTextLayerId = "timeline-location-markers-text";
@@ -152,6 +163,7 @@
     edinburghSevenLayerId,
     womenDoctorsBirthplacesLayerId,
     womenDoctorsCareerLocationsLayerId,
+    womenDoctorsWarLocationsLayerId,
     timelineMarkersCircleLayerId,
     timelineMarkersTextLayerId,
   ];
@@ -176,6 +188,22 @@
   const timelineMarkerCirclePaint: Record<string, unknown> = {
     ...circleMarkerPaint,
     "circle-color": "#f2c14e",
+  };
+  const womenDoctorsWarCirclePaint: Record<string, unknown> = {
+    "circle-radius": [
+      "interpolate",
+      ["linear"],
+      ["get", "value"],
+      2,
+      6,
+      277,
+      24,
+    ],
+    "circle-color": "#f2c14e",
+    "circle-opacity": 0.78,
+    "circle-stroke-color": "#171717",
+    "circle-stroke-width": 1.5,
+    "circle-stroke-opacity": 1,
   };
 
   // GeoJSON guards used by map-specific route and overlay helpers.
@@ -926,6 +954,76 @@
     });
   }
 
+  function syncWomenDoctorsWarLocationLabels(
+    features: GeoJSON.Feature<GeoJSON.Point>[],
+  ) {
+    if (!map) return;
+
+    const activeMarkerKeys = new Set<string>();
+
+    for (const feature of features) {
+      const [longitude, latitude] = feature.geometry.coordinates;
+      const location = String(feature.properties?.location ?? "Unknown");
+      const value = String(feature.properties?.value ?? "");
+      const markerKey = `${location}-${longitude}-${latitude}`;
+      const label = `${location}\n${value}`;
+      activeMarkerKeys.add(markerKey);
+
+      const existingMarker = womenDoctorsWarLabelMarkers.get(markerKey);
+      if (existingMarker) {
+        existingMarker.getElement().textContent = label;
+        continue;
+      }
+
+      const element = document.createElement("div");
+      element.className = "women-doctors-war-location-label";
+      element.textContent = label;
+
+      const marker = new mapboxgl.Marker({
+        element,
+        anchor: "top",
+        offset: [0, 10],
+      })
+        .setLngLat([longitude, latitude])
+        .addTo(map);
+      womenDoctorsWarLabelMarkers.set(markerKey, marker);
+    }
+
+    for (const [markerKey, marker] of womenDoctorsWarLabelMarkers) {
+      if (!activeMarkerKeys.has(markerKey)) {
+        marker.remove();
+        womenDoctorsWarLabelMarkers.delete(markerKey);
+      }
+    }
+  }
+
+  function drawWomenDoctorsWarLocationLayer(rawData: unknown, year: number) {
+    const features = getWomenDoctorsWarLocationFeatures(rawData, year);
+    const didDraw = drawCircleLayer({
+      features,
+      sourceId: womenDoctorsWarLocationsSourceId,
+      layerId: womenDoctorsWarLocationsLayerId,
+      paint: womenDoctorsWarCirclePaint,
+    });
+
+    if (!didDraw || !map || !styleReady) return false;
+    syncWomenDoctorsWarLocationLabels(features);
+    bringForegroundMarkersToFront();
+    return true;
+  }
+
+  function removeWomenDoctorsWarLocationLayer() {
+    for (const marker of womenDoctorsWarLabelMarkers.values()) {
+      marker.remove();
+    }
+    womenDoctorsWarLabelMarkers.clear();
+
+    removeLayerAndSource(
+      womenDoctorsWarLocationsSourceId,
+      womenDoctorsWarLocationsLayerId,
+    );
+  }
+
   function animateGeoJsonLineLayer({
     rawData,
     sourceId,
@@ -1348,6 +1446,7 @@
     map &&
     styleReady &&
     currentYear >= womenDoctorsCareerLocationsYear &&
+    showWomenDoctorCareerLocations &&
     Array.isArray(womenCareers1915Data) &&
     womenCareers1915Data.length > 0 &&
     !hasDrawnWomenDoctorCareerLocations
@@ -1356,6 +1455,31 @@
       rawData: womenCareers1915Data,
       sourceId: womenDoctorsCareerLocationsSourceId,
       layerId: womenDoctorsCareerLocationsLayerId,
+    });
+  }
+
+  // Show the 1915 war-location counts only with the third 1915 card.
+  $: if (
+    map &&
+    styleReady &&
+    showWomenDoctorsWarLocations &&
+    womenDoctorsWarYear !== null &&
+    (!hasDrawnWomenDoctorsWarLocations ||
+      drawnWomenDoctorsWarYear !== womenDoctorsWarYear)
+  ) {
+    hasDrawnWomenDoctorsWarLocations = drawWomenDoctorsWarLocationLayer(
+      womenDoctorsWarData,
+      womenDoctorsWarYear,
+    );
+    drawnWomenDoctorsWarYear = hasDrawnWomenDoctorsWarLocations
+      ? womenDoctorsWarYear
+      : null;
+
+    map.flyTo({
+      center: [20.1883, 42.5533],
+      duration: 2000,
+      zoom: 3.5,
+      essential: true,
     });
   }
 
@@ -1439,12 +1563,29 @@
     });
   }
 
-  $: if (map && styleReady && currentYear < womenDoctorsCareerLocationsYear) {
+  $: if (
+    map &&
+    styleReady &&
+    (currentYear < womenDoctorsCareerLocationsYear ||
+      !showWomenDoctorCareerLocations)
+  ) {
     hasDrawnWomenDoctorCareerLocations = false;
     removeCircleLayer({
       sourceId: womenDoctorsCareerLocationsSourceId,
       layerId: womenDoctorsCareerLocationsLayerId,
     });
+  }
+
+  $: if (
+    map &&
+    styleReady &&
+    !showWomenDoctorsWarLocations &&
+    (hasDrawnWomenDoctorsWarLocations ||
+      map.getLayer(womenDoctorsWarLocationsLayerId))
+  ) {
+    hasDrawnWomenDoctorsWarLocations = false;
+    drawnWomenDoctorsWarYear = null;
+    removeWomenDoctorsWarLocationLayer();
   }
 
   // Later timeline overview: zoom out to the broader women doctors distribution.
@@ -1507,6 +1648,10 @@
         marker.remove();
       }
       timelineLabelMarkers.clear();
+      for (const marker of womenDoctorsWarLabelMarkers.values()) {
+        marker.remove();
+      }
+      womenDoctorsWarLabelMarkers.clear();
       removeCircleLayer({
         sourceId: edinburghSevenSourceId,
         layerId: edinburghSevenLayerId,
@@ -1545,6 +1690,20 @@
     font-weight: 500;
     line-height: 1.2;
     white-space: nowrap;
+    pointer-events: none;
+    border-radius: 3px;
+  }
+
+  :global(.women-doctors-war-location-label) {
+    box-sizing: border-box;
+    padding: 3px 6px;
+    background: #000;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.2;
+    text-align: center;
+    white-space: pre-line;
     pointer-events: none;
     border-radius: 3px;
   }
