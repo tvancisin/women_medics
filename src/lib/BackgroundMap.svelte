@@ -93,6 +93,7 @@
     lineColor?: string;
     lineOpacity?: number;
     lineWidth?: number;
+    durationMs?: number;
     reverse?: boolean;
   };
 
@@ -152,6 +153,7 @@
   const historicalMapOverlayOpacity = 0.8;
   const historicalMapOverlayFadeDurationMs = 900;
   const animatedLineDurationMs = 20_000;
+  const studentPathAnimationDurationMs = 6_000;
   const womenDoctorsBirthplacesYear = 1911;
   const womenDoctorsFocusYear = 1911;
   const suezRoutesReverseYear = 1911;
@@ -1033,6 +1035,7 @@
     lineColor = "white",
     lineOpacity = 0.3,
     lineWidth = 1,
+    durationMs = animatedLineDurationMs,
     reverse = false,
   }: AnimatedLineConfig) {
     if (!map || !styleReady || !isGeoJsonData(rawData)) {
@@ -1081,7 +1084,7 @@
     const startedAt = performance.now();
 
     const step = (now: number) => {
-      const progress = Math.min(1, (now - startedAt) / animatedLineDurationMs);
+      const progress = Math.min(1, (now - startedAt) / durationMs);
       const nextData = getAnimatedLineFeatureCollection(
         rawData,
         progress,
@@ -1297,6 +1300,8 @@
       sourceId: firstClassesPathsSourceId,
       layerId: firstClassesPathsLayerId,
       milestoneYear: firstClassesYear,
+      lineColor: "black",
+      durationMs: studentPathAnimationDurationMs,
     });
   }
 
@@ -1371,6 +1376,8 @@
       sourceId: physiologyPathsSourceId,
       layerId: physiologyPathsLayerId,
       milestoneYear: physiologyYear,
+      lineColor: "black",
+      durationMs: studentPathAnimationDurationMs,
     });
   }
 
