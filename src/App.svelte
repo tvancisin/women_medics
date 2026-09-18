@@ -38,21 +38,8 @@
   const devRequireClickToResume = true;
 
   const pauseYears = [
-    1583,
-    1726,
-    1809,
-    1862,
-    1867,
-    1869,
-    1875,
-    1886,
-    1889,
-    1911,
-    1915,
-    1916,
-    1917,
-    1918,
-    1919,
+    1583, 1726, 1809, 1862, 1867, 1869, 1875, 1886, 1889, 1911, 1915, 1916,
+    1917, 1918, 1919,
   ];
   const milestoneLabels = new Map<number, string>([
     [1583, "Foundation of the University 1582"],
@@ -80,12 +67,12 @@
   const womenDoctorsWarMilestoneYears = new Set([1916, 1917, 1918, 1919]);
   const additional1915Cards = [
     {
-      title: "1915 milestone — card two",
-      text: "Temporary placeholder text for the second 1915 milestone card.",
+      title:
+        "1915 also marks the first year when women oficially started studying medicine at the University of Edinburgh. 11 started this year.",
     },
     {
-      title: "Women doctors at war, 1915",
-      text: "Circle size shows the recorded number of women doctors at each location.",
+      title:
+        "By 1915, women who studied medicine at the School/College of Medicine for Women (not the University) were already working as medics in the First Wolrd War.",
     },
   ];
 

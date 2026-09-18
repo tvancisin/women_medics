@@ -30,9 +30,6 @@
   export let showWomenDoctorsWarLocations = false;
   export let womenDoctorsWarYear: number | null = null;
 
-  console.log(womenDoctorsWarData);
-  
-
   // Local Mapbox state
   let map: mapboxgl.Map;
   let mapContainer: HTMLDivElement;
@@ -123,11 +120,18 @@
   const timelineMarkersSourceId = "timeline-location-markers";
   const timelineMarkersCircleLayerId = "timeline-location-markers-circles";
   const timelineMarkersTextLayerId = "timeline-location-markers-text";
+  const schoolOfMedicineForWomenSourceId =
+    "school-of-medicine-for-women-1886";
+  const schoolOfMedicineForWomenLayerId =
+    "school-of-medicine-for-women-1886-circles";
+  const collegeOfMedicineForWomenSourceId =
+    "college-of-medicine-for-women-1889";
+  const collegeOfMedicineForWomenLayerId =
+    "college-of-medicine-for-women-1889-circles";
   const oldMapOverlaySourceId = "old-map-overlay-1726";
   const oldMapOverlayLayerId = "old-map-overlay-1726-raster";
   const firstClassesMapOverlaySourceId = "first-classes-map-overlay-1867";
-  const firstClassesMapOverlayLayerId =
-    "first-classes-map-overlay-1867-raster";
+  const firstClassesMapOverlayLayerId = "first-classes-map-overlay-1867-raster";
   const physiologyMapOverlaySourceId = "physiology-map-overlay-1875";
   const physiologyMapOverlayLayerId = "physiology-map-overlay-1875-raster";
   const mapOverlay1886SourceId = "map-overlay-1886";
@@ -150,6 +154,8 @@
   const physiologyMapOverlayYear = 1875;
   const mapOverlay1886Year = 1886;
   const mapOverlay1886EndYear = 1889;
+  const schoolOfMedicineForWomenYear = 1886;
+  const collegeOfMedicineForWomenYear = 1889;
   const historicalMapOverlayOpacity = 0.8;
   const historicalMapOverlayFadeDurationMs = 900;
   const animatedLineDurationMs = 20_000;
@@ -441,11 +447,7 @@
   }
 
   function fadeOutFirstClassesMapOverlay() {
-    if (
-      !map ||
-      !styleReady ||
-      firstClassesMapOverlayFadeTimeout !== null
-    ) {
+    if (!map || !styleReady || firstClassesMapOverlayFadeTimeout !== null) {
       return;
     }
 
@@ -842,6 +844,19 @@
     });
   }
 
+  function drawTimelineMarkerCircle({
+    year,
+    sourceId,
+    layerId,
+  }: LayerConfig & { year: number }) {
+    return drawCircleLayer({
+      features: getTimelineMarkerFeatures(year),
+      sourceId,
+      layerId,
+      paint: timelineMarkerCirclePaint,
+    });
+  }
+
   function syncTimelineMarkerLabels(
     features: GeoJSON.Feature<GeoJSON.Point>[],
   ) {
@@ -886,7 +901,13 @@
   function drawTimelineMarkerLayers(year: number) {
     if (!map || !styleReady) return false;
 
-    const features = getTimelineMarkerFeatures(year);
+    const labelFeatures = getTimelineMarkerFeatures(year);
+    const features = [
+      schoolOfMedicineForWomenYear,
+      collegeOfMedicineForWomenYear,
+    ].includes(Math.floor(year))
+      ? []
+      : labelFeatures;
     const dataKey = features
       .map((feature) => String(feature.properties?.id ?? ""))
       .join("|");
@@ -923,7 +944,7 @@
       map.removeLayer(timelineMarkersTextLayerId);
     }
 
-    syncTimelineMarkerLabels(features);
+    syncTimelineMarkerLabels(labelFeatures);
 
     bringForegroundMarkersToFront();
 
@@ -1146,7 +1167,6 @@
     });
   }
 
-  // Timeline reactions
   // Historical colonies polygon layer is mounted as soon as the map and data are ready.
   $: if (map && styleReady && colonies) {
     drawColoniesLayer(colonies);
@@ -1158,6 +1178,7 @@
   }
 
   //// 1726
+  // Show the historical Edinburgh map.
   $: if (
     map &&
     styleReady &&
@@ -1176,7 +1197,18 @@
     });
   }
 
-  //// 1809 
+  // Fade out the historical map afterward.
+  $: if (
+    map &&
+    styleReady &&
+    currentYear > oldMapOverlayEndYear &&
+    (hasDrawnOldMapOverlay || map.getLayer(oldMapOverlayLayerId))
+  ) {
+    fadeOutOldMapOverlay();
+  }
+
+  //// 1809
+  // Draw Barry's journey.
   $: if (
     map &&
     styleReady &&
@@ -1187,7 +1219,24 @@
     startBarryJourney();
   }
 
+  // Allow Barry's journey to replay.
+  $: if (map && currentYear < barryJourneyYear) {
+    hasAnimatedBarryLine = false;
+  }
+
+  // Remove Barry's journey afterward.
+  $: if (
+    map &&
+    styleReady &&
+    currentYear > barryJourneyYear &&
+    (map.getLayer(barryLineLayerId) || map.getSource(barrySourceId))
+  ) {
+    cancelPathAnimation(barryLineLayerId);
+    removeLayerAndSource(barrySourceId, barryLineLayerId);
+  }
+
   //// 1862
+  // Draw Garrett's journey.
   $: if (
     map &&
     styleReady &&
@@ -1197,12 +1246,30 @@
   ) {
     startGarrettJourney();
   }
- 
-  //// 1867 
+
+  // Allow Garrett's journey to replay.
+  $: if (map && currentYear < garrettJourneyYear) {
+    hasAnimatedGarrettLine = false;
+  }
+
+  // Remove Garrett's journey afterward.
+  $: if (
+    map &&
+    styleReady &&
+    currentYear > garrettJourneyYear &&
+    (map.getLayer(garrettLineLayerId) || map.getSource(garrettSourceId))
+  ) {
+    cancelPathAnimation(garrettLineLayerId);
+    removeLayerAndSource(garrettSourceId, garrettLineLayerId);
+  }
+
+  //// 1867
+  // Focus on Edinburgh.
   $: if (map && styleReady && currentYear == firstClassesYear) {
     focusEdinburghClasses();
   }
 
+  // Show the first-classes map.
   $: if (
     map &&
     styleReady &&
@@ -1214,37 +1281,7 @@
     hasDrawnFirstClassesMapOverlay = drawFirstClassesMapOverlay();
   }
 
-  $: if (
-    map &&
-    styleReady &&
-    currentYear === physiologyMapOverlayYear &&
-    (!hasDrawnPhysiologyMapOverlay ||
-      physiologyMapOverlayFadeTimeout !== null ||
-      !map.getLayer(physiologyMapOverlayLayerId))
-  ) {
-    hasDrawnPhysiologyMapOverlay = drawPhysiologyMapOverlay();
-  }
-
-  $: if (
-    map &&
-    styleReady &&
-    currentYear === mapOverlay1886Year &&
-    (!hasDrawn1886MapOverlay ||
-      mapOverlay1886FadeTimeout !== null ||
-      !map.getLayer(mapOverlay1886LayerId))
-  ) {
-    hasDrawn1886MapOverlay = draw1886MapOverlay();
-  }
-
-  $: if (
-    map &&
-    styleReady &&
-    currentYear > oldMapOverlayEndYear &&
-    (hasDrawnOldMapOverlay || map.getLayer(oldMapOverlayLayerId))
-  ) {
-    fadeOutOldMapOverlay();
-  }
-
+  // Fade out the first-classes map afterward.
   $: if (
     map &&
     styleReady &&
@@ -1255,25 +1292,7 @@
     fadeOutFirstClassesMapOverlay();
   }
 
-  $: if (
-    map &&
-    styleReady &&
-    currentYear > physiologyMapOverlayYear &&
-    (hasDrawnPhysiologyMapOverlay || map.getLayer(physiologyMapOverlayLayerId))
-  ) {
-    fadeOutPhysiologyMapOverlay();
-  }
-
-  $: if (
-    map &&
-    styleReady &&
-    currentYear > mapOverlay1886EndYear &&
-    (hasDrawn1886MapOverlay || map.getLayer(mapOverlay1886LayerId))
-  ) {
-    fadeOut1886MapOverlay();
-  }
-
-  // First women attending classes: draw student points and animated walking paths.
+  // Show the first class of students.
   $: if (
     map &&
     styleReady &&
@@ -1288,6 +1307,7 @@
     });
   }
 
+  // Animate the students' paths.
   $: if (
     map &&
     styleReady &&
@@ -1305,6 +1325,7 @@
     });
   }
 
+  // Keep student points above their paths.
   $: if (
     map &&
     styleReady &&
@@ -1315,7 +1336,19 @@
     map.moveLayer(firstClassesLayerId);
   }
 
-  // Edinburgh Seven/Forty: show birthplace markers at the 1869 milestone.
+  // Clear the first-classes layers afterward.
+  $: if (map && styleReady && currentYear > firstClassesYear) {
+    cancelPathAnimation(firstClassesPathsLayerId);
+    hasAnimatedFirstClassesPaths = false;
+    removeLayerAndSource(firstClassesPathsSourceId, firstClassesPathsLayerId);
+    removeCircleLayer({
+      sourceId: firstClassesSourceId,
+      layerId: firstClassesLayerId,
+    });
+  }
+
+  //// 1869
+  // Animate the Edinburgh Seven routes.
   $: if (
     map &&
     styleReady &&
@@ -1331,6 +1364,7 @@
     });
   }
 
+  // Show the Edinburgh Seven markers.
   $: if (
     map &&
     styleReady &&
@@ -1348,7 +1382,42 @@
     });
   }
 
-  // Physiology students: draw the later student cohort and associated paths.
+  // Clear the Edinburgh Seven layers outside this year.
+  $: if (map && styleReady && currentYear !== edinburghSevenYear) {
+    hasDrawnEdinburghSeven = false;
+    removeCircleLayer({
+      sourceId: edinburghSevenSourceId,
+      layerId: edinburghSevenLayerId,
+    });
+    cancelPathAnimation(edinburghRoutesLineLayerId);
+    hasAnimatedEdinburghRoutes = false;
+    removeLayerAndSource(edinburghRoutesSourceId, edinburghRoutesLineLayerId);
+  }
+
+  //// 1875
+  // Show the physiology map.
+  $: if (
+    map &&
+    styleReady &&
+    currentYear === physiologyMapOverlayYear &&
+    (!hasDrawnPhysiologyMapOverlay ||
+      physiologyMapOverlayFadeTimeout !== null ||
+      !map.getLayer(physiologyMapOverlayLayerId))
+  ) {
+    hasDrawnPhysiologyMapOverlay = drawPhysiologyMapOverlay();
+  }
+
+  // Fade out the physiology map afterward.
+  $: if (
+    map &&
+    styleReady &&
+    currentYear > physiologyMapOverlayYear &&
+    (hasDrawnPhysiologyMapOverlay || map.getLayer(physiologyMapOverlayLayerId))
+  ) {
+    fadeOutPhysiologyMapOverlay();
+  }
+
+  // Show the physiology students.
   $: if (
     map &&
     styleReady &&
@@ -1364,6 +1433,7 @@
     focusEdinburghClasses();
   }
 
+  // Animate the students' paths.
   $: if (
     map &&
     styleReady &&
@@ -1381,6 +1451,7 @@
     });
   }
 
+  // Keep student points above their paths.
   $: if (
     map &&
     styleReady &&
@@ -1391,24 +1462,100 @@
     map.moveLayer(physiologyStudentsLayerId);
   }
 
-  // Women doctors: show birthplace distribution once enough data is in scope.
-  $: if (
-    map &&
-    styleReady &&
-    currentYear >= womenDoctorsBirthplacesYear &&
-    currentYear < womenDoctorsCareerLocationsYear &&
-    Array.isArray(womenDoctorsData) &&
-    womenDoctorsData.length > 0 &&
-    !hasDrawnWomenDoctorBirthplaces
-  ) {
-    hasDrawnWomenDoctorBirthplaces = drawWomenDoctorBirthplaceLayer({
-      rawData: womenDoctorsData,
-      sourceId: womenDoctorsBirthplacesSourceId,
-      layerId: womenDoctorsBirthplacesLayerId,
+  // Clear the physiology layers afterward.
+  $: if (map && styleReady && currentYear > physiologyYear) {
+    cancelPathAnimation(physiologyPathsLayerId);
+    hasAnimatedPhysiologyPaths = false;
+    removeLayerAndSource(physiologyPathsSourceId, physiologyPathsLayerId);
+    removeCircleLayer({
+      sourceId: physiologyStudentsSourceId,
+      layerId: physiologyStudentsLayerId,
     });
   }
 
+  //// 1886
+  // Show the 1886 map.
+  $: if (
+    map &&
+    styleReady &&
+    currentYear === mapOverlay1886Year &&
+    (!hasDrawn1886MapOverlay ||
+      mapOverlay1886FadeTimeout !== null ||
+      !map.getLayer(mapOverlay1886LayerId))
+  ) {
+    hasDrawn1886MapOverlay = draw1886MapOverlay();
+  }
 
+  // Show the School of Medicine for Women circle.
+  $: if (
+    map &&
+    styleReady &&
+    currentYear === schoolOfMedicineForWomenYear
+  ) {
+    drawTimelineMarkerCircle({
+      year: schoolOfMedicineForWomenYear,
+      sourceId: schoolOfMedicineForWomenSourceId,
+      layerId: schoolOfMedicineForWomenLayerId,
+    });
+  }
+
+  // Remove the school circle outside this year.
+  $: if (map && styleReady && currentYear !== schoolOfMedicineForWomenYear) {
+    removeCircleLayer({
+      sourceId: schoolOfMedicineForWomenSourceId,
+      layerId: schoolOfMedicineForWomenLayerId,
+    });
+  }
+
+  // Fade out the 1886 map afterward.
+  $: if (
+    map &&
+    styleReady &&
+    currentYear > mapOverlay1886EndYear &&
+    (hasDrawn1886MapOverlay || map.getLayer(mapOverlay1886LayerId))
+  ) {
+    fadeOut1886MapOverlay();
+  }
+
+  //// 1889
+  // Show the College of Medicine for Women circle.
+  $: if (
+    map &&
+    styleReady &&
+    currentYear === collegeOfMedicineForWomenYear
+  ) {
+    drawTimelineMarkerCircle({
+      year: collegeOfMedicineForWomenYear,
+      sourceId: collegeOfMedicineForWomenSourceId,
+      layerId: collegeOfMedicineForWomenLayerId,
+    });
+  }
+
+  // Remove the college circle outside this year.
+  $: if (map && styleReady && currentYear !== collegeOfMedicineForWomenYear) {
+    removeCircleLayer({
+      sourceId: collegeOfMedicineForWomenSourceId,
+      layerId: collegeOfMedicineForWomenLayerId,
+    });
+  }
+
+  //// 1911
+  // Zoom out to the global overview.
+  $: if (
+    map &&
+    currentYear >= womenDoctorsFocusYear &&
+    !hasFocusedWomenDoctorsMilestone
+  ) {
+    map.flyTo({
+      center: [70.1883, 10.9433],
+      zoom: 1.5,
+      duration: 2000,
+      essential: true,
+    });
+    hasFocusedWomenDoctorsMilestone = true;
+  }
+
+  // // Animate the Suez route.
   // $: if (
   //   map &&
   //   styleReady &&
@@ -1429,6 +1576,50 @@
   //   });
   // }
 
+  // Show women doctors' birthplaces.
+  $: if (
+    map &&
+    styleReady &&
+    currentYear >= womenDoctorsBirthplacesYear &&
+    currentYear < womenDoctorsCareerLocationsYear &&
+    Array.isArray(womenDoctorsData) &&
+    womenDoctorsData.length > 0 &&
+    !hasDrawnWomenDoctorBirthplaces
+  ) {
+    hasDrawnWomenDoctorBirthplaces = drawWomenDoctorBirthplaceLayer({
+      rawData: womenDoctorsData,
+      sourceId: womenDoctorsBirthplacesSourceId,
+      layerId: womenDoctorsBirthplacesLayerId,
+    });
+  }
+
+  // Clear 1911 birthplace circles.
+  $: if (map && styleReady && currentYear >= womenDoctorsCareerLocationsYear) {
+    hasDrawnWomenDoctorBirthplaces = false;
+    removeCircleLayer({
+      sourceId: womenDoctorsBirthplacesSourceId,
+      layerId: womenDoctorsBirthplacesLayerId,
+    });
+  }
+
+  //// 1915
+  // Draw career location circles.
+  $: if (
+    map &&
+    styleReady &&
+    currentYear >= womenDoctorsCareerLocationsYear &&
+    showWomenDoctorCareerLocations &&
+    Array.isArray(womenCareers1915Data) &&
+    womenCareers1915Data.length > 0 &&
+    !hasDrawnWomenDoctorCareerLocations
+  ) {
+    hasDrawnWomenDoctorCareerLocations = drawWomenDoctorCareerLocationLayer({
+      rawData: womenCareers1915Data,
+      sourceId: womenDoctorsCareerLocationsSourceId,
+      layerId: womenDoctorsCareerLocationsLayerId,
+    });
+  }
+
   // $: if (
   //   map &&
   //   styleReady &&
@@ -1448,24 +1639,22 @@
   //   });
   // }
 
-  // Career locations replace birthplace distribution at the next story beat.
+  // Remove career location circles
   $: if (
     map &&
     styleReady &&
-    currentYear >= womenDoctorsCareerLocationsYear &&
-    showWomenDoctorCareerLocations &&
-    Array.isArray(womenCareers1915Data) &&
-    womenCareers1915Data.length > 0 &&
-    !hasDrawnWomenDoctorCareerLocations
+    (currentYear < womenDoctorsCareerLocationsYear ||
+      !showWomenDoctorCareerLocations)
   ) {
-    hasDrawnWomenDoctorCareerLocations = drawWomenDoctorCareerLocationLayer({
-      rawData: womenCareers1915Data,
+    hasDrawnWomenDoctorCareerLocations = false;
+    removeCircleLayer({
       sourceId: womenDoctorsCareerLocationsSourceId,
       layerId: womenDoctorsCareerLocationsLayerId,
     });
   }
 
-  // Show the 1915 war-location counts only with the third 1915 card.
+
+  //// 1915 war-location counts only with the third 1915 card.
   $: if (
     map &&
     styleReady &&
@@ -1490,98 +1679,6 @@
     });
   }
 
-  // Reset state when the user scrubs backward so route animations can replay.
-  $: if (map && currentYear < garrettJourneyYear) {
-    hasAnimatedGarrettLine = false;
-  }
-
-  $: if (map && currentYear < barryJourneyYear) {
-    hasAnimatedBarryLine = false;
-  }
-
-  $: if (map && styleReady && currentYear !== edinburghSevenYear) {
-    hasDrawnEdinburghSeven = false;
-    removeCircleLayer({
-      sourceId: edinburghSevenSourceId,
-      layerId: edinburghSevenLayerId,
-    });
-    cancelPathAnimation(edinburghRoutesLineLayerId);
-    hasAnimatedEdinburghRoutes = false;
-    removeLayerAndSource(edinburghRoutesSourceId, edinburghRoutesLineLayerId);
-  }
-
-  // Remove one-off journey routes after their focused timeline moment.
-  $: if (
-    map &&
-    styleReady &&
-    currentYear > barryJourneyYear &&
-    (map.getLayer(barryLineLayerId) || map.getSource(barrySourceId))
-  ) {
-    cancelPathAnimation(barryLineLayerId);
-    removeLayerAndSource(barrySourceId, barryLineLayerId);
-  }
-
-  $: if (
-    map &&
-    styleReady &&
-    currentYear > garrettJourneyYear &&
-    (map.getLayer(garrettLineLayerId) || map.getSource(garrettSourceId))
-  ) {
-    cancelPathAnimation(garrettLineLayerId);
-    removeLayerAndSource(garrettSourceId, garrettLineLayerId);
-  }
-
-  // Remove transient student/path layers after their focused timeline moment.
-  $: if (map && styleReady && currentYear > firstClassesYear) {
-    cancelPathAnimation(firstClassesPathsLayerId);
-    hasAnimatedFirstClassesPaths = false;
-    removeLayerAndSource(firstClassesPathsSourceId, firstClassesPathsLayerId);
-    removeCircleLayer({
-      sourceId: firstClassesSourceId,
-      layerId: firstClassesLayerId,
-    });
-  }
-
-  $: if (map && styleReady && currentYear > physiologyYear) {
-    cancelPathAnimation(physiologyPathsLayerId);
-    hasAnimatedPhysiologyPaths = false;
-    removeLayerAndSource(physiologyPathsSourceId, physiologyPathsLayerId);
-    removeCircleLayer({
-      sourceId: physiologyStudentsSourceId,
-      layerId: physiologyStudentsLayerId,
-    });
-  }
-
-  // Hide birthplace data when scrubbing before that part of the story.
-  $: if (map && styleReady && currentYear < womenDoctorsBirthplacesYear) {
-    hasDrawnWomenDoctorBirthplaces = false;
-    hasFocusedWomenDoctorsMilestone = false;
-    removeCircleLayer({
-      sourceId: womenDoctorsBirthplacesSourceId,
-      layerId: womenDoctorsBirthplacesLayerId,
-    });
-  }
-
-  $: if (map && styleReady && currentYear >= womenDoctorsCareerLocationsYear) {
-    hasDrawnWomenDoctorBirthplaces = false;
-    removeCircleLayer({
-      sourceId: womenDoctorsBirthplacesSourceId,
-      layerId: womenDoctorsBirthplacesLayerId,
-    });
-  }
-
-  $: if (
-    map &&
-    styleReady &&
-    (currentYear < womenDoctorsCareerLocationsYear ||
-      !showWomenDoctorCareerLocations)
-  ) {
-    hasDrawnWomenDoctorCareerLocations = false;
-    removeCircleLayer({
-      sourceId: womenDoctorsCareerLocationsSourceId,
-      layerId: womenDoctorsCareerLocationsLayerId,
-    });
-  }
 
   $: if (
     map &&
@@ -1593,21 +1690,6 @@
     hasDrawnWomenDoctorsWarLocations = false;
     drawnWomenDoctorsWarYear = null;
     removeWomenDoctorsWarLocationLayer();
-  }
-
-  // Later timeline overview: zoom out to the broader women doctors distribution.
-  $: if (
-    map &&
-    currentYear >= womenDoctorsFocusYear &&
-    !hasFocusedWomenDoctorsMilestone
-  ) {
-    map.flyTo({
-      center: [70.1883, 10.9433],
-      zoom: 1.5,
-      duration: 2000,
-      essential: true,
-    });
-    hasFocusedWomenDoctorsMilestone = true;
   }
 
   onMount(() => {
