@@ -10,10 +10,10 @@
 
   const collapsedPathLength = 20;
   $: labelPaddingX = active ? 4 : 3;
-  $: labelBackgroundHeight = active ? 16 : 14;
+  $: labelBackgroundHeight = active ? 20 : 14;
   $: labelBackgroundOffsetX = active ? 16 : 8;
   $: labelTextOffsetX = active ? 20 : 11;
-  $: labelBackgroundCenterOffsetY = active ? 2 : 1;
+  $: labelBackgroundCenterOffsetY = active ? 3 : 1;
   let labelTextElement: SVGTextElement | null = null;
   let labelWidth = 0;
   $: labelBackgroundWidth = Math.ceil(labelWidth) + labelPaddingX * 2;
@@ -102,7 +102,7 @@
 
   .event-label {
     fill: #fafafa;
-    font-size: 12px;
+    font-size: 16px;
     font-family: "Montserrat";
     font-weight: 500;
     pointer-events: none;

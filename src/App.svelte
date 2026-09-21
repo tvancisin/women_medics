@@ -38,7 +38,8 @@
   const devRequireClickToResume = true;
 
   const pauseYears = [
-    1583, 1726, 1809, 1862, 1867, 1869, 1875, 1886, 1889, 1911, 1915, 1919,
+    1583, 1726, 1809, 1862, 1867, 1869, 1870, 1875, 1886, 1889, 1911, 1915,
+    1919,
   ];
   const milestoneLabels = new Map<number, string>([
     [1583, "Foundation of the University 1582"],
@@ -47,6 +48,7 @@
     [1862, "Elizabeth Garrett 1862"],
     [1867, "First classes for women 1867"],
     [1869, "Edinburgh Seven/Forty 1869"],
+    [1870, "The Riot 1870"],
     [1875, "Physiology students 1875"],
     // [1884, "Triple Qualification 1884"],
     [1886, "School of Medicine for Women 1886"],
@@ -58,7 +60,7 @@
     [1919, "Women doctors at war, 1915-1919"],
   ]);
 
-  const splitMilestoneYears = new Set([1809, 1862, 1867, 1875]);
+  const splitMilestoneYears = new Set([1809, 1862, 1867, 1870, 1875]);
   const milestone1915CardCount = 3;
   const womenDoctorsWarMilestoneYear = 1919;
   const additional1915Cards = [
@@ -79,6 +81,7 @@
   let width = 0;
   let garrettJourneyData: unknown = null;
   let barryJourneyData: unknown = null;
+  let riotData: unknown = null;
   let firstClassesPathsData: unknown = null;
   let physiologyPathsData: unknown = null;
   let colonies: unknown = null;
@@ -398,6 +401,7 @@
           rawSuez,
           rawEdinburghRoutes,
           rawWomenWarData,
+          rawRiotData,
         ] = await getJson([
           publicUrl("data/women_physiology_geo.json"),
           publicUrl("data/geo/garrett_journey.json"),
@@ -411,6 +415,7 @@
           publicUrl("data/geo/suez_routes.json"),
           publicUrl("data/geo/edinburgh_routes.json"),
           publicUrl("data/women_war.json"),
+          publicUrl("data/geo/riot.json"),
         ]);
 
         womenPhysiologyGeoData = Array.isArray(rawWomenPhysiologyGeoData)
@@ -423,6 +428,7 @@
 
         garrettJourneyData = rawGarrettJourneyData ?? null;
         barryJourneyData = rawBarryJourneyData ?? null;
+        riotData = rawRiotData ?? null;
         firstClassesPathsData = rawFirstClassesPaths ?? null;
         physiologyPathsData = rawPhysiologyPaths ?? null;
         colonies = rawColonies ?? null;
@@ -542,6 +548,7 @@
     {currentYear}
     {garrettJourneyData}
     {barryJourneyData}
+    {riotData}
     {womenPhysiologyGeoData}
     {firstClassesGeoData}
     {firstClassesPathsData}
@@ -684,6 +691,25 @@
             </div>
           {/each}
         </div>
+      {:else if year === 1870}
+        <div class="milestone-card-split-layout">
+          <div class="milestone-card-split-half milestone-card-split-image">
+            <img
+              class="milestone-image"
+              src={publicUrl("img/surgeon_riot.jpg")}
+              alt="Edinburgh Surgeon's Hall"
+            />
+          </div>
+          <div class="milestone-card-split-half milestone-card-split-text">
+            <div class="milestone-card-title">
+              During October everything went smoothly, but after we had applied
+              for admission to the Royal Infirmary for clinical instruction and
+              been refused we were subjected to petty annoyances that culminated
+              on November 18th, 1870, in an attempt to shut us out of Surgeons’
+              Hall
+            </div>
+          </div>
+        </div>
       {:else if year === 1875}
         <div class="milestone-card-split-layout">
           <div class="milestone-card-split-half milestone-card-split-image">
@@ -797,8 +823,8 @@
             {milestoneLabels.get(year) ?? ""}
           </div>
           <p>
-            Circle size shows the total recorded number of women doctors at
-            each location across 1915-1919.
+            Circle size shows the total recorded number of women doctors at each
+            location across 1915-1919.
           </p>
         </div>
       {:else if year === 1892}
@@ -831,8 +857,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: rgb(150, 150, 150);
     font-size: 10px;
+    font-weight: 600;
     border-radius: 7px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
     background-color: rgb(0, 0, 0);
@@ -897,7 +924,6 @@
     padding: 10px 10px 14px;
     background: rgba(0, 0, 0, 0.88);
     font-size: 12px;
-    font-weight: 700;
     line-height: 1.25;
     text-align: left;
   }
@@ -930,7 +956,6 @@
 
   .milestone-card-title {
     font-size: 12px;
-    font-weight: 700;
     line-height: 1.25;
     text-align: left;
   }
@@ -977,7 +1002,6 @@
     margin-bottom: 16px;
     color: #fff;
     font-size: 15px;
-    font-weight: 700;
     line-height: 1.25;
   }
 
@@ -1000,7 +1024,6 @@
     margin-bottom: 8px;
     color: #fff;
     font-size: 13px;
-    font-weight: 700;
     line-height: 1.2;
   }
 

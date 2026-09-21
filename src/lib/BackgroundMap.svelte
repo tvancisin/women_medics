@@ -15,6 +15,7 @@
   export let currentYear: number;
   export let garrettJourneyData: unknown = null;
   export let barryJourneyData: unknown = null;
+  export let riotData: unknown = null;
   export let womenPhysiologyGeoData: unknown = null;
   export let firstClassesGeoData: unknown = null;
   export let firstClassesPathsData: unknown = null;
@@ -40,6 +41,7 @@
   let hasAnimatedPhysiologyPaths = false;
   let hasAnimatedSuezRoutesReverse = false;
   let hasAnimatedSuezRoutesForward = false;
+  let hasAnimatedRiotRoute = false;
   let hasDrawnEdinburghSeven = false;
   let hasAnimatedEdinburghRoutes = false;
   let hasDrawnOldMapOverlay = false;
@@ -145,10 +147,13 @@
   const suezLineLayerId = "suez-routes-line";
   const edinburghRoutesSourceId = "edinburgh-routes";
   const edinburghRoutesLineLayerId = "edinburgh-routes-line";
+  const riotRouteSourceId = "edinburgh-riot-route";
+  const riotRouteLineLayerId = "edinburgh-riot-route-line";
   const barryJourneyYear = 1809;
   const garrettJourneyYear = 1862;
   const firstClassesYear = 1867;
   const edinburghSevenYear = 1869;
+  const edinburghSevenRiotYear = 1870;
   const physiologyYear = 1875;
   const oldMapOverlayStartYear = 1726;
   const oldMapOverlayEndYear = 1760;
@@ -210,7 +215,7 @@
       277,
       24,
     ],
-    "circle-color": "#f2c14e",
+    "circle-color": "white",
     "circle-opacity": 0.78,
     "circle-stroke-color": "#171717",
     "circle-stroke-width": 1.5,
@@ -1411,6 +1416,39 @@
     cancelPathAnimation(edinburghRoutesLineLayerId);
     hasAnimatedEdinburghRoutes = false;
     removeLayerAndSource(edinburghRoutesSourceId, edinburghRoutesLineLayerId);
+  }
+
+  //// 1870
+  // Focus on Edinburgh and draw the route of the Surgeons' Hall riot.
+  $: if (map && styleReady && currentYear == edinburghSevenRiotYear) {
+    map.flyTo({
+      center: [ -3.1862, 55.9433],
+      zoom: 15.5,
+      duration: 2000,
+      essential: true,
+    });
+  }
+
+  $: if (
+    map &&
+    styleReady &&
+    currentYear === edinburghSevenRiotYear &&
+    riotData &&
+    !hasAnimatedRiotRoute
+  ) {
+    hasAnimatedRiotRoute = animateGeoJsonLineLayer({
+      rawData: riotData,
+      sourceId: riotRouteSourceId,
+      layerId: riotRouteLineLayerId,
+      milestoneYear: edinburghSevenRiotYear,
+    });
+  }
+
+  // Remove the route when leaving the 1870 milestone so it can replay on return.
+  $: if (map && styleReady && currentYear !== edinburghSevenRiotYear) {
+    cancelPathAnimation(riotRouteLineLayerId);
+    hasAnimatedRiotRoute = false;
+    removeLayerAndSource(riotRouteSourceId, riotRouteLineLayerId);
   }
 
   //// 1875

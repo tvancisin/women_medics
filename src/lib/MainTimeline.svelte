@@ -49,9 +49,9 @@
     <rect
       class="timeline-background"
       x="0"
-      y={height - 40}
+      y={height - 30}
       width={width}
-      height="40"
+      height="30"
       aria-hidden="true"
     ></rect>
 
