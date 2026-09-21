@@ -282,43 +282,58 @@ export const getWomenDoctorCareerLocationFeatures = (
 
 export const getWomenDoctorsWarLocationFeatures = (
   rawData: unknown,
-  year: number,
+  years: number[],
 ): GeoJSON.Feature<GeoJSON.Point>[] => {
   if (!rawData || typeof rawData !== "object") {
     return [];
   }
 
-  const entries = (rawData as Record<string, unknown>)[String(year)];
-  if (!Array.isArray(entries)) {
-    return [];
+  const locations = new Map<
+    string,
+    { location: string; lat: number; lon: number; value: number }
+  >();
+
+  for (const year of years) {
+    const entries = (rawData as Record<string, unknown>)[String(year)];
+    if (!Array.isArray(entries)) continue;
+
+    for (const entry of entries as WomenDoctorsWarDatum[]) {
+      const lat = Number(entry.lat);
+      const lon = Number(entry.lon);
+      const value = Number(entry.value);
+
+      if (
+        !Number.isFinite(lat) ||
+        !Number.isFinite(lon) ||
+        !Number.isFinite(value)
+      ) {
+        continue;
+      }
+
+      const location = String(entry.location ?? "Unknown").trim() || "Unknown";
+      const locationKey = location.toLowerCase();
+      const existingLocation = locations.get(locationKey);
+
+      if (existingLocation) {
+        existingLocation.value += value;
+      } else {
+        locations.set(locationKey, { location, lat, lon, value });
+      }
+    }
   }
 
-  return (entries as WomenDoctorsWarDatum[]).flatMap((entry) => {
-    const lat = Number(entry.lat);
-    const lon = Number(entry.lon);
-    const value = Number(entry.value);
-
-    if (
-      !Number.isFinite(lat) ||
-      !Number.isFinite(lon) ||
-      !Number.isFinite(value)
-    ) {
-      return [];
-    }
-
-    return [
-      {
-        type: "Feature",
-        properties: {
-          location: entry.location ?? "Unknown",
-          value,
-        },
-        geometry: {
-          type: "Point",
-          coordinates: [lon, lat],
-        },
-      } satisfies GeoJSON.Feature<GeoJSON.Point>,
-    ];
+  return [...locations.values()].map(({ location, lat, lon, value }) => {
+    return {
+      type: "Feature",
+      properties: {
+        location,
+        value,
+      },
+      geometry: {
+        type: "Point",
+        coordinates: [lon, lat],
+      },
+    } satisfies GeoJSON.Feature<GeoJSON.Point>;
   });
 };
 

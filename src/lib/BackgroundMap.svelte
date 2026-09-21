@@ -28,7 +28,6 @@
   export let womenDoctorsWarData: unknown = null;
   export let showWomenDoctorCareerLocations = false;
   export let showWomenDoctorsWarLocations = false;
-  export let womenDoctorsWarYear: number | null = null;
 
   // Local Mapbox state
   let map: mapboxgl.Map;
@@ -56,7 +55,6 @@
   let hasDrawnWomenDoctorBirthplaces = false;
   let hasDrawnWomenDoctorCareerLocations = false;
   let hasDrawnWomenDoctorsWarLocations = false;
-  let drawnWomenDoctorsWarYear: number | null = null;
   let hasFocusedWomenDoctorsMilestone = false;
   let hasFocusedOfficialMedicsMilestone = false;
   let timelineMarkersDataKey = "";
@@ -75,6 +73,11 @@
   type CircleLayerConfig = LayerConfig & {
     features: GeoJSON.Feature<GeoJSON.Point>[];
     paint: Record<string, unknown>;
+  };
+
+  type LabelPlacement = {
+    anchor: "top" | "bottom" | "left" | "right";
+    offset: [number, number];
   };
 
   type JourneyLineConfig = {
@@ -120,8 +123,7 @@
   const timelineMarkersSourceId = "timeline-location-markers";
   const timelineMarkersCircleLayerId = "timeline-location-markers-circles";
   const timelineMarkersTextLayerId = "timeline-location-markers-text";
-  const schoolOfMedicineForWomenSourceId =
-    "school-of-medicine-for-women-1886";
+  const schoolOfMedicineForWomenSourceId = "school-of-medicine-for-women-1886";
   const schoolOfMedicineForWomenLayerId =
     "school-of-medicine-for-women-1886-circles";
   const collegeOfMedicineForWomenSourceId =
@@ -165,6 +167,7 @@
   const suezRoutesReverseYear = 1911;
   const suezRoutesForwardYear = 1912;
   const womenDoctorsCareerLocationsYear = 1915;
+  const womenDoctorsWarYears = [1915, 1916, 1917, 1918, 1919];
   const foregroundMarkerLayerIds = [
     firstClassesLayerId,
     physiologyStudentsLayerId,
@@ -212,6 +215,16 @@
     "circle-stroke-color": "#171717",
     "circle-stroke-width": 1.5,
     "circle-stroke-opacity": 1,
+  };
+  const defaultWomenDoctorsWarLabelPlacement: LabelPlacement = {
+    anchor: "top",
+    offset: [0, 10],
+  };
+  const womenDoctorsWarLabelPlacements: Record<string, LabelPlacement> = {
+    "abbaye de royaumont": { anchor: "left", offset: [10, 0] },
+    valjevo: { anchor: "right", offset: [-10, 0] },
+    mladenovac: { anchor: "left", offset: [10, 0] },
+    serbia: { anchor: "bottom", offset: [0, -10] },
   };
 
   // GeoJSON guards used by map-specific route and overlay helpers.
@@ -990,6 +1003,9 @@
       const value = String(feature.properties?.value ?? "");
       const markerKey = `${location}-${longitude}-${latitude}`;
       const label = `${location}\n${value}`;
+      const labelPlacement =
+        womenDoctorsWarLabelPlacements[location.toLowerCase()] ??
+        defaultWomenDoctorsWarLabelPlacement;
       activeMarkerKeys.add(markerKey);
 
       const existingMarker = womenDoctorsWarLabelMarkers.get(markerKey);
@@ -1004,8 +1020,8 @@
 
       const marker = new mapboxgl.Marker({
         element,
-        anchor: "top",
-        offset: [0, 10],
+        anchor: labelPlacement.anchor,
+        offset: labelPlacement.offset,
       })
         .setLngLat([longitude, latitude])
         .addTo(map);
@@ -1020,8 +1036,11 @@
     }
   }
 
-  function drawWomenDoctorsWarLocationLayer(rawData: unknown, year: number) {
-    const features = getWomenDoctorsWarLocationFeatures(rawData, year);
+  function drawWomenDoctorsWarLocationLayer(rawData: unknown) {
+    const features = getWomenDoctorsWarLocationFeatures(
+      rawData,
+      womenDoctorsWarYears,
+    );
     const didDraw = drawCircleLayer({
       features,
       sourceId: womenDoctorsWarLocationsSourceId,
@@ -1054,7 +1073,7 @@
     milestoneYear,
     continueAfterMilestone = false,
     lineColor = "white",
-    lineOpacity = 0.3,
+    lineOpacity = 0.5,
     lineWidth = 1,
     durationMs = animatedLineDurationMs,
     reverse = false,
@@ -1269,7 +1288,7 @@
     focusEdinburghClasses();
   }
 
-  // Show the first-classes map.
+  // Show map.
   $: if (
     map &&
     styleReady &&
@@ -1281,7 +1300,7 @@
     hasDrawnFirstClassesMapOverlay = drawFirstClassesMapOverlay();
   }
 
-  // Fade out the first-classes map afterward.
+  // Fade out the first-classes map.
   $: if (
     map &&
     styleReady &&
@@ -1292,7 +1311,7 @@
     fadeOutFirstClassesMapOverlay();
   }
 
-  // Show the first class of students.
+  // Draw circles.
   $: if (
     map &&
     styleReady &&
@@ -1487,11 +1506,7 @@
   }
 
   // Show the School of Medicine for Women circle.
-  $: if (
-    map &&
-    styleReady &&
-    currentYear === schoolOfMedicineForWomenYear
-  ) {
+  $: if (map && styleReady && currentYear === schoolOfMedicineForWomenYear) {
     drawTimelineMarkerCircle({
       year: schoolOfMedicineForWomenYear,
       sourceId: schoolOfMedicineForWomenSourceId,
@@ -1519,11 +1534,7 @@
 
   //// 1889
   // Show the College of Medicine for Women circle.
-  $: if (
-    map &&
-    styleReady &&
-    currentYear === collegeOfMedicineForWomenYear
-  ) {
+  $: if (map && styleReady && currentYear === collegeOfMedicineForWomenYear) {
     drawTimelineMarkerCircle({
       year: collegeOfMedicineForWomenYear,
       sourceId: collegeOfMedicineForWomenSourceId,
@@ -1653,23 +1664,16 @@
     });
   }
 
-
-  //// 1915 war-location counts only with the third 1915 card.
+  //// 1919
+  // Show aggregated war-location circles.
   $: if (
     map &&
     styleReady &&
     showWomenDoctorsWarLocations &&
-    womenDoctorsWarYear !== null &&
-    (!hasDrawnWomenDoctorsWarLocations ||
-      drawnWomenDoctorsWarYear !== womenDoctorsWarYear)
+    !hasDrawnWomenDoctorsWarLocations
   ) {
-    hasDrawnWomenDoctorsWarLocations = drawWomenDoctorsWarLocationLayer(
-      womenDoctorsWarData,
-      womenDoctorsWarYear,
-    );
-    drawnWomenDoctorsWarYear = hasDrawnWomenDoctorsWarLocations
-      ? womenDoctorsWarYear
-      : null;
+    hasDrawnWomenDoctorsWarLocations =
+      drawWomenDoctorsWarLocationLayer(womenDoctorsWarData);
 
     map.flyTo({
       center: [20.1883, 42.5533],
@@ -1679,7 +1683,7 @@
     });
   }
 
-
+  // Clear war-location circles outside this milestone.
   $: if (
     map &&
     styleReady &&
@@ -1688,7 +1692,6 @@
       map.getLayer(womenDoctorsWarLocationsLayerId))
   ) {
     hasDrawnWomenDoctorsWarLocations = false;
-    drawnWomenDoctorsWarYear = null;
     removeWomenDoctorsWarLocationLayer();
   }
 
@@ -1703,7 +1706,8 @@
       center: [-3.25, 55.95],
       zoom: 12,
       logoPosition: "top-right",
-      style: "mapbox://styles/mapbox/dark-v11",
+      // style: "mapbox://styles/mapbox/dark-v12",
+      style: "mapbox://styles/tomasvancisin/cmub2wzm7009v01qt4sj39282",
       attributionControl: false,
       projection: "naturalEarth",
     });

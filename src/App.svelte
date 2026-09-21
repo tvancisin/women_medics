@@ -38,8 +38,7 @@
   const devRequireClickToResume = true;
 
   const pauseYears = [
-    1583, 1726, 1809, 1862, 1867, 1869, 1875, 1886, 1889, 1911, 1915, 1916,
-    1917, 1918, 1919,
+    1583, 1726, 1809, 1862, 1867, 1869, 1875, 1886, 1889, 1911, 1915, 1919,
   ];
   const milestoneLabels = new Map<number, string>([
     [1583, "Foundation of the University 1582"],
@@ -56,15 +55,12 @@
     // [1892, "Women admitted to universities"],
     [1911, "School and College Students 1911"],
     [1915, "Women Doctors abroad in 1915"],
-    [1916, "Women doctors at war in 1916"],
-    [1917, "Women doctors at war in 1917"],
-    [1918, "Women doctors at war in 1918"],
-    [1919, "Women doctors at war in 1919"],
+    [1919, "Women doctors at war, 1915-1919"],
   ]);
 
   const splitMilestoneYears = new Set([1809, 1862, 1867, 1875]);
   const milestone1915CardCount = 3;
-  const womenDoctorsWarMilestoneYears = new Set([1916, 1917, 1918, 1919]);
+  const womenDoctorsWarMilestoneYear = 1919;
   const additional1915Cards = [
     {
       title:
@@ -559,14 +555,7 @@
     {womenDoctorsWarData}
     showWomenDoctorCareerLocations={pausedAtYear === 1915 &&
       active1915CardIndex === 0}
-    showWomenDoctorsWarLocations={(pausedAtYear === 1915 &&
-      active1915CardIndex === milestone1915CardCount - 1) ||
-      womenDoctorsWarMilestoneYears.has(pausedAtYear ?? 0)}
-    womenDoctorsWarYear={pausedAtYear === 1915
-      ? 1915
-      : womenDoctorsWarMilestoneYears.has(pausedAtYear ?? 0)
-        ? pausedAtYear
-        : null}
+    showWomenDoctorsWarLocations={pausedAtYear === womenDoctorsWarMilestoneYear}
   />
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
   {#if devRequireClickToResume && awaitingResumeClick}
@@ -802,14 +791,14 @@
             <p>{card.text}</p>
           </div>
         {/if}
-      {:else if womenDoctorsWarMilestoneYears.has(year)}
+      {:else if year === womenDoctorsWarMilestoneYear}
         <div class="milestone-card-placeholder">
           <div class="milestone-card-title">
             {milestoneLabels.get(year) ?? ""}
           </div>
           <p>
-            Circle size shows the recorded number of women doctors at each
-            location.
+            Circle size shows the total recorded number of women doctors at
+            each location across 1915-1919.
           </p>
         </div>
       {:else if year === 1892}
