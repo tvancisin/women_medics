@@ -1,23 +1,34 @@
 export const historicalEvents = [
-  // {
-  //   startYear: 1740,
-  //   endYear: 1800,
-  //   description: "Scottish Enlightenment"
-  // },
+  {
+    startYear: 1628,
+    endYear: 1629,
+    description: "Blood Circulation",
+  },
+  {
+    startYear: 1670,
+    endYear: 1680,
+    description: "First Microorganisms Observed",
+  },
+  {
+    startYear: 1740,
+    endYear: 1800,
+    description: "Scottish Enlightenment",
+  },
+  {
+    startYear: 1840,
+    endYear: 1850,
+    description: "London-Edinburgh Railway",
+  },
+  {
+    startYear: 1879,
+    endYear: 1880,
+    description: "Royal Infirmary (now EFI)",
+  },
+
   // {
   //   startYear: 1884,
   //   endYear: 1885,
   //   description: "Triple Qualifications"
-  // },
-  // {
-  //   startYear: 1886,
-  //   endYear: 1887,
-  //   description: "School of Medicine for Women"
-  // },
-  // {
-  //   startYear: 1889,
-  //   endYear: 1890,
-  //   description: "College of Medicine for Women"
   // },
   // {
   //   startYear: 1892,
@@ -32,7 +43,7 @@ export const historicalEvents = [
   {
     startYear: 1914,
     endYear: 1918,
-    description: "The First World War"
+    description: "WW1",
   },
   // {
   //   startYear: 1928,
@@ -42,7 +53,7 @@ export const historicalEvents = [
   {
     startYear: 1939,
     endYear: 1945,
-    description: "The Second World War"
+    description: "WW2",
   },
 ];
 

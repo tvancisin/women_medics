@@ -104,7 +104,7 @@
       <rect
         class="year-counter-background"
         x={yearCounterPanelX}
-        y={timelineY + 5}
+        y={timelineY - 40}
         width="112"
         height="37"
         rx="3"
@@ -113,13 +113,13 @@
       <text
         class="year-counter-label"
         x={yearCounterTextX}
-        y={timelineY + 35}
+        y={timelineY - 10}
         text-anchor="middle">Since Foundation</text
       >
       <text
         class="year-counter"
         x={yearCounterTextX}
-        y={timelineY + 22}
+        y={timelineY - 22}
         text-anchor="middle"
         aria-label={`${yearsSinceUniversityEstablished} years since the University was established`}
         >{yearsSinceUniversityEstablished} {yearCounterUnit}</text

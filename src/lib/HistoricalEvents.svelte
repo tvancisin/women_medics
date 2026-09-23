@@ -11,6 +11,9 @@
   export let domainEndYear: number;
   export let timelineY: number;
   export let yearToX: (year: number) => number;
+
+  const eventBandHeight = 50;
+  $: eventBandY = timelineY;
 </script>
 
 {#each events as event, index (event.description + index)}
@@ -25,16 +28,24 @@
     <rect
       class="historical-event"
       x={Math.min(x1, x2)}
-      y="0"
+      y={eventBandY}
       width={Math.max(1, Math.abs(x2 - x1))}
-      height={timelineY}
-      fill="steelblue"
+      height={eventBandHeight}
+      fill="#fff"
       aria-label={event.description}
     />
     <text
       class="event-label"
       x={x2 - 5}
-      y={80 + index * 20}
+      y={
+        eventBandY +
+        eventBandHeight -
+        5 -
+        (event.description ===
+          "Royal Infirmary (now EFI)"
+          ? 13
+          : 0)
+      }
       text-anchor={event.startYear <= domainStartYear ? "start" : "end"}
     >
       {event.description}
@@ -48,11 +59,11 @@
 
 <style>
   .historical-event {
-    opacity: 0.1;
+    opacity: 0.15;
     pointer-events: none;
   }
   .event-label {
-    fill: white;
+    fill: rgb(214, 214, 214);
     font-size: 12px;
     pointer-events: none;
   }
