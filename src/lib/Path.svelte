@@ -9,6 +9,11 @@
   export let active = false;
 
   const collapsedPathLength = 20;
+  const inactiveLabelMaxLength = 18;
+  $: shortenedLabel =
+    label.length > inactiveLabelMaxLength
+      ? `${label.slice(0, inactiveLabelMaxLength).trimEnd()}…`
+      : label;
   $: labelPaddingX = active ? 4 : 3;
   $: labelBackgroundHeight = active ? 20 : 14;
   $: labelBackgroundOffsetX = active ? 16 : 8;
@@ -23,7 +28,7 @@
     easing: cubicOut,
   });
   $: startY = height - 30;
-  $: middleY = height - 80;
+  $: middleY = height - 70;
   $: fullLength = Math.max(0, startY - middleY);
 
   onMount(() => {
@@ -51,14 +56,14 @@
     labelWidth = labelTextElement.getComputedTextLength();
   }
 
-  // The inactive label has a smaller font, so remeasure after its class changes.
-  $: if (label && typeof active === "boolean") {
+  // Inactive labels use shortened text and a smaller font, so remeasure them.
+  $: if (shortenedLabel && !active) {
     updateLabelWidth();
   }
 </script>
 
 <path class="event-path" class:inactive={!active} d={pathD} fill="none" />
-{#if label}
+{#if label && !active}
   <g
     transform="rotate(-90, {x}, {endY})"
   >
@@ -78,7 +83,7 @@
       y={endY + 2}
       text-anchor="start"
     >
-      {label}
+      {shortenedLabel}
     </text>
   </g>
 {/if}
@@ -86,13 +91,13 @@
 <style>
   .event-path {
     stroke: rgb(255, 255, 255);
-    stroke-width: 1;
+    stroke-width: 2px;
     stroke-linecap: round;
     pointer-events: none;
   }
 
   .event-path.inactive {
-    stroke: #999;
+    stroke: #ffffff;
   }
 
   .event-label-background {
@@ -109,7 +114,7 @@
   }
 
   .event-label.inactive {
-    fill: #999;
+    fill: #ffffff;
     font-size: 10px;
   }
 </style>

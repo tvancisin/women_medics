@@ -28,15 +28,14 @@
   const clampedLeft = (x: number, year: number) => {
     // return x < width / 2 ? x + 10 : x - milestoneCardWidth - 10;
     if (card_left.includes(year)) {
-      return x - milestoneCardWidth - 15;
+      return x - milestoneCardWidth;
     } else {
-      return x + 15;
+      return x;
     }
   };
 
   // Dev-only: set to false or remove this flag and the related blocks below to restore auto-resume.
   const devRequireClickToResume = true;
-
   const pauseYears = [
     1583, 1726, 1809, 1862, 1867, 1869, 1870, 1875, 1886, 1889, 1911, 1915,
     1919,
@@ -57,22 +56,13 @@
     // [1892, "Women admitted to universities"],
     [1911, "School and College Students 1911"],
     [1915, "Women Doctors abroad in 1915"],
-    [1919, "Women doctors at war, 1915-1919"],
+    [1919, "Women Doctors at WW1, 1915-1919"],
   ]);
 
-  const splitMilestoneYears = new Set([1809, 1862, 1867, 1870, 1875]);
-  const milestone1915CardCount = 3;
+  const splitMilestoneYears = new Set([
+    1809, 1862, 1867, 1870, 1875, 1886, 1889, 1911, 1919
+  ]);
   const womenDoctorsWarMilestoneYear = 1919;
-  const additional1915Cards = [
-    {
-      title:
-        "1915 also marks the first year when women oficially started studying medicine at the University of Edinburgh. 11 started this year.",
-    },
-    {
-      title:
-        "By 1915, women who studied medicine at the School/College of Medicine for Women (not the University) were already working as medics in the First Wolrd War.",
-    },
-  ];
 
   // Point multiple years at the same path, or leave a year out to show no image.
   const pauseDurationMs = 500;
@@ -258,14 +248,8 @@
   // Dev-only: remove these two variables with the click-to-resume behavior.
   let awaitingResumeClick = false;
   let resumeRequested = false;
-  let active1915CardIndex = 0;
 
   $: careerPositionGroups = buildCareerPositionGroups(womenCareers1915Data);
-
-  // Reset the 1915 sequence whenever this milestone is no longer active.
-  $: if (pausedAtYear !== 1915) {
-    active1915CardIndex = 0;
-  }
 
   $: maxSpan = Math.max(0, width - margin.left - margin.right);
   $: timelineY = Math.max(margin.top, height - margin.bottom);
@@ -341,15 +325,6 @@
 
   // Dev-only: remove this handler together with the Continue button markup.
   const handleResumeClick = () => {
-    if (
-      pausedAtYear === 1915 &&
-      active1915CardIndex < milestone1915CardCount - 1
-    ) {
-      active1915CardIndex += 1;
-      awaitingResumeClick = false;
-      return;
-    }
-
     resumeRequested = true;
     awaitingResumeClick = false;
   };
@@ -468,16 +443,6 @@
             return;
           }
 
-          // In production, use the regular timed pause between each 1915 card.
-          if (
-            pausedAtYear === 1915 &&
-            active1915CardIndex < milestone1915CardCount - 1
-          ) {
-            active1915CardIndex += 1;
-            pauseStartMs = Date.now();
-            return;
-          }
-
           // Trigger path shrink for the milestone we're leaving — works
           // whether the button triggered this or the timer fired automatically.
           // Keep timeline speed consistent by discounting time spent paused.
@@ -560,16 +525,13 @@
     {edinburghRoutes}
     {edinburghSevenData}
     {womenDoctorsWarData}
-    showWomenDoctorCareerLocations={pausedAtYear === 1915 &&
-      active1915CardIndex === 0}
+    showWomenDoctorCareerLocations={pausedAtYear === 1915}
     showWomenDoctorsWarLocations={pausedAtYear === womenDoctorsWarMilestoneYear}
   />
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
   {#if devRequireClickToResume && awaitingResumeClick}
     <button class="resume-button" type="button" on:click={handleResumeClick}>
-      {pausedAtYear === 1915 && active1915CardIndex < milestone1915CardCount - 1
-        ? "Next"
-        : "Continue"}
+      Continue
     </button>
   {/if}
   <MainTimeline
@@ -594,12 +556,12 @@
     <div
       class="milestone-card"
       class:milestone-card--university-founded={year === 1583}
-      class:milestone-card--text-only={year === 1726 || year === 1911}
       class:milestone-card--split={splitMilestoneYears.has(year)}
       class:is-active={pausedAtYear === year}
-      style:top="15vh"
+      style:bottom="10vh"
       style:left={`${clampedLeft(yearToX(year), year)}px`}
     >
+      <h1 class="milestone-card-heading">{milestoneLabels.get(year) ?? ""}</h1>
       {#if year === 1583}
         <div
           class="university-founded-card-image"
@@ -702,11 +664,15 @@
           </div>
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
-              During October everything went smoothly, but after we had applied
-              for admission to the Royal Infirmary for clinical instruction and
-              been refused we were subjected to petty annoyances that culminated
-              on November 18th, 1870, in an attempt to shut us out of Surgeons’
-              Hall
+              "We were proceeding in the dusk of a November afternoon to the
+              weekly class examination when we found a noisy crowd assembled
+              round the entrance. On our approach the gates were closed and a
+              loud yelling and hooting were set up by men inside and outside the
+              grounds leading to the Hall. We stood for a few minutes surrounded
+              by the hooting crowd of young men, unable to make our way to the
+              classroom which stood a little way back from the road, when a male
+              student rushed from the Hall and opened the gates from the
+              inside."
             </div>
           </div>
         </div>
@@ -729,23 +695,66 @@
             </div>
           </div>
         </div>
+      {:else if year === 1886}
+        <div class="milestone-card-split-layout">
+          <div class="milestone-card-split-half milestone-card-split-image">
+            <img
+              class="milestone-image"
+              src={publicUrl("img/esmw.jpg")}
+              alt="Women Doctors"
+            />
+          </div>
+          <div class="milestone-card-split-half milestone-card-split-text">
+            <div class="milestone-card-title">
+              Sophia Jex-Blake (1840 - 1912), the leading figure of the
+              Edinburgh Seven/Forty, established the School of Medicine for
+              Women in 1886, which, unlike the University, allowed women to
+              study medicine.
+            </div>
+          </div>
+        </div>
+      {:else if year === 1889}
+        <div class="milestone-card-split-layout">
+          <div class="milestone-card-split-half milestone-card-split-image">
+            <img
+              class="milestone-image"
+              src={publicUrl("img/ecmw.png")}
+              alt="Women Doctors"
+            />
+          </div>
+          <div class="milestone-card-split-half milestone-card-split-text">
+            <div class="milestone-card-title">
+              Edinburgh College of Medicine for Women was established by The
+              Scottish Association for the Medical Education of Women whose
+              leading members included John Inglis, the father of Elsie Inglis.
+              Elsie Inglis went on to become a leader in the suffrage movement
+              and found the Scottish Women's Hospital.
+            </div>
+          </div>
+        </div>
       {:else if year === 1911}
-        <div class="milestone-card-text-only">
-          <div class="milestone-card-title">
-            By 1911, 360 women have studied medicine at the School of Medicine
-            and College of Medicine for Women.
+        <div class="milestone-card-split-layout">
+          <div class="milestone-card-split-half milestone-card-split-image">
+            <img
+              class="milestone-image"
+              src={publicUrl("img/photo_outside_efi.jpg")}
+              alt="Women Doctors"
+            />
+          </div>
+          <div class="milestone-card-split-half milestone-card-split-text">
+            <div class="milestone-card-title">
+              By 1911, 360 women have studied medicine at the School of Medicine
+              and College of Medicine for Women. [Picture taken from outside the
+              now Edinburgh Futures Institute]
+            </div>
           </div>
         </div>
       {:else if year === 1915}
-        {#if active1915CardIndex === 0}
-          <div class="career-chart">
-            <div class="career-chart-title">
-              {milestoneLabels.get(year) ?? ""}
-            </div>
-            {#if careerPositionGroups.length > 0}
-              <div class="career-region-list">
-                {#each careerPositionGroups as regionGroup (regionGroup.region)}
-                  <section class="career-region">
+        <div class="career-chart">
+          {#if careerPositionGroups.length > 0}
+            <div class="career-region-list">
+              {#each careerPositionGroups as regionGroup (regionGroup.region)}
+                <section class="career-region">
                     <div class="career-region-heading">
                       <div class="career-region-summary">
                         <span class="career-region-name"
@@ -803,29 +812,29 @@
                         {/each}
                       </div>
                     {/if}
-                  </section>
-                {/each}
-              </div>
-            {:else}
-              <div class="career-chart-empty">No 1915 career data</div>
-            {/if}
-          </div>
-        {:else}
-          {@const card = additional1915Cards[active1915CardIndex - 1]}
-          <div class="milestone-card-placeholder">
-            <div class="milestone-card-title">{card.title}</div>
-            <p>{card.text}</p>
-          </div>
-        {/if}
+                </section>
+              {/each}
+            </div>
+          {:else}
+            <div class="career-chart-empty">No 1915 career data</div>
+          {/if}
+        </div>
       {:else if year === womenDoctorsWarMilestoneYear}
-        <div class="milestone-card-placeholder">
-          <div class="milestone-card-title">
-            {milestoneLabels.get(year) ?? ""}
+        <div class="milestone-card-split-layout">
+          <div class="milestone-card-split-half milestone-card-split-image">
+            <img
+              class="milestone-image"
+              src={publicUrl("img/women_war.jpg")}
+              alt="Women Doctors"
+            />
           </div>
-          <p>
-            Circle size shows the total recorded number of women doctors at each
-            location across 1915-1919.
-          </p>
+          <div class="milestone-card-split-half milestone-card-split-text">
+            <div class="milestone-card-title">
+              During the First World War, women doctors served in various
+              capacities, including in military hospitals and overseas. The
+              image above shows a group of women doctors during the war.
+            </div>
+          </div>
         </div>
       {:else if year === 1892}
         <div class="milestone-text">{milestoneLabels.get(year) ?? ""}</div>
@@ -874,23 +883,33 @@
 
   .milestone-card.is-active {
     width: 400px;
-    height: 75vh;
+    height: auto;
     pointer-events: auto;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
+  .milestone-card-heading {
+    flex: 0 0 auto;
+    margin: 10px 30px 5px;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.1;
+    text-align: center;
   }
 
   .milestone-card--split {
     padding: 0;
   }
 
-  .milestone-card--text-only {
-    align-items: flex-start;
-    justify-content: flex-start;
-    padding: 30px;
-    text-align: left;
-  }
-
   .milestone-card-text-only {
     width: 100%;
+    flex: 1 1 auto;
+    box-sizing: border-box;
+    padding: 0 30px 30px;
+    text-align: left;
   }
 
   .milestone-card--university-founded {
@@ -901,10 +920,14 @@
   }
 
   .milestone-card--university-founded.is-active {
-    width: min(80vw, 720px);
-    height: min(75vh, calc(min(80vw, 720px) * 0.751 + 52px));
+    width: min(90vw, 800px);
+    height: 75vh;
     flex-direction: column;
     padding: 5px;
+  }
+
+  .milestone-card--university-founded .milestone-card-heading {
+    margin: 10px 5px 8px;
   }
 
   .university-founded-card-image {
@@ -925,18 +948,19 @@
     background: rgba(0, 0, 0, 0.88);
     font-size: 12px;
     line-height: 1.25;
-    text-align: left;
+    text-align: center;
   }
 
   .milestone-card--split .milestone-card-split-layout {
     width: 100%;
-    height: 100%;
+    height: auto;
+    flex: 0 1 auto;
+    min-height: 0;
     display: flex;
     flex-direction: column;
   }
 
   .milestone-card--split .milestone-card-split-half {
-    flex: 1 1 50%;
     min-height: 0;
     min-width: 0;
     box-sizing: border-box;
@@ -945,12 +969,16 @@
   }
 
   .milestone-card--split .milestone-card-split-image {
+    flex: 0 0 auto;
+    width: 100%;
     padding: 0.5rem;
     align-items: center;
   }
 
   .milestone-card--split .milestone-card-split-text {
-    padding: 30px;
+    flex: 0 0 auto;
+    padding: 20px;
+    padding-top: 5px;
     text-align: left;
   }
 
@@ -980,29 +1008,26 @@
   }
 
   .milestone-image {
-    width: auto;
+    width: 100%;
+    height: auto;
     max-width: 100%;
-    max-height: calc(100% - 5rem);
+    max-height: 45vh;
     object-fit: contain;
     display: block;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     min-height: 0;
+    border-radius: 3px;
   }
 
   .career-chart {
     width: 100%;
-    height: 100%;
+    height: auto;
+    flex: 1 1 auto;
+    min-height: 0;
     box-sizing: border-box;
     padding: 18px;
     overflow-y: auto;
     text-align: left;
-  }
-
-  .career-chart-title {
-    margin-bottom: 16px;
-    color: #fff;
-    font-size: 15px;
-    line-height: 1.25;
   }
 
   .career-region-list {

@@ -62,6 +62,8 @@
   let timelineMarkersDataKey = "";
   const timelineLabelMarkers = new Map<string, mapboxgl.Marker>();
   const womenDoctorsWarLabelMarkers = new Map<string, mapboxgl.Marker>();
+  let womenDoctorCareerPopup: mapboxgl.Popup | null = null;
+  let hasWomenDoctorCareerHoverHandlers = false;
 
   type LayerConfig = {
     sourceId: string;
@@ -158,7 +160,8 @@
   const oldMapOverlayStartYear = 1726;
   const oldMapOverlayEndYear = 1760;
   const firstClassesMapOverlayYear = 1867;
-  const physiologyMapOverlayYear = 1875;
+  const physiologyMapOverlayStartYear = 1870;
+  const physiologyMapOverlayEndYear = 1875;
   const mapOverlay1886Year = 1886;
   const mapOverlay1886EndYear = 1889;
   const schoolOfMedicineForWomenYear = 1886;
@@ -203,7 +206,11 @@
   };
   const timelineMarkerCirclePaint: Record<string, unknown> = {
     ...circleMarkerPaint,
-    "circle-color": "#f2c14e",
+    "circle-radius": 8,
+    "circle-color": "black",
+    "circle-stroke-color": "white",
+    "circle-stroke-width": 1.5,
+    "circle-stroke-opacity": 1,
   };
   const womenDoctorsWarCirclePaint: Record<string, unknown> = {
     "circle-radius": [
@@ -597,6 +604,11 @@
     );
 
     bringForegroundMarkersToFront();
+    // The physiology overlay is used at the 1870 riot milestone; keep its
+    // animated route above the raster tiles instead of obscuring it.
+    if (map.getLayer(riotRouteLineLayerId)) {
+      map.moveLayer(riotRouteLineLayerId);
+    }
     return true;
   }
 
@@ -987,11 +999,124 @@
     sourceId,
     layerId,
   }: DataLayerConfig) {
-    return drawCircleLayer({
+    const didDraw = drawCircleLayer({
       features: getWomenDoctorCareerLocationFeatures(rawData),
       sourceId,
       layerId,
       paint: circleMarkerPaint,
+    });
+
+    if (didDraw) {
+      addWomenDoctorCareerHoverHandlers();
+    }
+
+    return didDraw;
+  }
+
+  function appendCareerPopupField(
+    container: HTMLDivElement,
+    label: string,
+    value: unknown,
+  ) {
+    const text = String(value ?? "").trim();
+    if (!text) return;
+
+    const field = document.createElement("div");
+    field.className = "women-doctor-career-popup-field";
+    const fieldLabel = document.createElement("span");
+    fieldLabel.className = "women-doctor-career-popup-label";
+    fieldLabel.textContent = `${label}: `;
+    field.append(fieldLabel, document.createTextNode(text));
+    container.append(field);
+  }
+
+  function showWomenDoctorCareerPopup(event: mapboxgl.MapLayerMouseEvent) {
+    if (!map) return;
+
+    const feature = event.features?.[0];
+    if (!feature || feature.geometry.type !== "Point") return;
+
+    const properties = feature.properties ?? {};
+    const content = document.createElement("div");
+    content.className = "women-doctor-career-popup";
+    const name = document.createElement("strong");
+    name.className = "women-doctor-career-popup-name";
+    name.textContent = String(properties.name ?? "Unknown doctor");
+    content.append(name);
+
+    appendCareerPopupField(content, "Location", properties.career_location);
+    appendCareerPopupField(content, "Country", properties.country);
+    appendCareerPopupField(content, "Region", properties.region);
+    appendCareerPopupField(content, "Position", properties.position_1915);
+    appendCareerPopupField(content, "Position code", properties.position_codes);
+    appendCareerPopupField(content, "Specialism", properties.specialism);
+    appendCareerPopupField(
+      content,
+      "First qualification",
+      properties.first_qual,
+    );
+    appendCareerPopupField(
+      content,
+      "Student registration",
+      properties.student_registration,
+    );
+
+    map.getCanvas().style.cursor = "pointer";
+    womenDoctorCareerPopup ??= new mapboxgl.Popup({
+      closeButton: false,
+      closeOnClick: false,
+      offset: 10,
+      className: "women-doctor-career-map-popup",
+    });
+    womenDoctorCareerPopup
+      .setLngLat(event.lngLat)
+      .setDOMContent(content)
+      .addTo(map);
+  }
+
+  function hideWomenDoctorCareerPopup() {
+    if (!map) return;
+
+    map.getCanvas().style.cursor = "";
+    womenDoctorCareerPopup?.remove();
+  }
+
+  function addWomenDoctorCareerHoverHandlers() {
+    if (!map || hasWomenDoctorCareerHoverHandlers) return;
+
+    map.on(
+      "mouseenter",
+      womenDoctorsCareerLocationsLayerId,
+      showWomenDoctorCareerPopup,
+    );
+    map.on(
+      "mouseleave",
+      womenDoctorsCareerLocationsLayerId,
+      hideWomenDoctorCareerPopup,
+    );
+    hasWomenDoctorCareerHoverHandlers = true;
+  }
+
+  function removeWomenDoctorCareerLocationLayer() {
+    hideWomenDoctorCareerPopup();
+
+    if (map && hasWomenDoctorCareerHoverHandlers) {
+      map.off(
+        "mouseenter",
+        womenDoctorsCareerLocationsLayerId,
+        showWomenDoctorCareerPopup,
+      );
+      map.off(
+        "mouseleave",
+        womenDoctorsCareerLocationsLayerId,
+        hideWomenDoctorCareerPopup,
+      );
+      hasWomenDoctorCareerHoverHandlers = false;
+    }
+
+    removeCircleLayer({
+      sourceId: womenDoctorsCareerLocationsSourceId,
+      layerId: womenDoctorsCareerLocationsLayerId,
     });
   }
 
@@ -1422,7 +1547,7 @@
   // Focus on Edinburgh and draw the route of the Surgeons' Hall riot.
   $: if (map && styleReady && currentYear == edinburghSevenRiotYear) {
     map.flyTo({
-      center: [ -3.1862, 55.9433],
+      center: [ -3.185, 55.9443],
       zoom: 15.5,
       duration: 2000,
       essential: true,
@@ -1441,6 +1566,10 @@
       sourceId: riotRouteSourceId,
       layerId: riotRouteLineLayerId,
       milestoneYear: edinburghSevenRiotYear,
+      lineColor: "black",
+      lineOpacity: 1,
+      lineWidth: 5,
+      durationMs: 10000,
     });
   }
 
@@ -1451,12 +1580,13 @@
     removeLayerAndSource(riotRouteSourceId, riotRouteLineLayerId);
   }
 
-  //// 1875
-  // Show the physiology map.
+  //// 1870–1875
+  // Keep the historical physiology map visible through the 1875 milestone.
   $: if (
     map &&
     styleReady &&
-    currentYear === physiologyMapOverlayYear &&
+    currentYear >= physiologyMapOverlayStartYear &&
+    currentYear <= physiologyMapOverlayEndYear &&
     (!hasDrawnPhysiologyMapOverlay ||
       physiologyMapOverlayFadeTimeout !== null ||
       !map.getLayer(physiologyMapOverlayLayerId))
@@ -1464,11 +1594,11 @@
     hasDrawnPhysiologyMapOverlay = drawPhysiologyMapOverlay();
   }
 
-  // Fade out the physiology map afterward.
+  // Fade out the physiology map after 1875.
   $: if (
     map &&
     styleReady &&
-    currentYear > physiologyMapOverlayYear &&
+    currentYear > physiologyMapOverlayEndYear &&
     (hasDrawnPhysiologyMapOverlay || map.getLayer(physiologyMapOverlayLayerId))
   ) {
     fadeOutPhysiologyMapOverlay();
@@ -1696,10 +1826,7 @@
       !showWomenDoctorCareerLocations)
   ) {
     hasDrawnWomenDoctorCareerLocations = false;
-    removeCircleLayer({
-      sourceId: womenDoctorsCareerLocationsSourceId,
-      layerId: womenDoctorsCareerLocationsLayerId,
-    });
+    removeWomenDoctorCareerLocationLayer();
   }
 
   //// 1919
@@ -1783,6 +1910,7 @@
         marker.remove();
       }
       womenDoctorsWarLabelMarkers.clear();
+      removeWomenDoctorCareerLocationLayer();
       removeCircleLayer({
         sourceId: edinburghSevenSourceId,
         layerId: edinburghSevenLayerId,
@@ -1837,5 +1965,34 @@
     white-space: pre-line;
     pointer-events: none;
     border-radius: 3px;
+  }
+
+  :global(.women-doctor-career-map-popup .mapboxgl-popup-content) {
+    padding: 10px 12px;
+    background: #111;
+    color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+    font-family: "Montserrat", sans-serif;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  :global(.women-doctor-career-popup) {
+    max-width: 260px;
+  }
+
+  :global(.women-doctor-career-popup-name) {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+
+  :global(.women-doctor-career-popup-field) {
+    margin-top: 2px;
+  }
+
+  :global(.women-doctor-career-popup-label) {
+    color: rgba(255, 255, 255, 0.65);
   }
 </style>
