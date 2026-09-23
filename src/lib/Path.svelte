@@ -27,8 +27,8 @@
     duration: 400,
     easing: cubicOut,
   });
-  $: startY = height - 30;
-  $: middleY = height - 70;
+  $: startY = height - 50;
+  $: middleY = height - 80;
   $: fullLength = Math.max(0, startY - middleY);
 
   onMount(() => {

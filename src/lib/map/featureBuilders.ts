@@ -93,7 +93,7 @@ export const normalizeWomenCareer1915Region = (region: unknown) => {
   }
 
   if (["australia", "new zealand"].includes(normalizedRegion)) {
-    return "Australia/New Zealand";
+    return "Australasia";
   }
 
   if (["ceylon", "india", "burma"].includes(normalizedRegion)) {

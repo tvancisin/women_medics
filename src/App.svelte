@@ -8,7 +8,8 @@
   const baseUrl = import.meta.env.BASE_URL;
   const publicUrl = (path: string) => `${baseUrl}${path}`;
 
-  const startYear = 1550;
+  const startYear = 1583;
+  const universityEstablishedYear = 1583;
   const endYear = 2026;
   const stepYears = 50;
   const timelineZoomTriggerYear = 1862;
@@ -18,7 +19,7 @@
   const timelineZoomDurationMs = 1600;
   // Set to false to keep the timeline at its full 1550–2026 range.
   const enableTimelineSpreading = false;
-  const margin = { top: 20, right: 40, bottom: 30, left: 40 };
+  const margin = { top: 20, right: 40, bottom: 50, left: 40 };
 
   // keeping the detail div inside screen
   const milestoneCardWidth = 400;
@@ -55,12 +56,12 @@
     // [1889, "Universities Scotland Act 1889"],
     // [1892, "Women admitted to universities"],
     [1911, "School and College Students 1911"],
-    [1915, "Women Doctors abroad in 1915"],
-    [1919, "Women Doctors at WW1, 1915-1919"],
+    [1915, "Career Locations in 1915"],
+    [1919, "Women Doctors in WWI, 1915-1919"],
   ]);
 
   const splitMilestoneYears = new Set([
-    1809, 1862, 1867, 1870, 1875, 1886, 1889, 1911, 1919
+    1809, 1862, 1867, 1870, 1875, 1886, 1889, 1911, 1919,
   ]);
   const womenDoctorsWarMilestoneYear = 1919;
 
@@ -93,6 +94,18 @@
   let pauseStartMs: number | null = null;
   let womenMedicsData: Array<{ year: number; number: number }> = [];
   let edinburghSevenData: Array<Record<string, string>> = [];
+  const edinburghSevenNames = [
+    "Sophia Louisa Jex-Blake",
+    "Isabel Jane Pryer later Thorne",
+    "Mary Edith Pechey",
+    "Matilda Charlotte Chaplin",
+    "Helen (de Lacy) Evans",
+    "Mary Adamson Anderson later Marshall",
+    "Emily Bovell later Sturge",
+  ];
+  const edinburghSevenOrder = new Map(
+    edinburghSevenNames.map((name, index) => [name, index]),
+  );
 
   type FirstClassesGeoDatum = {
     source_data?: {
@@ -213,12 +226,13 @@
     }
 
     return Array.from(countsByRegion.entries())
+      .filter(([region]) => region !== "Other")
       .map(([region, regionCounts]) => {
         const entries = Array.from(regionCounts.counts.entries()).sort(
           ([positionA, countA], [positionB, countB]) =>
             countB - countA || positionA.localeCompare(positionB),
         );
-        const topEntries = entries.slice(0, 5);
+        const topEntries = entries.slice(0, 3);
         const maxCount = Math.max(...topEntries.map(([, count]) => count), 1);
         const total = regionCounts.statedCount + regionCounts.notStatedCount;
 
@@ -250,6 +264,11 @@
   let resumeRequested = false;
 
   $: careerPositionGroups = buildCareerPositionGroups(womenCareers1915Data);
+  $: orderedEdinburghFortyData = [...edinburghSevenData].sort(
+    (personA, personB) =>
+      (edinburghSevenOrder.get(personA.name) ?? Number.MAX_SAFE_INTEGER) -
+      (edinburghSevenOrder.get(personB.name) ?? Number.MAX_SAFE_INTEGER),
+  );
 
   $: maxSpan = Math.max(0, width - margin.left - margin.right);
   $: timelineY = Math.max(margin.top, height - margin.bottom);
@@ -539,6 +558,7 @@
     {height}
     {currentYear}
     {startYear}
+    {universityEstablishedYear}
     {endYear}
     {timelineDomainStart}
     {timelineDomainEnd}
@@ -556,12 +576,23 @@
     <div
       class="milestone-card"
       class:milestone-card--university-founded={year === 1583}
+      class:milestone-card--edinburgh-forty={year === 1869}
       class:milestone-card--split={splitMilestoneYears.has(year)}
       class:is-active={pausedAtYear === year}
       style:bottom="10vh"
       style:left={`${clampedLeft(yearToX(year), year)}px`}
     >
       <h1 class="milestone-card-heading">{milestoneLabels.get(year) ?? ""}</h1>
+      {#if year === 1869}
+        <p class="edinburgh-forty-intro">
+          The Edinburgh Seven are known to be the first women to matriculate at
+          the University of Edinburgh in 1869. However, there were actually 40
+          women who enrolled in the School of Medicine that year. The women
+          faced significant opposition and discrimination, but their
+          determination paved the way for future generations of women in
+          medicine.
+        </p>
+      {/if}
       {#if year === 1583}
         <div
           class="university-founded-card-image"
@@ -643,8 +674,13 @@
         </div>
       {:else if year === 1869}
         <div class="edinburgh_forty">
-          {#each edinburghSevenData as d (d.name)}
-            <div class="edinburgh_forty-item">
+          {#each orderedEdinburghFortyData as d (d.name)}
+            <div
+              class="edinburgh_forty-item"
+              class:edinburgh_forty-item--edinburgh-seven={edinburghSevenOrder.has(
+                d.name,
+              )}
+            >
               <div
                 class="edinburgh_forty-circle"
                 style:background-image={edinburghFortyImageUrl(d.img)}
@@ -755,63 +791,61 @@
             <div class="career-region-list">
               {#each careerPositionGroups as regionGroup (regionGroup.region)}
                 <section class="career-region">
-                    <div class="career-region-heading">
-                      <div class="career-region-summary">
-                        <span class="career-region-name"
-                          >{regionGroup.region}</span
-                        >
-                        <div
-                          class="career-statement-indicator"
-                          aria-label={`Stated occupations: ${regionGroup.statedCount}; not stated: ${regionGroup.notStatedCount}`}
-                          title={`Stated occupations: ${regionGroup.statedCount}; not stated: ${regionGroup.notStatedCount}`}
-                        >
-                          <div class="career-statement-track">
-                            <div
-                              class="career-statement-fill career-statement-fill-stated"
-                              style:width={`${regionGroup.statedPercent}%`}
-                            ></div>
-                            <div
-                              class="career-statement-fill career-statement-fill-not-stated"
-                              style:width={`${regionGroup.notStatedPercent}%`}
-                            ></div>
-                          </div>
-                          <span
-                            class="career-statement-count career-statement-count-stated"
-                          >
-                            {regionGroup.statedCount}
-                          </span>
-                          <span
-                            class="career-statement-count career-statement-count-not-stated"
-                          >
-                            {regionGroup.notStatedCount}
-                          </span>
-                        </div>
-                      </div>
-                      <span class="career-region-total"
-                        >{regionGroup.total}</span
+                  <div class="career-region-heading">
+                    <div class="career-region-summary">
+                      <span class="career-region-name"
+                        >{regionGroup.region}</span
                       >
-                    </div>
-                    {#if regionGroup.positions.length > 0}
-                      <div class="career-bars">
-                        {#each regionGroup.positions as position (position.code)}
-                          <div class="career-bar-row">
-                            <div class="career-bar-label" title={position.code}>
-                              {position.code}
-                            </div>
-                            <div
-                              class="career-bar-track"
-                              aria-label={`${position.code}: ${position.count}`}
-                            >
-                              <div
-                                class="career-bar-fill"
-                                style:width={`${position.percent}%`}
-                              ></div>
-                            </div>
-                            <div class="career-bar-value">{position.count}</div>
-                          </div>
-                        {/each}
+                      <div
+                        class="career-statement-indicator"
+                        aria-label={`Known professions: ${regionGroup.statedCount}; unknown professions: ${regionGroup.notStatedCount}`}
+                        title={`Known professions: ${regionGroup.statedCount}; unknown professions: ${regionGroup.notStatedCount}`}
+                      >
+                        <div class="career-statement-track">
+                          <div
+                            class="career-statement-fill career-statement-fill-stated"
+                            style:width={`${regionGroup.statedPercent}%`}
+                          ></div>
+                          <div
+                            class="career-statement-fill career-statement-fill-not-stated"
+                            style:width={`${regionGroup.notStatedPercent}%`}
+                          ></div>
+                        </div>
+                        <span
+                          class="career-statement-count career-statement-count-stated"
+                        >
+                          {regionGroup.statedCount} known
+                        </span>
+                        <span
+                          class="career-statement-count career-statement-count-not-stated"
+                        >
+                          {regionGroup.notStatedCount} unknown
+                        </span>
                       </div>
-                    {/if}
+                    </div>
+                    <span class="career-region-total">{regionGroup.total}</span>
+                  </div>
+                  {#if regionGroup.positions.length > 0}
+                    <div class="career-bars">
+                      {#each regionGroup.positions as position (position.code)}
+                        <div class="career-bar-row">
+                          <div class="career-bar-label" title={position.code}>
+                            {position.code}
+                          </div>
+                          <div
+                            class="career-bar-track"
+                            aria-label={`${position.code}: ${position.count}`}
+                          >
+                            <div
+                              class="career-bar-fill"
+                              style:width={`${position.percent}%`}
+                            ></div>
+                          </div>
+                          <div class="career-bar-value">{position.count}</div>
+                        </div>
+                      {/each}
+                    </div>
+                  {/if}
                 </section>
               {/each}
             </div>
@@ -836,13 +870,13 @@
             </div>
           </div>
         </div>
-      {:else if year === 1892}
+        <!-- {:else if year === 1892}
         <div class="milestone-text">{milestoneLabels.get(year) ?? ""}</div>
         <img
           class="milestone-image"
           src={publicUrl("img/ordinance_1892.png")}
           alt="Women Admitted to Universities"
-        />
+        /> -->
       {:else}
         <!-- {milestoneLabels.get(year) ?? ""} -->
       {/if}
@@ -890,14 +924,25 @@
     justify-content: flex-start;
   }
 
+  .milestone-card--edinburgh-forty.is-active {
+    width: 600px;
+  }
+
   .milestone-card-heading {
     flex: 0 0 auto;
-    margin: 10px 30px 5px;
+    margin: 10px 10px 5px;
     color: #fff;
     font-size: 20px;
     font-weight: 400;
     line-height: 1.1;
     text-align: center;
+  }
+
+  .edinburgh-forty-intro {
+    margin: 0 16px 8px;
+    color: rgb(150, 150, 150);
+    font-size: 12px;
+    line-height: 1.3;
   }
 
   .milestone-card--split {
@@ -921,23 +966,23 @@
 
   .milestone-card--university-founded.is-active {
     width: min(90vw, 800px);
-    height: 75vh;
+    height: auto;
     flex-direction: column;
     padding: 5px;
   }
 
   .milestone-card--university-founded .milestone-card-heading {
-    margin: 10px 5px 8px;
+    margin: 5px 5px 8px;
   }
 
   .university-founded-card-image {
     width: 100%;
-    flex: 1 1 auto;
-    min-height: 0;
+    flex: 0 0 auto;
+    aspect-ratio: 7272 / 5461;
     background-color: #000;
     background-position: center;
     background-repeat: no-repeat;
-    background-size: contain;
+    background-size: cover;
   }
 
   .university-founded-card-text {
@@ -1090,11 +1135,11 @@
   }
 
   .career-statement-fill-stated {
-    background: #f2c14e;
+    background: white;
   }
 
   .career-statement-fill-not-stated {
-    background: rgba(255, 255, 255, 0.38);
+    background: rgba(146, 136, 136, 0.58);
   }
 
   .career-statement-count {
@@ -1117,11 +1162,11 @@
   }
 
   .career-statement-count-stated::before {
-    color: #f2c14e;
+    color: white;
   }
 
   .career-statement-count-not-stated::before {
-    color: rgba(255, 255, 255, 0.46);
+    color: rgba(146, 136, 136, 0.58);
   }
 
   .career-bars {
@@ -1155,7 +1200,7 @@
   .career-bar-fill {
     height: 100%;
     min-width: 2px;
-    background: #f2c14e;
+    background: white;
   }
 
   .career-bar-value {
@@ -1193,6 +1238,11 @@
     gap: 3px;
     padding: 3px;
     background: rgba(255, 255, 255, 0.12);
+    border-radius: 3px;
+  }
+
+  .edinburgh_forty-item--edinburgh-seven {
+    background: rgba(226, 226, 226, 0.28);
   }
 
   .edinburgh_forty-circle {
@@ -1210,10 +1260,11 @@
     width: 100%;
     min-width: 0;
     color: #fff;
-    font-size: 8px;
+    font-size: 10px;
     line-height: 1.1;
     text-align: center;
     overflow-wrap: anywhere;
+    font-weight: 400;
   }
 
   /* Dev-only: remove this style block with the Continue button markup. */

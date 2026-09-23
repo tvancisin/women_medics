@@ -11,6 +11,7 @@
   export let height = 0;
   export let currentYear: number;
   export let startYear: number;
+  export let universityEstablishedYear: number;
   export let endYear: number;
   export let timelineDomainStart: number;
   export let timelineDomainEnd: number;
@@ -29,13 +30,30 @@
     for (let year = 1600; year <= maxYear; year += 50) values.push(year);
     return values;
   };
+  const buildMinorTimelineTickValues = (maxYear: number) => {
+    const values = [];
+    for (let year = 1625; year < maxYear; year += 50) values.push(year);
+    return values;
+  };
 
   $: currentYearX = yearToX(currentYear);
+  $: yearCounterPanelX =
+    currentYear >= 2020 ? currentYearX - 56 : currentYearX + 4;
+  $: yearCounterTextX = yearCounterPanelX + 56;
+  $: yearsSinceUniversityEstablished = Math.max(
+    0,
+    Math.floor(currentYear) - universityEstablishedYear,
+  );
+  $: yearCounterUnit = yearsSinceUniversityEstablished === 1 ? "Year" : "Years";
   $: axisEnd = currentYearX;
   $: fullTickValues =
     width > 0 && height > 0 ? buildTimelineTickValues(endYear) : [];
+  $: fullMinorTickValues =
+    width > 0 && height > 0 ? buildMinorTimelineTickValues(endYear) : [];
   $: tickValues =
     width > 0 && height > 0 ? buildTimelineTickValues(currentYear) : [];
+  $: minorTickValues =
+    width > 0 && height > 0 ? buildMinorTimelineTickValues(currentYear) : [];
   $: displayYear = Math.floor(currentYear);
   $: isCurrentYearInTimelineDomain =
     currentYear >= timelineDomainStart && currentYear <= timelineDomainEnd;
@@ -49,9 +67,9 @@
     <rect
       class="timeline-background"
       x="0"
-      y={height - 30}
-      width={width}
-      height="30"
+      y={height - 50}
+      {width}
+      height="50"
       aria-hidden="true"
     ></rect>
 
@@ -70,10 +88,42 @@
           <text x="0" y={tickLength + 12} text-anchor="middle">{year}</text>
         </g>
       {/each}
+
+      {#each fullMinorTickValues as year}
+        <g
+          class="minor-tick"
+          transform={`translate(${yearToX(year)}, ${timelineY})`}
+        >
+          <line x1="0" y1="0" x2="0" y2={tickLength}></line>
+        </g>
+      {/each}
     </g>
 
     {#if isCurrentYearInTimelineDomain}
       <circle cx={currentYearX} cy={timelineY} r="4" fill="#fff"></circle>
+      <rect
+        class="year-counter-background"
+        x={yearCounterPanelX}
+        y={timelineY + 5}
+        width="112"
+        height="37"
+        rx="3"
+        aria-hidden="true"
+      ></rect>
+      <text
+        class="year-counter-label"
+        x={yearCounterTextX}
+        y={timelineY + 35}
+        text-anchor="middle">Since Foundation</text
+      >
+      <text
+        class="year-counter"
+        x={yearCounterTextX}
+        y={timelineY + 22}
+        text-anchor="middle"
+        aria-label={`${yearsSinceUniversityEstablished} years since the University was established`}
+        >{yearsSinceUniversityEstablished} {yearCounterUnit}</text
+      >
     {/if}
 
     <line
@@ -88,6 +138,15 @@
       <g class="tick" transform={`translate(${yearToX(year)}, ${timelineY})`}>
         <line x1="0" y1="0" x2="0" y2={tickLength}></line>
         <text x="0" y={tickLength + 12} text-anchor="middle">{year}</text>
+      </g>
+    {/each}
+
+    {#each minorTickValues as year}
+      <g
+        class="minor-tick"
+        transform={`translate(${yearToX(year)}, ${timelineY})`}
+      >
+        <line x1="0" y1="0" x2="0" y2={tickLength}></line>
       </g>
     {/each}
 
@@ -149,7 +208,28 @@
     fill: rgba(0, 0, 0, 0.65);
   }
 
+  .year-counter {
+    fill: #969696;
+    font-family: Montserrat;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .year-counter-background {
+    fill: rgba(0, 0, 0, 0.78);
+  }
+
+  .year-counter-label {
+    fill: #969696;
+    font-family: Montserrat;
+    font-size: 11px;
+  }
+
   .tick line {
+    stroke: #fff;
+  }
+
+  .minor-tick line {
     stroke: #fff;
   }
 
