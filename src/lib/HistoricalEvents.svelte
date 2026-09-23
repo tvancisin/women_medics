@@ -37,15 +37,13 @@
     <text
       class="event-label"
       x={x2 - 5}
-      y={
-        eventBandY +
+      y={eventBandY +
         eventBandHeight -
         5 -
-        (event.description ===
-          "Royal Infirmary (now EFI)"
+        (event.description === "ROYAL INFIRMARY (NOW EFI)" ||
+        event.description === "FIRST MICROORGANISMS OBSERVED"
           ? 13
-          : 0)
-      }
+          : 0)}
       text-anchor={event.startYear <= domainStartYear ? "start" : "end"}
     >
       {event.description}
@@ -64,7 +62,7 @@
   }
   .event-label {
     fill: rgb(214, 214, 214);
-    font-size: 12px;
+    font-size: 10px;
     pointer-events: none;
   }
 </style>

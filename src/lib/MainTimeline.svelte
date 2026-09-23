@@ -74,13 +74,13 @@
     ></rect>
 
     <g class="timeline-underlay" aria-hidden="true">
-      <line
+      <!-- <line
         class="domain"
         x1={axisStart}
         y1={timelineY}
         x2={axisRight}
         y2={timelineY}
-      ></line>
+      ></line> -->
 
       {#each fullTickValues as year}
         <g class="tick" transform={`translate(${yearToX(year)}, ${timelineY})`}>
@@ -126,13 +126,15 @@
       >
     {/if}
 
-    <line
-      class="domain"
-      x1={axisStart}
-      y1={timelineY}
-      x2={axisEnd}
-      y2={timelineY}
-    ></line>
+    {#if currentYear >= 1583}
+      <line
+        class="domain"
+        x1={yearToX(1583)}
+        y1={timelineY}
+        x2={axisEnd}
+        y2={timelineY}
+      ></line>
+    {/if}
 
     {#each tickValues as year}
       <g class="tick" transform={`translate(${yearToX(year)}, ${timelineY})`}>
@@ -184,6 +186,9 @@
       {yearToX}
       {womenMedicsData}
     />
+    <text class="year-counter" x={10} y={timelineY + 45} text-anchor="start" 
+      >HISTORICAL EVENTS</text
+    >
   {/if}
 </svg>
 
@@ -197,7 +202,7 @@
 
   .domain {
     stroke: rgb(255, 255, 255);
-    stroke-width: 1px;
+    stroke-width: 2px;
   }
 
   .timeline-underlay {

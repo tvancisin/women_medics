@@ -2,43 +2,43 @@ export const historicalEvents = [
   {
     startYear: 1628,
     endYear: 1629,
-    description: "Blood Circulation",
+    description: "BLOOD CIRCULATION",
   },
   {
     startYear: 1670,
     endYear: 1680,
-    description: "First Microorganisms Observed",
+    description: "FIRST MICROORGANISMS OBSERVED",
   },
   {
     startYear: 1740,
     endYear: 1800,
-    description: "Scottish Enlightenment",
+    description: "SCOTTISH ENLIGHTENMENT",
   },
   {
     startYear: 1840,
     endYear: 1850,
-    description: "London-Edinburgh Railway",
+    description: "LONDON-EDINBURGH RAILWAY",
   },
   {
     startYear: 1879,
     endYear: 1880,
-    description: "Royal Infirmary (now EFI)",
+    description: "ROYAL INFIRMARY (NOW EFI)",
   },
 
   // {
   //   startYear: 1884,
   //   endYear: 1885,
-  //   description: "Triple Qualifications"
+  //   description: "TRIPLE QUALIFICATIONS"
   // },
   // {
   //   startYear: 1892,
   //   endYear: 1893,
-  //   description: "Women admitted to universities"
+  //   description: "WOMEN ADMITTED TO UNIVERSITIES"
   // },
   // {
   //   startYear: 1832,
   //   endYear: 1903,
-  //   description: "Suffrage"
+  //   description: "SUFFRAGE"
   // },
   {
     startYear: 1914,
@@ -48,7 +48,7 @@ export const historicalEvents = [
   // {
   //   startYear: 1928,
   //   endYear: 1929,
-  //   description: "Voting Rights"
+  //   description: "VOTING RIGHTS"
   // },
   {
     startYear: 1939,

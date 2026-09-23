@@ -8,7 +8,7 @@
   const baseUrl = import.meta.env.BASE_URL;
   const publicUrl = (path: string) => `${baseUrl}${path}`;
 
-  const startYear = 1583;
+  const startYear = 1550;
   const universityEstablishedYear = 1583;
   const endYear = 2026;
   const stepYears = 50;
@@ -547,6 +547,11 @@
     showWomenDoctorCareerLocations={pausedAtYear === 1915}
     showWomenDoctorsWarLocations={pausedAtYear === womenDoctorsWarMilestoneYear}
   />
+  <img
+    class="site-logo"
+    src={publicUrl("img/logo.png")}
+    alt="Women Medics"
+  />
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
   {#if devRequireClickToResume && awaitingResumeClick}
     <button class="resume-button" type="button" on:click={handleResumeClick}>
@@ -889,6 +894,15 @@
     width: 100%;
     height: 100vh;
     position: relative;
+  }
+
+  .site-logo {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 3;
+    height: 75px;
+    pointer-events: none;
   }
 
   .milestone-card {
@@ -1270,8 +1284,8 @@
   /* Dev-only: remove this style block with the Continue button markup. */
   .resume-button {
     position: absolute;
-    top: 16px;
-    left: 16px;
+    top: 35px;
+    right: 16px;
     z-index: 10;
     padding: 0.5rem 0.75rem;
     border: 1px solid rgba(255, 255, 255, 0.4);
