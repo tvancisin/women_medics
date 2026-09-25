@@ -210,7 +210,7 @@
   }
 
   .timeline-background {
-    fill: rgba(0, 0, 0, 0.65);
+    fill: #151c24d7;
   }
 
   .year-counter {
@@ -221,7 +221,7 @@
   }
 
   .year-counter-background {
-    fill: rgba(0, 0, 0, 0.78);
+    fill: #151c24;
   }
 
   .year-counter-label {

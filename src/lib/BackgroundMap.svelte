@@ -1286,8 +1286,8 @@
       lineColor: "white",
     });
     map.flyTo({
-      center: [-5.1883, 54.1533],
-      zoom: 6,
+      center: [-5.2883, 53.55],
+      zoom: 6.2,
       duration: 3000,
       essential: true,
     });
@@ -1340,7 +1340,7 @@
     hasDrawnOldMapOverlay = drawOldMapOverlay();
     map.flyTo({
       center: [-3.192, 55.948],
-      zoom: 14.5,
+      zoom: 15,
       duration: 1000,
       essential: true,
     });

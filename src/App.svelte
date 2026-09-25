@@ -1,4 +1,9 @@
 <script lang="ts">
+// todo
+// decide on the historical events for the timeline bottom
+// image of the original old college
+
+
   import { onMount } from "svelte";
   import { getCSV, getJson } from "./lib/data/loaders";
   import BackgroundMap from "./lib/BackgroundMap.svelte";
@@ -46,7 +51,7 @@
     1919,
   ];
   const milestoneLabels = new Map<number, string>([
-    [1583, "Foundation of the University 1582"],
+    [1583, "University of Edinburgh Founded 1582"],
     [1726, "School of Medicine 1726"],
     [1809, "Margaret Bulkley / James Barry 1809"],
     [1862, "Elizabeth Garrett 1862"],
@@ -99,13 +104,13 @@
   let womenMedicsData: Array<{ year: number; number: number }> = [];
   let edinburghSevenData: Array<Record<string, string>> = [];
   const edinburghSevenNames = [
-    "Sophia Louisa Jex-Blake",
-    "Isabel Jane Pryer later Thorne",
-    "Mary Edith Pechey",
-    "Matilda Charlotte Chaplin",
-    "Helen (de Lacy) Evans",
-    "Mary Adamson Anderson later Marshall",
-    "Emily Bovell later Sturge",
+    "Sophia Jex-Blake",
+    "Isabel Pryer",
+    "Mary Pechey",
+    "Matilda Chaplin",
+    "Helen Evans",
+    "Mary Anderson",
+    "Emily Bovell",
   ];
   const edinburghSevenOrder = new Map(
     edinburghSevenNames.map((name, index) => [name, index]),
@@ -956,7 +961,7 @@
     font-weight: 600;
     border-radius: 7px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-    background-color: rgb(0, 0, 0);
+    background-color: #151c24;
     opacity: 0;
     pointer-events: none;
     overflow: hidden;
@@ -1016,7 +1021,7 @@
     align-items: stretch;
     justify-content: flex-start;
     padding: 0;
-    background-color: #000;
+    background-color: #151c24;
   }
 
   .milestone-card--university-founded.is-active {
@@ -1037,15 +1042,15 @@
     background-color: #000;
     background-position: center;
     background-repeat: no-repeat;
-    background-size: cover;
+    background-size: contain;
   }
 
   .university-founded-card-text {
     width: 100%;
     box-sizing: border-box;
     flex: 0 0 52px;
-    padding: 10px 10px 14px;
-    background: rgba(0, 0, 0, 0.88);
+    padding: 10px 0px 0px;
+    background-color: #151c24;
     font-size: 12px;
     line-height: 1.25;
     text-align: center;
@@ -1269,23 +1274,26 @@
     min-width: 0;
     min-height: 0;
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    justify-items: center;
     align-items: center;
-    justify-content: center;
     gap: clamp(1px, 0.35cqh, 3px);
     padding: clamp(1px, 0.35cqh, 3px);
-    background: rgba(255, 255, 255, 0.12);
+    background: #0d1116;
     border-radius: 3px;
     overflow: hidden;
   }
 
   .edinburgh_forty-item--edinburgh-seven {
-    background: rgba(226, 226, 226, 0.28);
+    background: #3e5269;
   }
 
   .edinburgh_forty-circle {
-    width: max(8px, min(34px, 58%, 4.5cqh));
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    min-height: 0;
     aspect-ratio: 1;
     border-radius: 50%;
     flex: 0 0 auto;
