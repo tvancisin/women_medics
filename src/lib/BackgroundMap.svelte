@@ -62,6 +62,8 @@
   let timelineMarkersDataKey = "";
   const timelineLabelMarkers = new Map<string, mapboxgl.Marker>();
   const womenDoctorsWarLabelMarkers = new Map<string, mapboxgl.Marker>();
+  const firstClassesFeaturedLabelMarkers = new Map<string, mapboxgl.Marker>();
+  const firstClassesFeaturedArrowMarkers = new Map<string, mapboxgl.Marker>();
   let womenDoctorCareerPopup: mapboxgl.Popup | null = null;
   let hasWomenDoctorCareerHoverHandlers = false;
 
@@ -865,6 +867,84 @@
     });
   }
 
+  function drawFirstClassesPointLayer(rawData: unknown) {
+    const features = getStudentPointFeatures(rawData);
+    const didDraw = drawStudentPointLayer({
+      rawData,
+      sourceId: firstClassesSourceId,
+      layerId: firstClassesLayerId,
+    });
+
+    if (didDraw) {
+      syncFirstClassesFeaturedLabels(features);
+    }
+
+    return didDraw;
+  }
+
+  function syncFirstClassesFeaturedLabels(
+    features: GeoJSON.Feature<GeoJSON.Point>[],
+  ) {
+    if (!map) return;
+
+    const activeMarkerKeys = new Set<string>();
+
+    for (const feature of features) {
+      if (feature.properties?.featured !== true) continue;
+
+      const [longitude, latitude] = feature.geometry.coordinates;
+      const name = String(feature.properties.name ?? "Unknown student");
+      const address = String(feature.properties.address ?? "").trim();
+      const markerKey = `${name}-${longitude}-${latitude}`;
+      activeMarkerKeys.add(markerKey);
+
+      const existingMarker = firstClassesFeaturedLabelMarkers.get(markerKey);
+      if (existingMarker) {
+        existingMarker.getElement().textContent = `${name}\n${address}`;
+      } else {
+        const element = document.createElement("div");
+        element.className = "first-classes-featured-label";
+        element.textContent = `${name}\n${address}`;
+
+        const marker = new mapboxgl.Marker({
+          element,
+          anchor: "right",
+          offset: [-10, 0],
+        })
+          .setLngLat([longitude, latitude])
+          .addTo(map);
+        firstClassesFeaturedLabelMarkers.set(markerKey, marker);
+      }
+
+      if (!firstClassesFeaturedArrowMarkers.has(markerKey)) {
+        const arrowElement = document.createElement("div");
+        arrowElement.className = "first-classes-featured-arrow";
+
+        const arrowMarker = new mapboxgl.Marker({
+          element: arrowElement,
+          anchor: "right",
+        })
+          .setLngLat([longitude, latitude])
+          .addTo(map);
+        firstClassesFeaturedArrowMarkers.set(markerKey, arrowMarker);
+      }
+    }
+
+    for (const [markerKey, marker] of firstClassesFeaturedLabelMarkers) {
+      if (!activeMarkerKeys.has(markerKey)) {
+        marker.remove();
+        firstClassesFeaturedLabelMarkers.delete(markerKey);
+      }
+    }
+
+    for (const [markerKey, marker] of firstClassesFeaturedArrowMarkers) {
+      if (!activeMarkerKeys.has(markerKey)) {
+        marker.remove();
+        firstClassesFeaturedArrowMarkers.delete(markerKey);
+      }
+    }
+  }
+
   function drawEdinburghSevenLayer(rawData: unknown) {
     return drawCircleLayer({
       features: getEdinburghSevenPointFeatures(rawData),
@@ -1117,6 +1197,15 @@
     removeCircleLayer({
       sourceId: womenDoctorsCareerLocationsSourceId,
       layerId: womenDoctorsCareerLocationsLayerId,
+    });
+  }
+
+  function removeFirstClassesPointLayer() {
+    syncFirstClassesFeaturedLabels([]);
+
+    removeCircleLayer({
+      sourceId: firstClassesSourceId,
+      layerId: firstClassesLayerId,
     });
   }
 
@@ -1449,11 +1538,7 @@
     Array.isArray(firstClassesGeoData) &&
     firstClassesGeoData.length > 0
   ) {
-    drawStudentPointLayer({
-      rawData: firstClassesGeoData,
-      sourceId: firstClassesSourceId,
-      layerId: firstClassesLayerId,
-    });
+    drawFirstClassesPointLayer(firstClassesGeoData);
   }
 
   // Animate the students' paths.
@@ -1490,10 +1575,7 @@
     cancelPathAnimation(firstClassesPathsLayerId);
     hasAnimatedFirstClassesPaths = false;
     removeLayerAndSource(firstClassesPathsSourceId, firstClassesPathsLayerId);
-    removeCircleLayer({
-      sourceId: firstClassesSourceId,
-      layerId: firstClassesLayerId,
-    });
+    removeFirstClassesPointLayer();
   }
 
   //// 1869
@@ -1911,6 +1993,7 @@
       }
       womenDoctorsWarLabelMarkers.clear();
       removeWomenDoctorCareerLocationLayer();
+      removeFirstClassesPointLayer();
       removeCircleLayer({
         sourceId: edinburghSevenSourceId,
         layerId: edinburghSevenLayerId,
@@ -1951,6 +2034,31 @@
     white-space: nowrap;
     pointer-events: none;
     border-radius: 3px;
+  }
+
+  :global(.first-classes-featured-label) {
+    box-sizing: border-box;
+    max-width: 155px;
+    padding: 4px 6px;
+    background: rgba(17, 17, 17, 0.9);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.25;
+    text-align: left;
+    white-space: pre-line;
+    pointer-events: none;
+    border-radius: 3px;
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.4);
+  }
+
+  :global(.first-classes-featured-arrow) {
+    width: 0;
+    height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 10px solid rgba(17, 17, 17, 0.9);
+    pointer-events: none;
   }
 
   :global(.women-doctors-war-location-label) {

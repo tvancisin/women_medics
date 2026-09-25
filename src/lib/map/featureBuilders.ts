@@ -81,6 +81,26 @@ type WomenDoctorsWarDatum = {
   value?: number | string;
 };
 
+const featuredFirstClassesStudents = new Set([
+  "marjoribanks mrs",
+  "carmichael miss",
+  "millar white miss",
+]);
+
+const formatFeaturedFirstClassesName = (value: unknown) => {
+  const name = String(value ?? "").trim();
+  const isFeatured = featuredFirstClassesStudents.has(name.toLowerCase());
+  const honorificAtEnd = name.match(/^(.*)\s+(Miss|Mrs)$/i);
+
+  return {
+    isFeatured,
+    name:
+      isFeatured && honorificAtEnd
+        ? `${honorificAtEnd[2]} ${honorificAtEnd[1]}`
+        : name || "Unknown",
+  };
+};
+
 export const normalizeWomenCareer1915Region = (region: unknown) => {
   const normalizedRegion = String(region ?? "").trim().toLowerCase();
 
@@ -117,6 +137,7 @@ export const getStudentPointFeatures = (
   return (rawData as StudentGeoDatum[]).flatMap((row) => {
     const sourceData = row.source_data;
     const universityAddress = sourceData?.university_address;
+    const student = formatFeaturedFirstClassesName(sourceData?.name);
     const directLat = Number(sourceData?.lat);
     const directLon = Number(sourceData?.lon);
     const addressLat = Number(universityAddress?.lat);
@@ -131,7 +152,8 @@ export const getStudentPointFeatures = (
     const feature: GeoJSON.Feature<GeoJSON.Point> = {
       type: "Feature",
       properties: {
-        name: sourceData?.name ?? "Unknown",
+        name: student.name,
+        featured: student.isFeatured,
         entry_year: sourceData?.entry_year ?? null,
         address: universityAddress?.original_name ?? "",
       },
