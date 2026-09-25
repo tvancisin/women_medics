@@ -186,9 +186,9 @@
       {yearToX}
       {womenMedicsData}
     />
-    <text class="year-counter" x={10} y={timelineY + 45} text-anchor="start" 
-      >HISTORICAL EVENTS</text
-    >
+    <!-- <text class="year-counter" x={10} y={timelineY + 45} text-anchor="start" 
+      >HISTORICAL EVENTS:</text
+    > -->
   {/if}
 </svg>
 
@@ -214,7 +214,7 @@
   }
 
   .year-counter {
-    fill: #969696;
+    fill: #ffffff;
     font-family: Montserrat;
     font-size: 14px;
     font-weight: 600;
@@ -225,7 +225,7 @@
   }
 
   .year-counter-label {
-    fill: #969696;
+    fill: #ffffff;
     font-family: Montserrat;
     font-size: 11px;
   }

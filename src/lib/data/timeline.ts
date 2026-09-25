@@ -17,7 +17,7 @@ export const historicalEvents = [
   {
     startYear: 1840,
     endYear: 1850,
-    description: "LONDON-EDINBURGH RAILWAY",
+    description: "LONDON-EDINBURGH RAIL",
   },
   {
     startYear: 1879,

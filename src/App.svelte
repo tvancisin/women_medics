@@ -8,7 +8,7 @@
   const baseUrl = import.meta.env.BASE_URL;
   const publicUrl = (path: string) => `${baseUrl}${path}`;
 
-  const startYear = 1550;
+  const startYear = 1583;
   const universityEstablishedYear = 1583;
   const endYear = 2026;
   const stepYears = 50;
@@ -23,6 +23,10 @@
 
   // keeping the detail div inside screen
   const milestoneCardWidth = 400;
+  const universityFoundedImageAspectRatio = 7272 / 5461;
+  const milestoneCardBottomOffset = 95;
+  const milestoneCardTopClearance = 80;
+  const universityFoundedCardChromeHeight = 97;
 
   // Anchor cards differently depending on whether the milestone is left or right of center.
   const card_left = [1726, 1809];
@@ -276,6 +280,29 @@
   $: axisStart = margin.left;
   $: axisRight = axisStart + maxSpan;
   $: timelineDomainSpan = Math.max(1, timelineDomainEnd - timelineDomainStart);
+  $: universityFoundedAvailableHeight = Math.max(
+    0,
+    height - milestoneCardBottomOffset - milestoneCardTopClearance,
+  );
+  $: universityFoundedPreferredWidth =
+    Math.max(
+      0,
+      universityFoundedAvailableHeight - universityFoundedCardChromeHeight,
+    ) *
+      universityFoundedImageAspectRatio +
+    10;
+  $: universityFoundedCardWidth = Math.min(
+    universityFoundedPreferredWidth,
+    Math.max(0, width - margin.left),
+  );
+  $: universityFoundedCardHeight = Math.min(
+    universityFoundedAvailableHeight,
+    Math.max(
+      0,
+      (universityFoundedCardWidth - 10) / universityFoundedImageAspectRatio +
+        universityFoundedCardChromeHeight,
+    ),
+  );
 
   const timelineZoomEase = (t: number) =>
     t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -584,8 +611,18 @@
       class:milestone-card--edinburgh-forty={year === 1869}
       class:milestone-card--split={splitMilestoneYears.has(year)}
       class:is-active={pausedAtYear === year}
-      style:bottom="10vh"
+      style:bottom="95px"
       style:left={`${clampedLeft(yearToX(year), year)}px`}
+      style:width={
+        year === 1583 && pausedAtYear === year
+          ? `${universityFoundedCardWidth}px`
+          : undefined
+      }
+      style:height={
+        year === 1583 && pausedAtYear === year
+          ? `${universityFoundedCardHeight}px`
+          : undefined
+      }
     >
       <h1 class="milestone-card-heading">{milestoneLabels.get(year) ?? ""}</h1>
       {#if year === 1869}
@@ -932,6 +969,7 @@
   .milestone-card.is-active {
     width: 400px;
     height: auto;
+    max-height: calc(100vh - 95px - 80px);
     pointer-events: auto;
     flex-direction: column;
     align-items: stretch;
@@ -939,7 +977,9 @@
   }
 
   .milestone-card--edinburgh-forty.is-active {
-    width: 600px;
+    width: min(500px, calc(100vw - 32px));
+    height: calc(100vh - 95px - 80px);
+    container-type: size;
   }
 
   .milestone-card-heading {
@@ -953,10 +993,11 @@
   }
 
   .edinburgh-forty-intro {
+    flex: 0 0 auto;
     margin: 0 16px 8px;
     color: rgb(150, 150, 150);
-    font-size: 12px;
-    line-height: 1.3;
+    font-size: clamp(8px, 1.2vh, 12px);
+    line-height: 1.25;
   }
 
   .milestone-card--split {
@@ -980,7 +1021,7 @@
 
   .milestone-card--university-founded.is-active {
     width: min(90vw, 800px);
-    height: auto;
+    height: calc(100vh - 95px - 80px);
     flex-direction: column;
     padding: 5px;
   }
@@ -991,8 +1032,8 @@
 
   .university-founded-card-image {
     width: 100%;
-    flex: 0 0 auto;
-    aspect-ratio: 7272 / 5461;
+    min-height: 0;
+    flex: 1 1 0;
     background-color: #000;
     background-position: center;
     background-repeat: no-repeat;
@@ -1045,25 +1086,6 @@
     font-size: 12px;
     line-height: 1.25;
     text-align: left;
-  }
-
-  .milestone-card-placeholder {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 30px;
-    text-align: left;
-  }
-
-  .milestone-card-placeholder p {
-    margin: 14px 0 0;
-    font-size: 12px;
-    line-height: 1.5;
-  }
-
-  .milestone-text {
-    width: 100%;
-    font-size: 12px;
-    flex: 0 0 auto;
   }
 
   .milestone-image {
@@ -1232,12 +1254,14 @@
 
   .edinburgh_forty {
     width: 100%;
-    height: 100%;
+    min-height: 0;
     box-sizing: border-box;
+    flex: 1 1 0;
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 3px;
-    padding: 3px;
+    grid-template-rows: repeat(8, minmax(0, 1fr));
+    gap: clamp(1px, 0.4cqh, 3px);
+    padding: clamp(1px, 0.4cqh, 3px);
     overflow: hidden;
   }
 
@@ -1249,10 +1273,11 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
-    padding: 3px;
+    gap: clamp(1px, 0.35cqh, 3px);
+    padding: clamp(1px, 0.35cqh, 3px);
     background: rgba(255, 255, 255, 0.12);
     border-radius: 3px;
+    overflow: hidden;
   }
 
   .edinburgh_forty-item--edinburgh-seven {
@@ -1260,7 +1285,7 @@
   }
 
   .edinburgh_forty-circle {
-    width: min(40px, 70%);
+    width: max(8px, min(34px, 58%, 4.5cqh));
     aspect-ratio: 1;
     border-radius: 50%;
     flex: 0 0 auto;
@@ -1274,8 +1299,8 @@
     width: 100%;
     min-width: 0;
     color: #fff;
-    font-size: 10px;
-    line-height: 1.1;
+    font-size: clamp(5px, 1.5cqh, 10px);
+    line-height: 1.05;
     text-align: center;
     overflow-wrap: anywhere;
     font-weight: 400;

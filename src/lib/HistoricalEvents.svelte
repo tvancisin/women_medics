@@ -40,8 +40,8 @@
       y={eventBandY +
         eventBandHeight -
         5 -
-        (event.description === "ROYAL INFIRMARY (NOW EFI)" ||
-        event.description === "FIRST MICROORGANISMS OBSERVED"
+        (event.description === "FIRST MICROORGANISMS OBSERVED" ||
+        event.description === "LONDON-EDINBURGH RAIL"
           ? 13
           : 0)}
       text-anchor={event.startYear <= domainStartYear ? "start" : "end"}
