@@ -90,6 +90,18 @@ export const timelineImageMarkers: ImageMarkerConfig[] = [
     alt: "68-73 Queen Street",
   },
   {
+    id: "edinburgh-forty-home",
+    year: 1870,
+    coordinates: [55.942668948406876, -3.1868325772638566],
+    alt: "15 Buccleuch Place",
+  },
+  {
+    id: "surgeons-hall",
+    year: 1870,
+    coordinates: [55.946645682120604, -3.185338751775801],
+    alt: "Surgeon's Hall",
+  },
+  {
     id: "physiology",
     year: 1875,
     coordinates: [55.96018424065475, -3.1874283008879383],

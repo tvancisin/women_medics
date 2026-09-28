@@ -1,8 +1,7 @@
 <script lang="ts">
-// todo
-// decide on the historical events for the timeline bottom
-// image of the original old college
-
+  // todo
+  // decide on the historical events for the timeline bottom
+  // image of the original old college
 
   import { onMount } from "svelte";
   import { getCSV, getJson } from "./lib/data/loaders";
@@ -579,11 +578,7 @@
     showWomenDoctorCareerLocations={pausedAtYear === 1915}
     showWomenDoctorsWarLocations={pausedAtYear === womenDoctorsWarMilestoneYear}
   />
-  <img
-    class="site-logo"
-    src={publicUrl("img/logo.png")}
-    alt="Women Medics"
-  />
+  <img class="site-logo" src={publicUrl("img/logo.png")} alt="Women Medics" />
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
   {#if devRequireClickToResume && awaitingResumeClick}
     <button class="resume-button" type="button" on:click={handleResumeClick}>
@@ -618,16 +613,12 @@
       class:is-active={pausedAtYear === year}
       style:bottom="95px"
       style:left={`${clampedLeft(yearToX(year), year)}px`}
-      style:width={
-        year === 1583 && pausedAtYear === year
-          ? `${universityFoundedCardWidth}px`
-          : undefined
-      }
-      style:height={
-        year === 1583 && pausedAtYear === year
-          ? `${universityFoundedCardHeight}px`
-          : undefined
-      }
+      style:width={year === 1583 && pausedAtYear === year
+        ? `${universityFoundedCardWidth}px`
+        : undefined}
+      style:height={year === 1583 && pausedAtYear === year
+        ? `${universityFoundedCardHeight}px`
+        : undefined}
     >
       <h1 class="milestone-card-heading">{milestoneLabels.get(year) ?? ""}</h1>
       {#if year === 1869}
@@ -747,15 +738,8 @@
           </div>
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
-              "We were proceeding in the dusk of a November afternoon to the
-              weekly class examination when we found a noisy crowd assembled
-              round the entrance. On our approach the gates were closed and a
-              loud yelling and hooting were set up by men inside and outside the
-              grounds leading to the Hall. We stood for a few minutes surrounded
-              by the hooting crowd of young men, unable to make our way to the
-              classroom which stood a little way back from the road, when a male
-              student rushed from the Hall and opened the gates from the
-              inside."
+              A crowd of several hundred gathered as the Edinburgh Seven arrived
+              for their anatomy exam, facing mud, abuse and blocked gates.
             </div>
           </div>
         </div>

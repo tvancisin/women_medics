@@ -611,6 +611,12 @@
     if (map.getLayer(riotRouteLineLayerId)) {
       map.moveLayer(riotRouteLineLayerId);
     }
+    if (
+      currentYear === edinburghSevenRiotYear &&
+      map.getLayer(timelineMarkersCircleLayerId)
+    ) {
+      map.moveLayer(timelineMarkersCircleLayerId);
+    }
     return true;
   }
 
@@ -1753,6 +1759,12 @@
       !map.getLayer(mapOverlay1886LayerId))
   ) {
     hasDrawn1886MapOverlay = draw1886MapOverlay();
+    map.flyTo({
+      center: [-3.182, 55.947],
+      zoom: 15,
+      duration: 3000,
+      essential: true,
+    });
   }
 
   // Show the School of Medicine for Women circle.
