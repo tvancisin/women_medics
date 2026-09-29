@@ -169,6 +169,7 @@
   const edinburghRoutesLineLayerId = "edinburgh-routes-line";
   const riotRouteSourceId = "edinburgh-riot-route";
   const riotRouteLineLayerId = "edinburgh-riot-route-line";
+
   const barryJourneyYear = 1809;
   const garrettJourneyYear = 1862;
   const firstClassesYear = 1867;
@@ -195,8 +196,18 @@
     [
       {
         name: "Singcha Hoashoo",
-        imageAnchor: { x: 55.1, y: 24.1 },
+        imageAnchor: { x: 55.1, y: 23.1 },
         birthplace: [-58.1583214, 6.8231985],
+      },
+      {
+        name: "Margarethe Plum",
+        imageAnchor: { x: 44.0, y: 31.5 },
+        birthplace: [9.501785, 56.26392],
+      },
+      {
+        name: "Vera Nicolaevna Bolotine",
+        imageAnchor: { x: 33.9, y: 32.3 },
+        birthplace: [50.1606382, 53.203772],
       },
     ];
   const suezRoutesReverseYear = 1911;
@@ -1181,7 +1192,9 @@
       if (imageFile && imageFile.toLowerCase() !== "null") {
         portrait.style.backgroundImage = `url("${publicUrl(`img/edin_forty/${imageFile}`)}")`;
       } else {
-        portrait.classList.add("edinburgh-forty-featured-portrait--unavailable");
+        portrait.classList.add(
+          "edinburgh-forty-featured-portrait--unavailable",
+        );
         portrait.setAttribute("aria-label", `Portrait of ${name} unavailable`);
         portrait.setAttribute("role", "img");
       }
@@ -1505,16 +1518,8 @@
   function addPhysiologyStudentHoverHandlers() {
     if (!map || hasPhysiologyStudentHoverHandlers) return;
 
-    map.on(
-      "mouseenter",
-      physiologyStudentsLayerId,
-      showPhysiologyStudentPopup,
-    );
-    map.on(
-      "mouseleave",
-      physiologyStudentsLayerId,
-      hidePhysiologyStudentPopup,
-    );
+    map.on("mouseenter", physiologyStudentsLayerId, showPhysiologyStudentPopup);
+    map.on("mouseleave", physiologyStudentsLayerId, hidePhysiologyStudentPopup);
     hasPhysiologyStudentHoverHandlers = true;
   }
 
@@ -1939,7 +1944,7 @@
   ) {
     hasDrawnEdinburghSeven = drawEdinburghSevenLayer(edinburghSevenData);
     map.flyTo({
-      center: [7.1883, 54.5533],
+      center: [8.9883, 54.5533],
       duration: 2000,
       zoom: 5,
       essential: true,
@@ -1959,7 +1964,7 @@
   // Focus on Edinburgh and draw the route of the Surgeons' Hall riot.
   $: if (map && styleReady && currentYear == edinburghSevenRiotYear) {
     map.flyTo({
-      center: [ -3.185, 55.9443],
+      center: [-3.185, 55.9443],
       zoom: 15.5,
       duration: 2000,
       essential: true,
@@ -2193,19 +2198,11 @@
   }
 
   // Draw the fixed photo-to-birthplace connections only at the 1911 milestone.
-  $: if (
-    map &&
-    styleReady &&
-    currentYear === womenDoctorsBirthplacesYear
-  ) {
+  $: if (map && styleReady && currentYear === womenDoctorsBirthplacesYear) {
     showWomenDoctors1911PhotoBirthplaceConnections();
   }
 
-  $: if (
-    map &&
-    styleReady &&
-    currentYear !== womenDoctorsBirthplacesYear
-  ) {
+  $: if (map && styleReady && currentYear !== womenDoctorsBirthplacesYear) {
     hideWomenDoctors1911PhotoBirthplaceConnections();
   }
 
