@@ -47,17 +47,17 @@
   const devRequireClickToResume = true;
   const pauseYears = [
     1583, 1726, 1809, 1862, 1867, 1869, 1870, 1875, 1886, 1889, 1911, 1915,
-    1919,
+    // 1919,
   ];
   const milestoneLabels = new Map<number, string>([
     [1583, "University of Edinburgh Founded 1582"],
     [1726, "School of Medicine 1726"],
-    [1809, "Margaret Bulkley / James Barry 1809"],
+    [1809, "Margaret Bulkley/James Barry 1809"],
     [1862, "Elizabeth Garrett 1862"],
-    [1867, "First classes for women 1867"],
+    [1867, "First Classes for Women 1867"],
     [1869, "Edinburgh Seven/Forty 1869"],
     [1870, "The Riot 1870"],
-    [1875, "Physiology students 1875"],
+    [1875, "Physiology Students 1875"],
     // [1884, "Triple Qualification 1884"],
     [1886, "School of Medicine for Women 1886"],
     [1889, "College of Medicine for Women 1889"],
@@ -65,13 +65,13 @@
     // [1892, "Women admitted to universities"],
     [1911, "School and College Students 1911"],
     [1915, "Career Locations in 1915"],
-    [1919, "Women Doctors in WWI, 1915-1919"],
+    // [1919, "Women Doctors in WWI, 1915-1919"],
   ]);
 
   const splitMilestoneYears = new Set([
-    1809, 1862, 1867, 1870, 1875, 1886, 1889, 1911, 1919,
+    1809, 1862, 1867, 1870, 1875, 1886, 1889, 1911,
   ]);
-  const womenDoctorsWarMilestoneYear = 1919;
+  // const womenDoctorsWarMilestoneYear = 1919;
 
   // Point multiple years at the same path, or leave a year out to show no image.
   const pauseDurationMs = 500;
@@ -181,6 +181,31 @@
 
     const year = Number(rawYear);
     return Number.isFinite(year) ? year : Number.POSITIVE_INFINITY;
+  };
+
+  const getAcademicYearEnd = (value: string | undefined) => {
+    const [startText, endText] = String(value ?? "")
+      .trim()
+      .split(/[-–—]/)
+      .map((year) => year.trim());
+    const startYear = Number(startText);
+    const endYear = Number(endText ?? startText);
+
+    if (!Number.isFinite(startYear) || !Number.isFinite(endYear)) {
+      return Number.NaN;
+    }
+
+    if (!endText || endText.length >= startText.length) {
+      return endYear;
+    }
+
+    const abbreviatedDigits = 10 ** endText.length;
+    const endAcademicYear =
+      Math.floor(startYear / abbreviatedDigits) * abbreviatedDigits + endYear;
+
+    return endAcademicYear < startYear
+      ? endAcademicYear + abbreviatedDigits
+      : endAcademicYear;
   };
 
   const displayLabel = (value: unknown, fallback = "Not stated") => {
@@ -394,14 +419,17 @@
 
         womenMedicsData = rawWomenMedicsData
           .map((row: { year?: string; number?: string }) => {
-            const firstYear = Number(String(row.year ?? "").split("-")[0]);
+            const year = getAcademicYearEnd(row.year);
             const total = Number(row.number);
-            return { year: firstYear, number: total };
+            return { year, number: total };
           })
           .filter(
             (row: { year: number; number: number }) =>
               Number.isFinite(row.year) && Number.isFinite(row.number),
           );
+
+        console.log(womenMedicsData);
+
 
         edinburghSevenData = rawEdinburghSevenData;
 
@@ -559,6 +587,10 @@
 </script>
 
 <main bind:clientWidth={width} bind:clientHeight={height}>
+  <!-- 1919 map inputs temporarily disabled:
+  {womenDoctorsWarData}
+  showWomenDoctorsWarLocations={pausedAtYear === womenDoctorsWarMilestoneYear}
+  -->
   <BackgroundMap
     {currentYear}
     {garrettJourneyData}
@@ -574,9 +606,7 @@
     {suez}
     {edinburghRoutes}
     {edinburghSevenData}
-    {womenDoctorsWarData}
     showWomenDoctorCareerLocations={pausedAtYear === 1915}
-    showWomenDoctorsWarLocations={pausedAtYear === womenDoctorsWarMilestoneYear}
   />
   <img class="site-logo" src={publicUrl("img/logo.png")} alt="Women Medics" />
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
@@ -803,9 +833,10 @@
         <div class="milestone-card-split-layout">
           <div class="milestone-card-split-half milestone-card-split-image">
             <img
+              id="women-doctors-1911-photo"
               class="milestone-image"
               src={publicUrl("img/photo_outside_efi.jpg")}
-              alt="Women Doctors"
+              alt="Women doctors outside the Edinburgh Futures Institute"
             />
           </div>
           <div class="milestone-card-split-half milestone-card-split-text">
@@ -884,6 +915,7 @@
             <div class="career-chart-empty">No 1915 career data</div>
           {/if}
         </div>
+      <!-- 1919 milestone temporarily disabled.
       {:else if year === womenDoctorsWarMilestoneYear}
         <div class="milestone-card-split-layout">
           <div class="milestone-card-split-half milestone-card-split-image">
@@ -901,6 +933,7 @@
             </div>
           </div>
         </div>
+      -->
         <!-- {:else if year === 1892}
         <div class="milestone-text">{milestoneLabels.get(year) ?? ""}</div>
         <img
@@ -943,12 +976,13 @@
     color: rgb(150, 150, 150);
     font-size: 10px;
     font-weight: 600;
-    border-radius: 7px;
+    border-radius: 5px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
     background-color: #151c24;
     opacity: 0;
     pointer-events: none;
     overflow: hidden;
+    border: 2px solid rgba(109, 109, 109, 0.24);
   }
 
   .milestone-card.is-active {
@@ -1270,7 +1304,7 @@
   }
 
   .edinburgh_forty-item--edinburgh-seven {
-    background: #3e5269;
+    background: #495563;
   }
 
   .edinburgh_forty-circle {

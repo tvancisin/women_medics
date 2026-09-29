@@ -87,9 +87,24 @@ const featuredFirstClassesStudents = new Set([
   "millar white miss",
 ]);
 
-const formatFeaturedFirstClassesName = (value: unknown) => {
+const featuredPhysiologyStudents = new Set([
+  "mrs scott moncrieff",
+  "miss e. harris smith",
+  "cameron miss",
+]);
+
+const featuredEdinburghFortyWomen = new Set([
+  "sophia jex-blake",
+  "mary anderson",
+  "anna dahms",
+]);
+
+const formatFeaturedStudentName = (
+  value: unknown,
+  featuredStudents: Set<string>,
+) => {
   const name = String(value ?? "").trim();
-  const isFeatured = featuredFirstClassesStudents.has(name.toLowerCase());
+  const isFeatured = featuredStudents.has(name.toLowerCase());
   const honorificAtEnd = name.match(/^(.*)\s+(Miss|Mrs)$/i);
 
   return {
@@ -129,6 +144,7 @@ export const normalizeWomenCareer1915Region = (region: unknown) => {
 
 export const getStudentPointFeatures = (
   rawData: unknown,
+  featuredStudents = featuredFirstClassesStudents,
 ): GeoJSON.Feature<GeoJSON.Point>[] => {
   if (!Array.isArray(rawData)) {
     return [];
@@ -137,7 +153,10 @@ export const getStudentPointFeatures = (
   return (rawData as StudentGeoDatum[]).flatMap((row) => {
     const sourceData = row.source_data;
     const universityAddress = sourceData?.university_address;
-    const student = formatFeaturedFirstClassesName(sourceData?.name);
+    const student = formatFeaturedStudentName(
+      sourceData?.name,
+      featuredStudents,
+    );
     const directLat = Number(sourceData?.lat);
     const directLon = Number(sourceData?.lon);
     const addressLat = Number(universityAddress?.lat);
@@ -166,6 +185,9 @@ export const getStudentPointFeatures = (
     return [feature];
   });
 };
+
+export const getPhysiologyStudentPointFeatures = (rawData: unknown) =>
+  getStudentPointFeatures(rawData, featuredPhysiologyStudents);
 
 export const getEdinburghSevenPointFeatures = (
   rawData: unknown,
@@ -203,6 +225,9 @@ export const getEdinburghSevenPointFeatures = (
         entry_year: row.entry_year ?? null,
         life: row.Life ?? "",
         img: row.img ?? "",
+        featured: featuredEdinburghFortyWomen.has(
+          String(row.name ?? "").trim().toLowerCase(),
+        ),
       },
       geometry: {
         type: "Point",
