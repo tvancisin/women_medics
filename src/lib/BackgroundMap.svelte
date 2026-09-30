@@ -62,6 +62,7 @@
   let hasDrawnWomenDoctorCareerLocations = false;
   let hasDrawnWomenDoctorsWarLocations = false;
   let hasFocusedWomenDoctorsMilestone = false;
+  let hasCompletedWomenDoctors1911Focus = false;
   let hasFocusedOfficialMedicsMilestone = false;
   let womenDoctors1911ConnectionOverlay: SVGSVGElement | null = null;
   let timelineMarkersDataKey = "";
@@ -471,7 +472,19 @@
         photoRect.top + (photoRect.height * connection.imageAnchor.y) / 100;
       const endX = mapRect.left + mapPoint.x;
       const endY = mapRect.top + mapPoint.y;
-      const controlX = (startX + endX) / 2;
+      const pathData =
+        connection.name === "Singcha Hoashoo"
+          ? getSingchaHoashooConnectionPath(startX, startY, endX, endY)
+          : connection.name === "Margarethe Plum"
+            ? getMargarethePlumConnectionPath(startX, startY, endX, endY)
+            : connection.name === "Vera Nicolaevna Bolotine"
+              ? getVeraNicolaevnaBolotineConnectionPath(
+                  startX,
+                  startY,
+                  endX,
+                  endY,
+                )
+          : `M ${startX} ${startY} Q ${(startX + endX) / 2} ${startY} ${endX} ${endY}`;
       const path = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "path",
@@ -479,7 +492,7 @@
       path.classList.add("women-doctors-1911-connection-line");
       path.setAttribute(
         "d",
-        `M ${startX} ${startY} Q ${controlX} ${startY} ${endX} ${endY}`,
+        pathData,
       );
       womenDoctors1911ConnectionOverlay.append(path);
 
@@ -501,9 +514,102 @@
     }
   }
 
+  function getSingchaHoashooConnectionPath(
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number,
+  ) {
+    const horizontalY = startY - 20;
+    const horizontalDirection = endX < startX ? -1 : 1;
+    const verticalDirection = endY < horizontalY ? -1 : 1;
+    const bendRadius = Math.min(
+      10,
+      Math.abs(endX - startX) / 2,
+      Math.abs(endY - horizontalY) / 2,
+    );
+    const firstHorizontalX = startX + horizontalDirection * bendRadius;
+    const finalHorizontalX = endX - horizontalDirection * bendRadius;
+    const finalVerticalY = horizontalY + verticalDirection * bendRadius;
+
+    return [
+      `M ${startX} ${startY}`,
+      `V ${horizontalY + bendRadius}`,
+      `Q ${startX} ${horizontalY} ${firstHorizontalX} ${horizontalY}`,
+      `H ${finalHorizontalX}`,
+      `Q ${endX} ${horizontalY} ${endX} ${finalVerticalY}`,
+      `V ${endY}`,
+    ].join(" ");
+  }
+
+  function getMargarethePlumConnectionPath(
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number,
+  ) {
+    const horizontalY = startY - 30;
+    const horizontalDirection = endX < startX ? -1 : 1;
+    const verticalDirection = endY < horizontalY ? -1 : 1;
+    const bendRadius = Math.min(
+      10,
+      Math.abs(endX - startX) / 2,
+      Math.abs(endY - horizontalY) / 2,
+    );
+    const firstHorizontalX = startX + horizontalDirection * bendRadius;
+    const finalHorizontalX = endX - horizontalDirection * bendRadius;
+    const finalVerticalY = horizontalY + verticalDirection * bendRadius;
+
+    return [
+      `M ${startX} ${startY}`,
+      `V ${horizontalY + bendRadius}`,
+      `Q ${startX} ${horizontalY} ${firstHorizontalX} ${horizontalY}`,
+      `H ${finalHorizontalX}`,
+      `Q ${endX} ${horizontalY} ${endX} ${finalVerticalY}`,
+      `V ${endY}`,
+    ].join(" ");
+  }
+
+  function getVeraNicolaevnaBolotineConnectionPath(
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number,
+  ) {
+    const horizontalY = startY - 15;
+    const horizontalDirection = endX < startX ? -1 : 1;
+    const verticalDirection = endY < horizontalY ? -1 : 1;
+    const bendRadius = Math.min(
+      10,
+      Math.abs(endX - startX) / 2,
+      Math.abs(endY - horizontalY) / 2,
+    );
+    const firstHorizontalX = startX + horizontalDirection * bendRadius;
+    const finalHorizontalX = endX - horizontalDirection * bendRadius;
+    const finalVerticalY = horizontalY + verticalDirection * bendRadius;
+
+    return [
+      `M ${startX} ${startY}`,
+      `V ${horizontalY + bendRadius}`,
+      `Q ${startX} ${horizontalY} ${firstHorizontalX} ${horizontalY}`,
+      `H ${finalHorizontalX}`,
+      `Q ${endX} ${horizontalY} ${endX} ${finalVerticalY}`,
+      `V ${endY}`,
+    ].join(" ");
+  }
+
   function hideWomenDoctors1911PhotoBirthplaceConnections() {
     womenDoctors1911ConnectionOverlay?.remove();
     womenDoctors1911ConnectionOverlay = null;
+  }
+
+  function handleWomenDoctors1911MapFocusEnd() {
+    if (
+      currentYear === womenDoctorsBirthplacesYear &&
+      hasFocusedWomenDoctorsMilestone
+    ) {
+      hasCompletedWomenDoctors1911Focus = true;
+    }
   }
 
   function clearOldMapOverlayFade() {
@@ -2141,6 +2247,7 @@
     currentYear >= womenDoctorsFocusYear &&
     !hasFocusedWomenDoctorsMilestone
   ) {
+    hasCompletedWomenDoctors1911Focus = false;
     map.flyTo({
       center: [70.1883, 10.9433],
       zoom: 1.5,
@@ -2198,11 +2305,17 @@
   }
 
   // Draw the fixed photo-to-birthplace connections only at the 1911 milestone.
-  $: if (map && styleReady && currentYear === womenDoctorsBirthplacesYear) {
+  $: if (
+    map &&
+    styleReady &&
+    currentYear === womenDoctorsBirthplacesYear &&
+    hasCompletedWomenDoctors1911Focus
+  ) {
     showWomenDoctors1911PhotoBirthplaceConnections();
   }
 
   $: if (map && styleReady && currentYear !== womenDoctorsBirthplacesYear) {
+    hasCompletedWomenDoctors1911Focus = false;
     hideWomenDoctors1911PhotoBirthplaceConnections();
   }
 
@@ -2318,12 +2431,14 @@
 
     map.on("load", handleResize);
     map.on("move", updateWomenDoctors1911PhotoBirthplaceConnections);
+    map.on("moveend", handleWomenDoctors1911MapFocusEnd);
     map.on("resize", updateWomenDoctors1911PhotoBirthplaceConnections);
     window.addEventListener("resize", handleResize);
 
     return () => {
       window.removeEventListener("resize", handleResize);
       map.off("move", updateWomenDoctors1911PhotoBirthplaceConnections);
+      map.off("moveend", handleWomenDoctors1911MapFocusEnd);
       map.off("resize", updateWomenDoctors1911PhotoBirthplaceConnections);
       hideWomenDoctors1911PhotoBirthplaceConnections();
       clearOldMapOverlayFade();
@@ -2486,8 +2601,8 @@
 
   :global(.women-doctors-1911-connection-line) {
     fill: none;
-    stroke: rgba(255, 255, 255, 0.603);
-    stroke-width: 1;
+    stroke: rgba(255, 255, 255, 0.4);
+    stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.65));

@@ -430,7 +430,6 @@
 
         console.log(womenMedicsData);
 
-
         edinburghSevenData = rawEdinburghSevenData;
 
         // firstClassesData = first_classes;
@@ -608,7 +607,12 @@
     {edinburghSevenData}
     showWomenDoctorCareerLocations={pausedAtYear === 1915}
   />
-  <img class="site-logo" src={publicUrl("img/logo.png")} alt="Women Medics" />
+  <img
+    class="site-logo"
+    src={publicUrl("img/logo_adjusted.png")}
+    alt="Edinburgh Futures Institute"
+  />
+  <h1 id="data-led-methods">Data-Led Methods and Research Technology</h1>
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
   {#if devRequireClickToResume && awaitingResumeClick}
     <button class="resume-button" type="button" on:click={handleResumeClick}>
@@ -639,6 +643,7 @@
       class="milestone-card"
       class:milestone-card--university-founded={year === 1583}
       class:milestone-card--edinburgh-forty={year === 1869}
+      class:milestone-card--women-doctors-1911={year === 1911}
       class:milestone-card--split={splitMilestoneYears.has(year)}
       class:is-active={pausedAtYear === year}
       style:bottom="95px"
@@ -651,16 +656,6 @@
         : undefined}
     >
       <h1 class="milestone-card-heading">{milestoneLabels.get(year) ?? ""}</h1>
-      {#if year === 1869}
-        <p class="edinburgh-forty-intro">
-          The Edinburgh Seven are known to be the first women to matriculate at
-          the University of Edinburgh in 1869. However, there were actually 40
-          women who enrolled in the School of Medicine that year. The women
-          faced significant opposition and discrimination, but their
-          determination paved the way for future generations of women in
-          medicine.
-        </p>
-      {/if}
       {#if year === 1583}
         <div
           class="university-founded-card-image"
@@ -694,8 +689,8 @@
           </div>
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
-              Born as Margaret Anne Bulkley (1789 - 1865), James Barry lived as
-              a man throughout his medical education and career. In 1809, he
+              Born as Margaret Anne Bulkley, James Barry lived as a man
+              throughout their medical education and career. In 1809, they
               travelled from London to Edinburgh by boat (~9 days of travel) to
               study medicine and graduated in 1812.
             </div>
@@ -712,12 +707,10 @@
           </div>
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
-              Elizabeth Garrett Anderson (1836 - 1917) came to Edinburgh (most
-              likely by train, North British Railway was completed in 1846) in
-              1862, trying to enroll at the School of Medicine. She also tried
-              to enroll at Universities of Cambridge, Glasgow, Oxford, and St
-              Andrews, but was rejected by all. She eventually became the first
-              woman to qualify as a physician and surgeon.
+              Elizabeth Garrett Anderson came to Edinburgh (most likely by
+              train) in 1862, trying to enroll at the School of Medicine. She
+              also tried to enroll at Universities of Cambridge, Glasgow,
+              Oxford, and St Andrews, but was rejected by all.
             </div>
           </div>
         </div>
@@ -732,15 +725,19 @@
           </div>
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
-              The very first classes women could attend at the University (2
-              years before Edinburgh Seven's enrollment) were David Masson's
-              (1822 – 1907) English Literature classes. A supporter of women's
-              suffrage, Masson started teching women in 1867 at Hopetoun Rooms
-              (67-73 Queen Street).
+              The very first classes women could attend at the University (
+              before Edinburgh Seven) were David Masson's English Literature
+              classes. A supporter of women's suffrage, Masson started teching
+              women in 1867 at Hopetoun Rooms (67-73 Queen Street).
             </div>
           </div>
         </div>
       {:else if year === 1869}
+        <p class="edinburgh-forty-intro">
+          The Edinburgh Seven are known to be the first women to matriculate at
+          a University in the UK. What's much less known is that there were
+          actually 40 women who matriculated at the School of Medicine in 1869.
+        </p>
         <div class="edinburgh_forty">
           {#each orderedEdinburghFortyData as d (d.name)}
             <div
@@ -784,11 +781,11 @@
           </div>
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
-              After Edinburgh Seven/Forty were refused graduation and a general
-              backlash against women studying medicine, there were still
-              professors who supported women in this regard. One of them was
-              John Gray McKendrick (1841-1926), who started teaching pyhsiology
-              to women at Gayfield House (18 East London Street) in 1875.
+              After the Edinburgh Seven were refused graduation, there were
+              still professors who supported women in their pursuit to study
+              medicine. One of them was John Gray McKendrick, who started
+              teaching pyhsiology to women at Gayfield House (18 East London
+              Street) in 1875.
             </div>
           </div>
         </div>
@@ -803,10 +800,10 @@
           </div>
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
-              Sophia Jex-Blake (1840 - 1912), the leading figure of the
-              Edinburgh Seven/Forty, established the School of Medicine for
-              Women in 1886, which, unlike the University, allowed women to
-              study medicine.
+              Sophia Jex-Blake, the leading figure of the Edinburgh Seven/Forty,
+              established the School of Medicine for Women in 1886, which,
+              unlike the University, allowed women to obtain a full medical
+              education.
             </div>
           </div>
         </div>
@@ -915,7 +912,7 @@
             <div class="career-chart-empty">No 1915 career data</div>
           {/if}
         </div>
-      <!-- 1919 milestone temporarily disabled.
+        <!-- 1919 milestone temporarily disabled.
       {:else if year === womenDoctorsWarMilestoneYear}
         <div class="milestone-card-split-layout">
           <div class="milestone-card-split-half milestone-card-split-image">
@@ -964,6 +961,21 @@
     pointer-events: none;
   }
 
+  #data-led-methods {
+    position: absolute;
+    top: 36px;
+    left: 66px;
+    z-index: 3;
+    margin: 0;
+    padding: 0.5rem 1rem;
+    color: #fff;
+    font-family: "Jost";
+    font-size: 14px;
+    font-weight: 375;
+    letter-spacing: 0.02em;
+    pointer-events: none;
+  }
+
   .milestone-card {
     position: absolute;
     z-index: 2;
@@ -1003,6 +1015,10 @@
     width: min(500px, calc(100vw - 32px));
     height: calc(100vh - 95px - 80px);
     container-type: size;
+  }
+
+  .milestone-card--women-doctors-1911.is-active {
+    width: min(500px, calc(100vw - 32px));
   }
 
   .milestone-card-heading {
