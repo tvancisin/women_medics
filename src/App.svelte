@@ -883,7 +883,7 @@
     z-index: 3;
     margin: 0;
     padding: 0.5rem 1rem;
-    color: #fff;
+    color: #ffffffdc;
     font-family: "Jost";
     font-size: 14px;
     font-weight: 375;

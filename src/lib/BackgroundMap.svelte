@@ -1809,7 +1809,7 @@
       lineColor: "white",
     });
     map.flyTo({
-      center: [-2.1883, 54.5533],
+      center: [-1.1883, 53.55],
       duration: 2000,
       essential: true,
     });
@@ -2225,8 +2225,8 @@
     hasCompletedWomenDoctors1911Focus = false;
     map.flyTo({
       center: [70.1883, 10.9433],
-      zoom: 1.5,
-      duration: 1000,
+      zoom: 1.8,
+      duration: 2000,
       essential: true,
     });
     hasFocusedWomenDoctorsMilestone = true;
