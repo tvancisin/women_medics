@@ -7,7 +7,6 @@
   import { getCSV, getJson } from "./lib/data/loaders";
   import BackgroundMap from "./lib/BackgroundMap.svelte";
   import MainTimeline from "./lib/MainTimeline.svelte";
-  import { normalizeWomenCareer1915Region } from "./lib/map/featureBuilders";
 
   const baseUrl = import.meta.env.BASE_URL;
   const publicUrl = (path: string) => `${baseUrl}${path}`;
@@ -130,27 +129,17 @@
 
   type WomenCareer1915Datum = {
     source_data?: {
-      "Position codes"?: string | null;
       career_location_1915?: {
+        country?: string | null;
         region?: string | null;
       } | null;
     };
   };
 
-  type CareerPositionCount = {
-    code: string;
+  type CareerCountryCount = {
+    country: string;
     count: number;
     percent: number;
-  };
-
-  type CareerRegionGroup = {
-    region: string;
-    total: number;
-    statedCount: number;
-    notStatedCount: number;
-    statedPercent: number;
-    notStatedPercent: number;
-    positions: CareerPositionCount[];
   };
 
   const edinburghFortyImageUrl = (img?: string) => {
@@ -208,95 +197,64 @@
       : endAcademicYear;
   };
 
-  const displayLabel = (value: unknown, fallback = "Not stated") => {
-    const label = String(value ?? "").trim();
-    return label && label.toLowerCase() !== "null" ? label : fallback;
-  };
+  const getCareerCountry = (
+    careerLocation: NonNullable<
+      WomenCareer1915Datum["source_data"]
+    >["career_location_1915"],
+  ) => {
+    const country = String(careerLocation?.country ?? "").trim();
+    if (!country || country.toLowerCase() === "null") return null;
 
-  const isStatedPosition = (position: string) => {
-    return position.trim().toLowerCase() !== "not stated";
-  };
-
-  const buildCareerPositionGroups = (rawData: unknown): CareerRegionGroup[] => {
-    if (!Array.isArray(rawData)) return [];
-
-    const countsByRegion = new Map<
-      string,
-      {
-        counts: Map<string, number>;
-        notStatedCount: number;
-        statedCount: number;
-      }
-    >();
-
-    for (const row of rawData as WomenCareer1915Datum[]) {
-      const sourceData = row.source_data;
-      const region = normalizeWomenCareer1915Region(
-        sourceData?.career_location_1915?.region,
-      );
-      const position = displayLabel(sourceData?.["Position codes"]);
-
-      if (!countsByRegion.has(region)) {
-        countsByRegion.set(region, {
-          counts: new Map<string, number>(),
-          notStatedCount: 0,
-          statedCount: 0,
-        });
-      }
-
-      const regionCounts = countsByRegion.get(region);
-      if (!regionCounts) continue;
-
-      if (isStatedPosition(position)) {
-        regionCounts.statedCount += 1;
-        regionCounts.counts.set(
-          position,
-          (regionCounts.counts.get(position) ?? 0) + 1,
-        );
-      } else {
-        regionCounts.notStatedCount += 1;
-      }
+    if (country.toLowerCase() === "democratic republic of the congo") {
+      return "Congo";
     }
 
-    return Array.from(countsByRegion.entries())
-      .filter(([region]) => region !== "Other")
-      .map(([region, regionCounts]) => {
-        const entries = Array.from(regionCounts.counts.entries()).sort(
-          ([positionA, countA], [positionB, countB]) =>
-            countB - countA || positionA.localeCompare(positionB),
-        );
-        const topEntries = entries.slice(0, 3);
-        const maxCount = Math.max(...topEntries.map(([, count]) => count), 1);
-        const total = regionCounts.statedCount + regionCounts.notStatedCount;
+    if (country.toLowerCase() === "myanmar (burma)") {
+      return "Myanmar";
+    }
 
-        return {
-          region,
-          total,
-          statedCount: regionCounts.statedCount,
-          notStatedCount: regionCounts.notStatedCount,
-          statedPercent:
-            total > 0 ? (regionCounts.statedCount / total) * 100 : 0,
-          notStatedPercent:
-            total > 0 ? (regionCounts.notStatedCount / total) * 100 : 0,
-          positions: topEntries.map(([code, count]) => ({
-            code,
-            count,
-            percent: (count / maxCount) * 100,
-          })),
-        };
-      })
-      .sort(
-        (regionA, regionB) =>
-          regionB.total - regionA.total ||
-          regionA.region.localeCompare(regionB.region),
-      );
+    if (country.toLowerCase() !== "united kingdom") return country;
+
+    const region = String(careerLocation?.region ?? "")
+      .trim()
+      .toLowerCase();
+    if (region === "london") return "England";
+    if (["england", "scotland", "wales", "ireland"].includes(region)) {
+      return `${region[0].toUpperCase()}${region.slice(1)}`;
+    }
+
+    return country;
+  };
+
+  const buildCareerCountryCounts = (rawData: unknown): CareerCountryCount[] => {
+    if (!Array.isArray(rawData)) return [];
+
+    const countsByCountry = new Map<string, number>();
+
+    for (const row of rawData as WomenCareer1915Datum[]) {
+      const country = getCareerCountry(row.source_data?.career_location_1915);
+      if (!country) continue;
+      countsByCountry.set(country, (countsByCountry.get(country) ?? 0) + 1);
+    }
+
+    const countries = Array.from(countsByCountry.entries()).sort(
+      ([countryA, countA], [countryB, countB]) =>
+        countB - countA || countryA.localeCompare(countryB),
+    );
+    const maxCount = Math.max(...countries.map(([, count]) => count), 1);
+
+    return countries.map(([country, count]) => ({
+      country,
+      count,
+      percent: (count / maxCount) * 100,
+    }));
   };
 
   // Dev-only: remove these two variables with the click-to-resume behavior.
   let awaitingResumeClick = false;
   let resumeRequested = false;
 
-  $: careerPositionGroups = buildCareerPositionGroups(womenCareers1915Data);
+  $: careerCountryCounts = buildCareerCountryCounts(womenCareers1915Data);
   $: orderedEdinburghFortyData = [...edinburghSevenData].sort(
     (personA, personB) =>
       (edinburghSevenOrder.get(personA.name) ?? Number.MAX_SAFE_INTEGER) -
@@ -428,8 +386,6 @@
               Number.isFinite(row.year) && Number.isFinite(row.number),
           );
 
-        console.log(womenMedicsData);
-
         edinburghSevenData = rawEdinburghSevenData;
 
         // firstClassesData = first_classes;
@@ -497,6 +453,9 @@
         womenCareers1915Data = Array.isArray(rawWomenDoctors1915)
           ? rawWomenDoctors1915
           : null;
+
+        console.log(womenCareers1915Data);
+        
       } catch (error: unknown) {
         console.error("Failed to load timeline JSON data", error);
       }
@@ -846,66 +805,22 @@
         </div>
       {:else if year === 1915}
         <div class="career-chart">
-          {#if careerPositionGroups.length > 0}
-            <div class="career-region-list">
-              {#each careerPositionGroups as regionGroup (regionGroup.region)}
-                <section class="career-region">
-                  <div class="career-region-heading">
-                    <div class="career-region-summary">
-                      <span class="career-region-name"
-                        >{regionGroup.region}</span
-                      >
-                      <div
-                        class="career-statement-indicator"
-                        aria-label={`Known professions: ${regionGroup.statedCount}; unknown professions: ${regionGroup.notStatedCount}`}
-                        title={`Known professions: ${regionGroup.statedCount}; unknown professions: ${regionGroup.notStatedCount}`}
-                      >
-                        <div class="career-statement-track">
-                          <div
-                            class="career-statement-fill career-statement-fill-stated"
-                            style:width={`${regionGroup.statedPercent}%`}
-                          ></div>
-                          <div
-                            class="career-statement-fill career-statement-fill-not-stated"
-                            style:width={`${regionGroup.notStatedPercent}%`}
-                          ></div>
-                        </div>
-                        <span
-                          class="career-statement-count career-statement-count-stated"
-                        >
-                          {regionGroup.statedCount} known
-                        </span>
-                        <span
-                          class="career-statement-count career-statement-count-not-stated"
-                        >
-                          {regionGroup.notStatedCount} unknown
-                        </span>
-                      </div>
-                    </div>
-                    <span class="career-region-total">{regionGroup.total}</span>
+          {#if careerCountryCounts.length > 0}
+            <div class="career-country-list">
+              {#each careerCountryCounts as country (country.country)}
+                <div class="career-country-row">
+                  <div class="career-country-name">{country.country}</div>
+                  <div
+                    class="career-country-track"
+                    aria-label={`${country.country}: ${country.count} women`}
+                  >
+                    <div
+                      class="career-country-fill"
+                      style:width={`${country.percent}%`}
+                    ></div>
                   </div>
-                  {#if regionGroup.positions.length > 0}
-                    <div class="career-bars">
-                      {#each regionGroup.positions as position (position.code)}
-                        <div class="career-bar-row">
-                          <div class="career-bar-label" title={position.code}>
-                            {position.code}
-                          </div>
-                          <div
-                            class="career-bar-track"
-                            aria-label={`${position.code}: ${position.count}`}
-                          >
-                            <div
-                              class="career-bar-fill"
-                              style:width={`${position.percent}%`}
-                            ></div>
-                          </div>
-                          <div class="career-bar-value">{position.count}</div>
-                        </div>
-                      {/each}
-                    </div>
-                  {/if}
-                </section>
+                  <div class="career-country-count">{country.count}</div>
+                </div>
               {/each}
             </div>
           {:else}
@@ -1150,137 +1065,44 @@
     text-align: left;
   }
 
-  .career-region-list {
+  .career-country-list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-  }
-
-  .career-region {
-    border-top: 1px solid rgba(255, 255, 255, 0.24);
-    padding-top: 10px;
-  }
-
-  .career-region-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 8px;
-    color: #fff;
-    font-size: 13px;
-    line-height: 1.2;
-  }
-
-  .career-region-summary {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-    min-width: 0;
-  }
-
-  .career-region-name {
-    min-width: 0;
-    overflow-wrap: anywhere;
-  }
-
-  .career-region-total {
-    flex: 0 0 auto;
-  }
-
-  .career-statement-indicator {
-    display: grid;
-    grid-template-columns: 70px auto auto;
-    align-items: center;
     gap: 5px;
-    flex: 0 0 auto;
   }
 
-  .career-statement-track {
-    display: flex;
-    width: 70px;
-    height: 8px;
-    overflow: hidden;
-    background: rgba(255, 255, 255, 0.14);
-  }
-
-  .career-statement-fill {
-    height: 100%;
-  }
-
-  .career-statement-fill-stated {
-    background: white;
-  }
-
-  .career-statement-fill-not-stated {
-    background: rgba(146, 136, 136, 0.58);
-  }
-
-  .career-statement-count {
-    position: relative;
-    padding-left: 7px;
-    color: rgba(255, 255, 255, 0.82);
-    font-size: 9px;
-    line-height: 1;
-  }
-
-  .career-statement-count::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    width: 4px;
-    height: 4px;
-    transform: translateY(-50%);
-    background: currentColor;
-  }
-
-  .career-statement-count-stated::before {
-    color: white;
-  }
-
-  .career-statement-count-not-stated::before {
-    color: rgba(146, 136, 136, 0.58);
-  }
-
-  .career-bars {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-  }
-
-  .career-bar-row {
+  .career-country-row {
     display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(90px, 1fr) 26px;
+    grid-template-columns: minmax(92px, 1fr) minmax(110px, 2.25fr) 28px;
     gap: 8px;
     align-items: center;
-    min-height: 18px;
+    min-height: 20px;
   }
 
-  .career-bar-label {
+  .career-country-name {
     min-width: 0;
-    color: rgba(255, 255, 255, 0.88);
-    font-size: 10px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 11px;
     line-height: 1.15;
     overflow-wrap: anywhere;
   }
 
-  .career-bar-track {
-    height: 8px;
+  .career-country-track {
+    height: 10px;
     overflow: hidden;
     background: rgba(255, 255, 255, 0.16);
   }
 
-  .career-bar-fill {
+  .career-country-fill {
     height: 100%;
     min-width: 2px;
-    background: white;
+    background: #fff;
   }
 
-  .career-bar-value {
-    color: rgba(255, 255, 255, 0.82);
-    font-size: 10px;
+  .career-country-count {
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
     line-height: 1;
     text-align: right;
   }

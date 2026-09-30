@@ -99,6 +99,16 @@ const featuredEdinburghFortyWomen = new Set([
   "anna dahms",
 ]);
 
+const featuredWomenCareer1915 = new Set([
+  "isabelle aitken",
+  "meher ardeshir dadabhai naoroji",
+  "eileen josephine fitzgerald",
+  "edith gertrude pycroft",
+  "eva maud snowball",
+  "mary scott anderson",
+  "mabel lida ramsay",
+]);
+
 const formatFeaturedStudentName = (
   value: unknown,
   featuredStudents: Set<string>,
@@ -316,6 +326,11 @@ export const getWomenDoctorCareerLocationFeatures = (
         specialism: sourceData?.Specialism ?? "",
         position_1915: sourceData?.["Position 1915"] ?? "",
         position_codes: sourceData?.["Position codes"] ?? "",
+        featured_1915: featuredWomenCareer1915.has(
+          String(sourceData?.name ?? row.name?.original ?? "")
+            .trim()
+            .toLowerCase(),
+        ),
       },
       geometry: {
         type: "Point",

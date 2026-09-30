@@ -72,11 +72,17 @@
   const firstClassesFeaturedArrowMarkers = new Map<string, mapboxgl.Marker>();
   const physiologyFeaturedLabelMarkers = new Map<string, mapboxgl.Marker>();
   const physiologyFeaturedArrowMarkers = new Map<string, mapboxgl.Marker>();
+  const womenDoctorsCareerFeaturedLabelMarkers = new Map<
+    string,
+    mapboxgl.Marker
+  >();
+  const womenDoctorsCareerFeaturedArrowMarkers = new Map<
+    string,
+    mapboxgl.Marker
+  >();
   const edinburghFortyFeaturedMarkers = new Map<string, mapboxgl.Marker>();
   let physiologyStudentPopup: mapboxgl.Popup | null = null;
   let hasPhysiologyStudentHoverHandlers = false;
-  let womenDoctorCareerPopup: mapboxgl.Popup | null = null;
-  let hasWomenDoctorCareerHoverHandlers = false;
 
   type LayerConfig = {
     sourceId: string;
@@ -1465,120 +1471,89 @@
     sourceId,
     layerId,
   }: DataLayerConfig) {
+    const features = getWomenDoctorCareerLocationFeatures(rawData);
     const didDraw = drawCircleLayer({
-      features: getWomenDoctorCareerLocationFeatures(rawData),
+      features,
       sourceId,
       layerId,
       paint: circleMarkerPaint,
     });
 
     if (didDraw) {
-      addWomenDoctorCareerHoverHandlers();
+      syncWomenDoctorsCareerFeaturedLabels(features);
     }
 
     return didDraw;
   }
 
-  function appendCareerPopupField(
-    container: HTMLDivElement,
-    label: string,
-    value: unknown,
+  function syncWomenDoctorsCareerFeaturedLabels(
+    features: GeoJSON.Feature<GeoJSON.Point>[],
   ) {
-    const text = String(value ?? "").trim();
-    if (!text) return;
-
-    const field = document.createElement("div");
-    field.className = "women-doctor-career-popup-field";
-    const fieldLabel = document.createElement("span");
-    fieldLabel.className = "women-doctor-career-popup-label";
-    fieldLabel.textContent = `${label}: `;
-    field.append(fieldLabel, document.createTextNode(text));
-    container.append(field);
-  }
-
-  function showWomenDoctorCareerPopup(event: mapboxgl.MapLayerMouseEvent) {
     if (!map) return;
 
-    const feature = event.features?.[0];
-    if (!feature || feature.geometry.type !== "Point") return;
+    const activeMarkerKeys = new Set<string>();
 
-    const properties = feature.properties ?? {};
-    const content = document.createElement("div");
-    content.className = "women-doctor-career-popup";
-    const name = document.createElement("strong");
-    name.className = "women-doctor-career-popup-name";
-    name.textContent = String(properties.name ?? "Unknown doctor");
-    content.append(name);
+    for (const feature of features) {
+      if (feature.properties?.featured_1915 !== true) continue;
 
-    appendCareerPopupField(content, "Location", properties.career_location);
-    appendCareerPopupField(content, "Country", properties.country);
-    appendCareerPopupField(content, "Region", properties.region);
-    appendCareerPopupField(content, "Position", properties.position_1915);
-    appendCareerPopupField(content, "Position code", properties.position_codes);
-    appendCareerPopupField(content, "Specialism", properties.specialism);
-    appendCareerPopupField(
-      content,
-      "First qualification",
-      properties.first_qual,
-    );
-    appendCareerPopupField(
-      content,
-      "Student registration",
-      properties.student_registration,
-    );
+      const [longitude, latitude] = feature.geometry.coordinates;
+      const name = String(feature.properties.name ?? "Unknown doctor");
+      const location = String(feature.properties.career_location ?? "Unknown");
+      const label = `${name}\nCareer: ${location}`;
+      const markerKey = `${name}-${longitude}-${latitude}`;
+      activeMarkerKeys.add(markerKey);
 
-    map.getCanvas().style.cursor = "pointer";
-    womenDoctorCareerPopup ??= new mapboxgl.Popup({
-      closeButton: false,
-      closeOnClick: false,
-      offset: 10,
-      className: "women-doctor-career-map-popup",
-    });
-    womenDoctorCareerPopup
-      .setLngLat(event.lngLat)
-      .setDOMContent(content)
-      .addTo(map);
-  }
+      const existingMarker = womenDoctorsCareerFeaturedLabelMarkers.get(
+        markerKey,
+      );
+      if (existingMarker) {
+        existingMarker.getElement().textContent = label;
+      } else {
+        const element = document.createElement("div");
+        element.className = "first-classes-featured-label";
+        element.textContent = label;
 
-  function hideWomenDoctorCareerPopup() {
-    if (!map) return;
+        const marker = new mapboxgl.Marker({
+          element,
+          anchor: "right",
+          offset: [-10, 0],
+        })
+          .setLngLat([longitude, latitude])
+          .addTo(map);
+        womenDoctorsCareerFeaturedLabelMarkers.set(markerKey, marker);
+      }
 
-    map.getCanvas().style.cursor = "";
-    womenDoctorCareerPopup?.remove();
-  }
+      if (!womenDoctorsCareerFeaturedArrowMarkers.has(markerKey)) {
+        const arrowElement = document.createElement("div");
+        arrowElement.className = "women-doctors-career-featured-arrow";
 
-  function addWomenDoctorCareerHoverHandlers() {
-    if (!map || hasWomenDoctorCareerHoverHandlers) return;
+        const arrowMarker = new mapboxgl.Marker({
+          element: arrowElement,
+          anchor: "right",
+        })
+          .setLngLat([longitude, latitude])
+          .addTo(map);
+        womenDoctorsCareerFeaturedArrowMarkers.set(markerKey, arrowMarker);
+      }
+    }
 
-    map.on(
-      "mouseenter",
-      womenDoctorsCareerLocationsLayerId,
-      showWomenDoctorCareerPopup,
-    );
-    map.on(
-      "mouseleave",
-      womenDoctorsCareerLocationsLayerId,
-      hideWomenDoctorCareerPopup,
-    );
-    hasWomenDoctorCareerHoverHandlers = true;
+    for (const [markerKey, marker] of womenDoctorsCareerFeaturedLabelMarkers) {
+      if (!activeMarkerKeys.has(markerKey)) {
+        marker.remove();
+        womenDoctorsCareerFeaturedLabelMarkers.delete(markerKey);
+      }
+    }
+
+    for (const [markerKey, marker] of womenDoctorsCareerFeaturedArrowMarkers) {
+      if (!activeMarkerKeys.has(markerKey)) {
+        marker.remove();
+        womenDoctorsCareerFeaturedArrowMarkers.delete(markerKey);
+      }
+    }
   }
 
   function removeWomenDoctorCareerLocationLayer() {
-    hideWomenDoctorCareerPopup();
-
-    if (map && hasWomenDoctorCareerHoverHandlers) {
-      map.off(
-        "mouseenter",
-        womenDoctorsCareerLocationsLayerId,
-        showWomenDoctorCareerPopup,
-      );
-      map.off(
-        "mouseleave",
-        womenDoctorsCareerLocationsLayerId,
-        hideWomenDoctorCareerPopup,
-      );
-      hasWomenDoctorCareerHoverHandlers = false;
-    }
+    syncWomenDoctorsCareerFeaturedLabels([]);
 
     removeCircleLayer({
       sourceId: womenDoctorsCareerLocationsSourceId,
@@ -2251,7 +2226,7 @@
     map.flyTo({
       center: [70.1883, 10.9433],
       zoom: 1.5,
-      duration: 2000,
+      duration: 1000,
       essential: true,
     });
     hasFocusedWomenDoctorsMilestone = true;
@@ -2524,6 +2499,16 @@
     pointer-events: none;
   }
 
+  :global(.women-doctors-career-featured-arrow) {
+    width: 0;
+    height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 10px solid rgba(17, 17, 17, 0.9);
+    filter: drop-shadow(0 0 1px rgba(180, 180, 180, 0.9));
+    pointer-events: none;
+  }
+
   :global(.edinburgh-forty-featured-marker) {
     display: grid;
     justify-items: center;
@@ -2629,32 +2614,4 @@
     border-radius: 3px;
   }
 
-  :global(.women-doctor-career-map-popup .mapboxgl-popup-content) {
-    padding: 10px 12px;
-    background: #111;
-    color: #fff;
-    border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
-    font-family: "Montserrat", sans-serif;
-    font-size: 12px;
-    line-height: 1.35;
-  }
-
-  :global(.women-doctor-career-popup) {
-    max-width: 260px;
-  }
-
-  :global(.women-doctor-career-popup-name) {
-    display: block;
-    margin-bottom: 6px;
-    font-size: 13px;
-  }
-
-  :global(.women-doctor-career-popup-field) {
-    margin-top: 2px;
-  }
-
-  :global(.women-doctor-career-popup-label) {
-    color: rgba(255, 255, 255, 0.65);
-  }
 </style>
