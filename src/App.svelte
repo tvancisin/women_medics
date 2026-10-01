@@ -1,8 +1,4 @@
 <script lang="ts">
-  // todo
-  // decide on the historical events for the timeline bottom
-  // image of the original old college
-
   import { onMount } from "svelte";
   import { getCSV, getJson } from "./lib/data/loaders";
   import BackgroundMap from "./lib/BackgroundMap.svelte";
@@ -455,7 +451,6 @@
           : null;
 
         console.log(womenCareers1915Data);
-        
       } catch (error: unknown) {
         console.error("Failed to load timeline JSON data", error);
       }

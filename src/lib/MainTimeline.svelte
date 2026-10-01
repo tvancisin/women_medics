@@ -100,7 +100,7 @@
     </g>
 
     {#if isCurrentYearInTimelineDomain}
-      <circle cx={currentYearX} cy={timelineY} r="4" fill="#fff"></circle>
+      <circle cx={currentYearX} cy={timelineY} r="5" fill="#fff"></circle>
       <rect
         class="year-counter-background"
         x={yearCounterPanelX}

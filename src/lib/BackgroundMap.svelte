@@ -72,6 +72,14 @@
   const firstClassesFeaturedArrowMarkers = new Map<string, mapboxgl.Marker>();
   const physiologyFeaturedLabelMarkers = new Map<string, mapboxgl.Marker>();
   const physiologyFeaturedArrowMarkers = new Map<string, mapboxgl.Marker>();
+  const womenDoctors1911FeaturedLabelMarkers = new Map<
+    string,
+    mapboxgl.Marker
+  >();
+  const womenDoctors1911FeaturedArrowMarkers = new Map<
+    string,
+    mapboxgl.Marker
+  >();
   const womenDoctorsCareerFeaturedLabelMarkers = new Map<
     string,
     mapboxgl.Marker
@@ -107,6 +115,8 @@
     name: string;
     imageAnchor: { x: number; y: number };
     birthplace: [number, number];
+    location_name: string;
+    lineStyle: "solid" | "dashed" | "dotted";
   };
 
   type JourneyLineConfig = {
@@ -205,16 +215,22 @@
         name: "Singcha Hoashoo",
         imageAnchor: { x: 55.1, y: 23.1 },
         birthplace: [-58.1583214, 6.8231985],
+        location_name: "British Guiana (now Guyana)",
+        lineStyle: "solid",
       },
       {
         name: "Margarethe Plum",
-        imageAnchor: { x: 44.0, y: 31.5 },
+        imageAnchor: { x: 44.5, y: 31.5 },
         birthplace: [9.501785, 56.26392],
+        location_name: "Denmark",
+        lineStyle: "dashed",
       },
       {
         name: "Vera Nicolaevna Bolotine",
-        imageAnchor: { x: 33.9, y: 32.3 },
+        imageAnchor: { x: 35, y: 32.3 },
         birthplace: [50.1606382, 53.203772],
+        location_name: "Samara, Russia",
+        lineStyle: "dotted",
       },
     ];
   const suezRoutesReverseYear = 1911;
@@ -495,7 +511,10 @@
         "http://www.w3.org/2000/svg",
         "path",
       );
-      path.classList.add("women-doctors-1911-connection-line");
+      path.classList.add(
+        "women-doctors-1911-connection-line",
+        `women-doctors-1911-connection-line--${connection.lineStyle}`,
+      );
       path.setAttribute(
         "d",
         pathData,
@@ -1458,11 +1477,92 @@
     sourceId,
     layerId,
   }: DataLayerConfig) {
-    return drawCircleLayer({
-      features: getWomenDoctorBirthplaceFeatures(rawData),
+    const features = getWomenDoctorBirthplaceFeatures(rawData);
+    const didDraw = drawCircleLayer({
+      features,
       sourceId,
       layerId,
       paint: circleMarkerPaint,
+    });
+
+    if (didDraw) {
+      syncWomenDoctors1911FeaturedLabels(features);
+    }
+
+    return didDraw;
+  }
+
+  function syncWomenDoctors1911FeaturedLabels(
+    features: GeoJSON.Feature<GeoJSON.Point>[],
+  ) {
+    if (!map) return;
+
+    const activeMarkerKeys = new Set<string>();
+
+    for (const feature of features) {
+      const [longitude, latitude] = feature.geometry.coordinates;
+      const name = String(feature.properties?.name ?? "Unknown doctor");
+      const connection = womenDoctors1911PhotoBirthplaceConnections.find(
+        ({ name: connectionName }) => connectionName === name,
+      );
+      if (!connection) continue;
+
+      const markerKey = `${name}-${longitude}-${latitude}`;
+      const label = `${name}\n${connection.location_name}`;
+      activeMarkerKeys.add(markerKey);
+
+      const existingMarker = womenDoctors1911FeaturedLabelMarkers.get(markerKey);
+      if (existingMarker) {
+        existingMarker.getElement().textContent = label;
+      } else {
+        const element = document.createElement("div");
+        element.className = "first-classes-featured-label";
+        element.textContent = label;
+
+        const marker = new mapboxgl.Marker({
+          element,
+          anchor: "right",
+          offset: [-10, 0],
+        })
+          .setLngLat([longitude, latitude])
+          .addTo(map);
+        womenDoctors1911FeaturedLabelMarkers.set(markerKey, marker);
+      }
+
+      if (!womenDoctors1911FeaturedArrowMarkers.has(markerKey)) {
+        const arrowElement = document.createElement("div");
+        arrowElement.className = "first-classes-featured-arrow";
+
+        const arrowMarker = new mapboxgl.Marker({
+          element: arrowElement,
+          anchor: "right",
+        })
+          .setLngLat([longitude, latitude])
+          .addTo(map);
+        womenDoctors1911FeaturedArrowMarkers.set(markerKey, arrowMarker);
+      }
+    }
+
+    for (const [markerKey, marker] of womenDoctors1911FeaturedLabelMarkers) {
+      if (!activeMarkerKeys.has(markerKey)) {
+        marker.remove();
+        womenDoctors1911FeaturedLabelMarkers.delete(markerKey);
+      }
+    }
+
+    for (const [markerKey, marker] of womenDoctors1911FeaturedArrowMarkers) {
+      if (!activeMarkerKeys.has(markerKey)) {
+        marker.remove();
+        womenDoctors1911FeaturedArrowMarkers.delete(markerKey);
+      }
+    }
+  }
+
+  function removeWomenDoctorBirthplaceLayer() {
+    syncWomenDoctors1911FeaturedLabels([]);
+    removeCircleLayer({
+      sourceId: womenDoctorsBirthplacesSourceId,
+      layerId: womenDoctorsBirthplacesLayerId,
     });
   }
 
@@ -2273,10 +2373,7 @@
   // Clear 1911 birthplace circles.
   $: if (map && styleReady && currentYear >= womenDoctorsCareerLocationsYear) {
     hasDrawnWomenDoctorBirthplaces = false;
-    removeCircleLayer({
-      sourceId: womenDoctorsBirthplacesSourceId,
-      layerId: womenDoctorsBirthplacesLayerId,
-    });
+    removeWomenDoctorBirthplaceLayer();
   }
 
   // Draw the fixed photo-to-birthplace connections only at the 1911 milestone.
@@ -2591,6 +2688,14 @@
     stroke-linecap: round;
     stroke-linejoin: round;
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.65));
+  }
+
+  :global(.women-doctors-1911-connection-line--dashed) {
+    stroke-dasharray: 16 8;
+  }
+
+  :global(.women-doctors-1911-connection-line--dotted) {
+    stroke-dasharray: 1 6;
   }
 
   :global(.women-doctors-1911-connection-origin),
