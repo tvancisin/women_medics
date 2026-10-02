@@ -10,7 +10,7 @@
   const startYear = 1583;
   const universityEstablishedYear = 1583;
   const endYear = 2026;
-  const stepYears = 50;
+  const stepYears = 100;
   const timelineZoomTriggerYear = 1862;
   const timelineResetTriggerYear = 1914;
   const timelineZoomDomainStart = 1850;
@@ -18,14 +18,72 @@
   const timelineZoomDurationMs = 1600;
   // Set to false to keep the timeline at its full 1550–2026 range.
   const enableTimelineSpreading = false;
-  const margin = { top: 20, right: 40, bottom: 50, left: 40 };
+  const margin = { top: 20, right: 40, bottom: 30, left: 40 };
+
+  // Add a credit object for each milestone year that needs map or image credits.
+  const creditsByYear = [
+    {
+      year: 1583,
+      map: "Edenburgum Scotiae Metropolis Cologne: G. Braun & F. Hogenberg, ca. 1582",
+      image: "",
+    },
+    {
+      year: 1726,
+      map: "The plan of the city and castle of Edinburgh anno 1742 / by Willm. Edgar, architect.",
+      image: "",
+    },
+    {
+      year: 1809,
+      map: "",
+      image:
+        "Dr James Barry, c. 1820s. Unknown artist. Museum Africa, Johannesburg. Wikimedia Commons. Public domain.",
+    },
+    {
+      year: 1862,
+      map: "",
+      image:
+        "Elizabeth Garrett Anderson. Photograph by Walery, published by Sampson Low & Co. in February 1889",
+    },
+    {
+      year: 1867,
+      map: "Plan of Edinburgh & Leith with Suburbs, from Ordnance and Actual Surveys. Constructed for the Post Office Directory. By John Bartholomew, F.R.G.S. 1867 ",
+      image:
+        "Street elevation from north east showing Mary Erskine School, 1910. Historic Environment Scotland Archives, via Trove.scot, image 2657634.",
+    },
+    {
+      year: 1870,
+      map: "Plan of Edinburgh & Leith with Suburbs, from Ordnance and Actual Surveys. Constructed for the Post Office Directory. By John Bartholomew, F.R.G.S. 1875",
+      image: "Surgeons' Hall, Edinburgh, c. 1870. The National Archives",
+    },
+    {
+      year: 1875,
+      map: "Plan of Edinburgh & Leith with Suburbs, from Ordnance and Actual Surveys. Constructed for the Post Office Directory. By John Bartholomew, F.R.G.S. 1875",
+      image:
+        "Gayfield House, Edinburgh, Hstoric Environment Scotland, Trove.scot, image 1098306",
+    },
+    {
+      year: 1886,
+      map: "Plan of Edinburgh and Leith with Suburbs, from Ordnance and Actual Surveys. Constructed for the Post Office Directory by John Bartholomew. 1888-9",
+      image:
+        "Kim Traynor, “Chisholm House, Surgeons’ Square,” 23 July 2011, Geograph Britain and Ireland, CC BY-SA 2.0.",
+    },
+    {
+      year: 1889,
+      map: "Plan of Edinburgh and Leith with Suburbs, from Ordnance and Actual Surveys. Constructed for the Post Office Directory by John Bartholomew. 1888-9",
+      image:
+        "General view of Minto House, Chambers Street incorporating Free Tron Church, 1880. Historic Environment Scotland / Canmore, via trove.scot",
+    },
+  ];
 
   // keeping the detail div inside screen
   const milestoneCardWidth = 400;
   const universityFoundedImageAspectRatio = 7272 / 5461;
   const milestoneCardBottomOffset = 95;
+  // Keeps the 1916 card 5px above its 250px raised milestone path.
+  const raisedMilestoneCardBottomOffset = 285;
   const milestoneCardTopClearance = 80;
-  const universityFoundedCardChromeHeight = 97;
+  // Heading (22px), its vertical margins (13px), and the card's 5px top/bottom padding.
+  const universityFoundedCardChromeHeight = 45;
 
   // Anchor cards differently depending on whether the milestone is left or right of center.
   const card_left = [1726, 1809];
@@ -42,6 +100,7 @@
   const devRequireClickToResume = true;
   const pauseYears = [
     1583, 1726, 1809, 1862, 1867, 1869, 1870, 1875, 1886, 1889, 1911, 1915,
+    1916,
     // 1919,
   ];
   const milestoneLabels = new Map<number, string>([
@@ -60,6 +119,7 @@
     // [1892, "Women admitted to universities"],
     [1911, "School and College Students 1911"],
     [1915, "Career Locations in 1915"],
+    [1916, "Equal Medical Education 1916"],
     // [1919, "Women Doctors in WWI, 1915-1919"],
   ]);
 
@@ -96,6 +156,11 @@
   let pausedAtYear: number | null = null;
   let pauseStartMs: number | null = null;
   let womenMedicsData: Array<{ year: number; number: number }> = [];
+  $: activeCredits = creditsByYear.find(
+    (credits) => credits.year === pausedAtYear,
+  );
+  $: mapCredit = activeCredits?.map ?? "";
+  $: imageCredit = activeCredits?.image ?? "";
   let edinburghSevenData: Array<Record<string, string>> = [];
   const edinburghSevenNames = [
     "Sophia Jex-Blake",
@@ -567,6 +632,16 @@
     alt="Edinburgh Futures Institute"
   />
   <h1 id="data-led-methods">Data-Led Methods and Research Technology</h1>
+  {#if mapCredit || imageCredit}
+    <aside class="map-image-credits" aria-label="Map and image credits">
+      {#if mapCredit}
+        <em>Map Credit: {mapCredit}</em>
+      {/if}
+      {#if imageCredit}
+        <em>Image Credit: {imageCredit}</em>
+      {/if}
+    </aside>
+  {/if}
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
   {#if devRequireClickToResume && awaitingResumeClick}
     <button class="resume-button" type="button" on:click={handleResumeClick}>
@@ -600,7 +675,7 @@
       class:milestone-card--women-doctors-1911={year === 1911}
       class:milestone-card--split={splitMilestoneYears.has(year)}
       class:is-active={pausedAtYear === year}
-      style:bottom="95px"
+      style:bottom={`${year === 1916 ? raisedMilestoneCardBottomOffset : milestoneCardBottomOffset}px`}
       style:left={`${clampedLeft(yearToX(year), year)}px`}
       style:width={year === 1583 && pausedAtYear === year
         ? `${universityFoundedCardWidth}px`
@@ -615,14 +690,6 @@
           class="university-founded-card-image"
           style:background-image={universityFoundedBackgroundImage}
         ></div>
-        <div class="university-founded-card-text">
-          <em
-            >Edenburgum Scotiae Metropolis Cologne: G. Braun & F. Hogenberg, ca.
-            1582</em
-          >
-          <br />
-          The University was founded in 1582, the same year as the map shown above.
-        </div>
       {:else if year === 1726}
         <div class="milestone-card-text-only">
           <div class="milestone-card-title">
@@ -822,6 +889,14 @@
             <div class="career-chart-empty">No 1915 career data</div>
           {/if}
         </div>
+      {:else if year === 1916}
+        <div class="milestone-card-text-only">
+          <div class="milestone-card-title">
+            After decades of separate medical education, wartime pressure and
+            campaigning led the University to admit women to its medical classes
+            alongside men.
+          </div>
+        </div>
         <!-- 1919 milestone temporarily disabled.
       {:else if year === womenDoctorsWarMilestoneYear}
         <div class="milestone-card-split-layout">
@@ -884,6 +959,31 @@
     font-weight: 375;
     letter-spacing: 0.02em;
     pointer-events: none;
+  }
+
+  .map-image-credits {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    z-index: 3;
+    box-sizing: border-box;
+    width: max-content;
+    max-width: calc(100vw - 32px);
+    height: 40px;
+    padding: 0 16px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #ffffffdc;
+    background-color: #000;
+    font-family: "Jost";
+    font-size: 14px;
+    line-height: 1.2;
+    text-align: center;
+    pointer-events: none;
+    gap: 2px;
   }
 
   .milestone-card {
@@ -987,17 +1087,6 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
-  }
-
-  .university-founded-card-text {
-    width: 100%;
-    box-sizing: border-box;
-    flex: 0 0 52px;
-    padding: 10px 0px 0px;
-    background-color: #151c24;
-    font-size: 12px;
-    line-height: 1.25;
-    text-align: center;
   }
 
   .milestone-card--split .milestone-card-split-layout {
