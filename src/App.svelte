@@ -10,7 +10,7 @@
   const startYear = 1583;
   const universityEstablishedYear = 1583;
   const endYear = 2026;
-  const stepYears = 100;
+  const stepYears = 50;
   const timelineZoomTriggerYear = 1862;
   const timelineResetTriggerYear = 1914;
   const timelineZoomDomainStart = 1850;
@@ -79,8 +79,6 @@
   const milestoneCardWidth = 400;
   const universityFoundedImageAspectRatio = 7272 / 5461;
   const milestoneCardBottomOffset = 95;
-  // Keeps the 1916 card 5px above its 250px raised milestone path.
-  const raisedMilestoneCardBottomOffset = 285;
   const milestoneCardTopClearance = 80;
   // Heading (22px), its vertical margins (13px), and the card's 5px top/bottom padding.
   const universityFoundedCardChromeHeight = 45;
@@ -99,8 +97,8 @@
   // Dev-only: set to false or remove this flag and the related blocks below to restore auto-resume.
   const devRequireClickToResume = true;
   const pauseYears = [
-    1583, 1726, 1809, 1862, 1867, 1869, 1870, 1875, 1886, 1889, 1911, 1915,
-    1916,
+    1583, 1682, 1726, 1809, 1862, 1867, 1869, 1870, 1875, 1886, 1889, 1911,
+    1915, 1916,
     // 1919,
   ];
   const milestoneLabels = new Map<number, string>([
@@ -156,6 +154,7 @@
   let pausedAtYear: number | null = null;
   let pauseStartMs: number | null = null;
   let womenMedicsData: Array<{ year: number; number: number }> = [];
+  let menMedicsData: Array<{ year: number; number: number }> = [];
   $: activeCredits = creditsByYear.find(
     (credits) => credits.year === pausedAtYear,
   );
@@ -427,8 +426,9 @@
   onMount(() => {
     const loadCsvData = async () => {
       try {
-        const [rawWomenMedicsData, rawEdinburghSevenData] = (await getCSV([
+        const [rawWomenMedicsData, rawMenMedicsData, rawEdinburghSevenData] = (await getCSV([
           publicUrl("data/women_medics_1914_1966.csv"),
+          publicUrl("data/men_medics_1836_1966.csv"),
           publicUrl("data/edinburgh_forty.csv"),
         ])) as [
           Array<{ year?: string; number?: string }>,
@@ -437,6 +437,17 @@
         ];
 
         womenMedicsData = rawWomenMedicsData
+          .map((row: { year?: string; number?: string }) => {
+            const year = getAcademicYearEnd(row.year);
+            const total = Number(row.number);
+            return { year, number: total };
+          })
+          .filter(
+            (row: { year: number; number: number }) =>
+              Number.isFinite(row.year) && Number.isFinite(row.number),
+          );
+
+        menMedicsData = rawMenMedicsData
           .map((row: { year?: string; number?: string }) => {
             const year = getAcademicYearEnd(row.year);
             const total = Number(row.number);
@@ -632,7 +643,7 @@
     alt="Edinburgh Futures Institute"
   />
   <h1 id="data-led-methods">Data-Led Methods and Research Technology</h1>
-  {#if mapCredit || imageCredit}
+  <!-- {#if mapCredit || imageCredit}
     <aside class="map-image-credits" aria-label="Map and image credits">
       {#if mapCredit}
         <em>Map Credit: {mapCredit}</em>
@@ -641,7 +652,7 @@
         <em>Image Credit: {imageCredit}</em>
       {/if}
     </aside>
-  {/if}
+  {/if} -->
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
   {#if devRequireClickToResume && awaitingResumeClick}
     <button class="resume-button" type="button" on:click={handleResumeClick}>
@@ -664,10 +675,11 @@
     {milestoneLabels}
     {womenDoctorsData}
     {womenMedicsData}
+    {menMedicsData}
     {yearToX}
   />
 
-  {#each pauseYears as year (year)}
+  {#each pauseYears.filter((year) => milestoneLabels.has(year)) as year (year)}
     <div
       class="milestone-card"
       class:milestone-card--university-founded={year === 1583}
@@ -675,7 +687,7 @@
       class:milestone-card--women-doctors-1911={year === 1911}
       class:milestone-card--split={splitMilestoneYears.has(year)}
       class:is-active={pausedAtYear === year}
-      style:bottom={`${year === 1916 ? raisedMilestoneCardBottomOffset : milestoneCardBottomOffset}px`}
+      style:bottom={`${milestoneCardBottomOffset}px`}
       style:left={`${clampedLeft(yearToX(year), year)}px`}
       style:width={year === 1583 && pausedAtYear === year
         ? `${universityFoundedCardWidth}px`

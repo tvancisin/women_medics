@@ -9,11 +9,9 @@
   export let active = false;
   export let mutedInactiveLabel = false;
   export let expandedInactive = false;
-  export let raised = false;
 
   const collapsedPathLength = 20;
-  // Keep the expanded 1726 label and raised 1916 milestone at one height.
-  const raisedPathLength = 250;
+  const expandedPathLength = 250;
   const inactiveLabelMaxLength = 18;
   $: shortenedLabel =
     expandedInactive || label.length <= inactiveLabelMaxLength
@@ -36,13 +34,9 @@
   $: middleY = height - 90;
   $: fullLength = Math.max(0, startY - middleY);
   $: inactivePathLength = expandedInactive
-    ? raisedPathLength
+    ? expandedPathLength
     : Math.min(fullLength, collapsedPathLength);
-  $: targetPathLength = raised
-    ? raisedPathLength
-    : active
-      ? fullLength
-      : inactivePathLength;
+  $: targetPathLength = active ? fullLength : inactivePathLength;
 
   $: pathLengthPx.set(targetPathLength);
 

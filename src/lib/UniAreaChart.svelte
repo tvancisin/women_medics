@@ -9,8 +9,8 @@
   export let timelineY: number;
   export let yearToX: (year: number) => number;
   export let womenMedicsData: WomenMedicsDatum[] = [];
+  export let menMedicsData: WomenMedicsDatum[] = [];
 
-  const chartPaddingTop = 80;
   const chartPaddingBottom = 0;
 
   $: projectionData =
@@ -62,14 +62,18 @@
 
   $: sortedData = [...womenMedicsData].sort((a, b) => a.year - b.year);
 
-  // Keep y-scale fixed by using the full dataset max, not only currently visible points.
-  $: maxY = d3.max(womenMedicsData, (d: WomenMedicsDatum) => d.number) ?? 0;
+  // Both charts use one fixed scale so their values remain directly comparable.
+  $: maxY =
+    d3.max(
+      [...womenMedicsData, ...menMedicsData],
+      (d: WomenMedicsDatum) => d.number,
+    ) ?? 0;
 
   // SVG y grows downward, so the range is inverted: bigger values map higher up.
   $: yScale = d3
     .scaleLinear()
     .domain([0, maxY > 0 ? maxY : 1])
-    .range([timelineY - chartPaddingBottom, chartPaddingTop * 4]);
+    .range([timelineY - chartPaddingBottom, 0]);
 
   $: areaPath = d3
     .area<WomenMedicsDatum>()
@@ -81,6 +85,29 @@
     .line<WomenMedicsDatum>()
     .x((d: WomenMedicsDatum) => yearToX(d.year))
     .y((d: WomenMedicsDatum) => yScale(d.number))(visibleData);
+
+  $: visibleMenData =
+    currentYear >= 2026
+      ? menMedicsData
+          .filter(
+            (d) =>
+              d.year <= currentYear &&
+              d.year >= domainStartYear &&
+              d.year <= domainEndYear,
+          )
+          .sort((a, b) => a.year - b.year)
+      : [];
+
+  $: menAreaPath = d3
+    .area<WomenMedicsDatum>()
+    .x((d: WomenMedicsDatum) => yearToX(d.year))
+    .y0(timelineY - chartPaddingBottom)
+    .y1((d: WomenMedicsDatum) => yScale(d.number))(visibleMenData);
+
+  $: menLinePath = d3
+    .line<WomenMedicsDatum>()
+    .x((d: WomenMedicsDatum) => yearToX(d.year))
+    .y((d: WomenMedicsDatum) => yScale(d.number))(visibleMenData);
 
   const interpolateValueAtYear = (year: number): number | null => {
     if (sortedData.length === 0) {
@@ -133,6 +160,13 @@
   {/if} -->
 {/if}
 
+{#if currentYear >= 2026 && visibleMenData.length > 1 && menAreaPath}
+  <path d={menAreaPath} class="men-area-shape" />
+  {#if menLinePath}
+    <path d={menLinePath} class="men-area-top-line" fill="none" />
+  {/if}
+{/if}
+
 <style>
   .area-shape {
     fill: rgba(255, 255, 255, 0.1);
@@ -141,6 +175,16 @@
 
   .area-top-line {
     stroke: rgba(255, 255, 255, 0.7);
+    stroke-width: 1;
+  }
+
+  .men-area-shape {
+    fill: rgba(125, 211, 252, 0.18);
+    stroke: none;
+  }
+
+  .men-area-top-line {
+    stroke: rgba(125, 211, 252, 0.85);
     stroke-width: 1;
   }
 

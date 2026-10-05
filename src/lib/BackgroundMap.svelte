@@ -50,6 +50,8 @@
   let hasAnimatedEdinburghRoutes = false;
   let hasDrawnOldMapOverlay = false;
   let oldMapOverlayFadeTimeout: ReturnType<typeof setTimeout> | null = null;
+  let hasDrawn1682MapOverlay = false;
+  let mapOverlay1682FadeTimeout: ReturnType<typeof setTimeout> | null = null;
   let hasDrawnFirstClassesMapOverlay = false;
   let firstClassesMapOverlayFadeTimeout: ReturnType<typeof setTimeout> | null =
     null;
@@ -171,6 +173,8 @@
     "college-of-medicine-for-women-1889-circles";
   const oldMapOverlaySourceId = "old-map-overlay-1726";
   const oldMapOverlayLayerId = "old-map-overlay-1726-raster";
+  const mapOverlay1682SourceId = "map-overlay-1682";
+  const mapOverlay1682LayerId = "map-overlay-1682-raster";
   const firstClassesMapOverlaySourceId = "first-classes-map-overlay-1867";
   const firstClassesMapOverlayLayerId = "first-classes-map-overlay-1867-raster";
   const physiologyMapOverlaySourceId = "physiology-map-overlay-1875";
@@ -193,6 +197,7 @@
   const edinburghSevenYear = 1869;
   const edinburghSevenRiotYear = 1870;
   const physiologyYear = 1875;
+  const mapOverlay1682Year = 1682;
   const oldMapOverlayStartYear = 1726;
   const oldMapOverlayEndYear = 1760;
   const firstClassesMapOverlayYear = 1867;
@@ -202,8 +207,9 @@
   const mapOverlay1886EndYear = 1889;
   const schoolOfMedicineForWomenYear = 1886;
   const collegeOfMedicineForWomenYear = 1889;
-  const historicalMapOverlayOpacity = 0.8;
+  const historicalMapOverlayOpacity = 0.9;
   const historicalMapOverlayFadeDurationMs = 900;
+  const mapOverlay1682FadeDurationMs = 1_000;
   const animatedLineDurationMs = 20_000;
   const studentPathAnimationDurationMs = 6_000;
   const womenDoctorsBirthplacesYear = 1911;
@@ -635,6 +641,74 @@
     ) {
       hasCompletedWomenDoctors1911Focus = true;
     }
+  }
+
+  function clear1682MapOverlayFade() {
+    if (mapOverlay1682FadeTimeout === null) return;
+
+    clearTimeout(mapOverlay1682FadeTimeout);
+    mapOverlay1682FadeTimeout = null;
+  }
+
+  function remove1682MapOverlay() {
+    clear1682MapOverlayFade();
+    hasDrawn1682MapOverlay = false;
+    removeLayerAndSource(mapOverlay1682SourceId, mapOverlay1682LayerId);
+  }
+
+  function fadeOut1682MapOverlay() {
+    if (!map || !styleReady || mapOverlay1682FadeTimeout !== null) return;
+
+    if (!map.getLayer(mapOverlay1682LayerId)) {
+      remove1682MapOverlay();
+      return;
+    }
+
+    map.setPaintProperty(mapOverlay1682LayerId, "raster-opacity", 0);
+    mapOverlay1682FadeTimeout = setTimeout(() => {
+      mapOverlay1682FadeTimeout = null;
+      hasDrawn1682MapOverlay = false;
+      removeLayerAndSource(mapOverlay1682SourceId, mapOverlay1682LayerId);
+    }, mapOverlay1682FadeDurationMs);
+  }
+
+  function draw1682MapOverlay() {
+    if (!map || !styleReady) return false;
+
+    clear1682MapOverlayFade();
+
+    if (!map.getSource(mapOverlay1682SourceId)) {
+      map.addSource(mapOverlay1682SourceId, {
+        type: "raster",
+        tiles: [
+          `https://api.mapbox.com/v4/tomasvancisin.ljq3nf/{z}/{x}/{y}.png?access_token=${envToken}`,
+        ],
+        tileSize: 256,
+      });
+    }
+
+    if (!map.getLayer(mapOverlay1682LayerId)) {
+      map.addLayer({
+        id: mapOverlay1682LayerId,
+        type: "raster",
+        source: mapOverlay1682SourceId,
+        paint: {
+          "raster-opacity": historicalMapOverlayOpacity,
+          "raster-opacity-transition": {
+            duration: mapOverlay1682FadeDurationMs,
+          },
+        },
+      });
+    }
+
+    map.setPaintProperty(
+      mapOverlay1682LayerId,
+      "raster-opacity",
+      historicalMapOverlayOpacity,
+    );
+
+    bringForegroundMarkersToFront();
+    return true;
   }
 
   function clearOldMapOverlayFade() {
@@ -1934,6 +2008,35 @@
     drawTimelineMarkerLayers(currentYear);
   }
 
+  //// 1682
+  // This is an intentional map-only pause: there is no corresponding milestone.
+  $: if (
+    map &&
+    styleReady &&
+    currentYear === mapOverlay1682Year &&
+    (!hasDrawn1682MapOverlay ||
+      mapOverlay1682FadeTimeout !== null ||
+      !map.getLayer(mapOverlay1682LayerId))
+  ) {
+    hasDrawn1682MapOverlay = draw1682MapOverlay();
+    map.flyTo({
+      center: [-3.192, 55.948],
+      zoom: 12,
+      duration: 1000,
+      essential: true,
+    });
+  }
+
+  // Fade the map away gradually once the timeline resumes.
+  $: if (
+    map &&
+    styleReady &&
+    currentYear > mapOverlay1682Year &&
+    (hasDrawn1682MapOverlay || map.getLayer(mapOverlay1682LayerId))
+  ) {
+    fadeOut1682MapOverlay();
+  }
+
   //// 1726
   // Show the historical Edinburgh map.
   $: if (
@@ -2513,6 +2616,7 @@
       map.off("moveend", handleWomenDoctors1911MapFocusEnd);
       map.off("resize", updateWomenDoctors1911PhotoBirthplaceConnections);
       hideWomenDoctors1911PhotoBirthplaceConnections();
+      clear1682MapOverlayFade();
       clearOldMapOverlayFade();
       clearFirstClassesMapOverlayFade();
       clearPhysiologyMapOverlayFade();
@@ -2538,7 +2642,7 @@
   });
 </script>
 
-<div class="background-map">
+<div class="background-map" style:opacity={currentYear >= 1916 ? 0 : 1}>
   <div bind:this={mapContainer} class="map"></div>
 </div>
 

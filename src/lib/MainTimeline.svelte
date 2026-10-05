@@ -22,11 +22,12 @@
   export let milestoneLabels: Map<number, string> = new Map();
   export let womenDoctorsData: unknown = [];
   export let womenMedicsData: WomenMedicsDatum[] = [];
+  export let menMedicsData: WomenMedicsDatum[] = [];
   export let yearToX: (year: number) => number;
 
   const tickLength = 5;
   const mutedInactiveMilestoneYears = new Set([1886, 1889, 1911, 1915]);
-  const raisedMilestonePathLength = 250;
+  const expandedMilestonePathLength = 250;
   const buildTimelineTickValues = (maxYear: number) => {
     const values = [startYear];
     for (let year = 1600; year <= maxYear; year += 50) values.push(year);
@@ -61,12 +62,16 @@
   $: visibleMilestoneYears = pauseYears.filter(
     (year) => displayYear >= year && milestoneLabels.has(year),
   );
-  $: milestoneComparisonLineY =
-    height - 30 - raisedMilestonePathLength + 20;
-  $: milestoneComparisonStartX = yearToX(1726) + 5;
-  $: milestoneComparisonEndX = yearToX(1916) - 5;
-  $: milestoneComparisonLabelX =
-    (milestoneComparisonStartX + milestoneComparisonEndX) / 2;
+  $: milestoneComparison300LineY =
+    height - 30 - expandedMilestonePathLength + 20;
+  $: milestoneComparison110LineY = milestoneComparison300LineY + 40;
+  $: milestoneComparison300StartX = yearToX(1726) + 5;
+  $: milestoneComparison110StartX = yearToX(1916) + 5;
+  $: milestoneComparisonEndX = yearToX(2026) - 5;
+  $: milestoneComparison300LabelX =
+    (milestoneComparison300StartX + milestoneComparisonEndX) / 2;
+  $: milestoneComparison110LabelX =
+    (milestoneComparison110StartX + milestoneComparisonEndX) / 2;
 </script>
 
 <svg {width} {height}>
@@ -181,13 +186,13 @@
       {yearToX}
     /> -->
 
-    <DoctorsAreaChart
+    <!-- <DoctorsAreaChart
       {womenDoctorsData}
       {currentYear}
       {timelineY}
       {yearToX}
       {womenMedicsData}
-    />
+    /> -->
 
     {#each visibleMilestoneYears as year (year)}
       <Milestone
@@ -196,25 +201,45 @@
         label={milestoneLabels.get(year) ?? ""}
         active={currentYear === year}
         mutedInactiveLabel={mutedInactiveMilestoneYears.has(year)}
-        expandedInactive={year === 1726 && displayYear === 1916}
-        raised={year === 1916 && displayYear === 1916}
+        expandedInactive={year === 1726 && displayYear === 2026}
       />
     {/each}
 
-    {#if displayYear === 1916}
-      <g class="milestone-comparison" aria-label="190 years between 1726 and 1916">
+    {#if displayYear === 2026}
+      <Milestone
+        x={yearToX(2026)}
+        {height}
+        label="2026"
+        expandedInactive={true}
+      />
+      <g class="milestone-comparison" aria-label="300 years between 1726 and 2026">
         <line
-          x1={milestoneComparisonStartX}
-          y1={milestoneComparisonLineY}
+          x1={milestoneComparison300StartX}
+          y1={milestoneComparison300LineY}
           x2={milestoneComparisonEndX}
-          y2={milestoneComparisonLineY}
+          y2={milestoneComparison300LineY}
           marker-start="url(#milestone-comparison-arrow)"
           marker-end="url(#milestone-comparison-arrow)"
         />
         <text
-          x={milestoneComparisonLabelX}
-          y={milestoneComparisonLineY - 10}
-          text-anchor="middle">190 years</text
+          x={milestoneComparison300LabelX}
+          y={milestoneComparison300LineY - 10}
+          text-anchor="middle">300 years</text
+        >
+      </g>
+      <g class="milestone-comparison" aria-label="110 years between 1916 and 2026">
+        <line
+          x1={milestoneComparison110StartX}
+          y1={milestoneComparison110LineY}
+          x2={milestoneComparisonEndX}
+          y2={milestoneComparison110LineY}
+          marker-start="url(#milestone-comparison-arrow)"
+          marker-end="url(#milestone-comparison-arrow)"
+        />
+        <text
+          x={milestoneComparison110LabelX}
+          y={milestoneComparison110LineY - 10}
+          text-anchor="middle">110 years</text
         >
       </g>
     {/if}
@@ -226,6 +251,7 @@
       {timelineY}
       {yearToX}
       {womenMedicsData}
+      {menMedicsData}
     />
     <!-- <text class="year-counter" x={10} y={timelineY + 45} text-anchor="start" 
       >HISTORICAL EVENTS:</text
@@ -244,6 +270,11 @@
   .domain {
     stroke: rgb(255, 255, 255);
     stroke-width: 2px;
+  }
+
+  .year-indicator-line {
+    stroke: rgba(255, 255, 255, 0.55);
+    stroke-width: 1px;
   }
 
   .timeline-underlay {
