@@ -27,7 +27,7 @@
 
   const tickLength = 5;
   const mutedInactiveMilestoneYears = new Set([1886, 1889, 1911, 1915]);
-  const expandedMilestonePathLength = 250;
+  const expandedMilestonePathLength = 700;
   const buildTimelineTickValues = (maxYear: number) => {
     const values = [startYear];
     for (let year = 1600; year <= maxYear; year += 50) values.push(year);
@@ -107,12 +107,12 @@
         y2={timelineY}
       ></line> -->
 
-      {#each fullTickValues as year}
+      <!-- {#each fullTickValues as year}
         <g class="tick" transform={`translate(${yearToX(year)}, ${timelineY})`}>
           <line x1="0" y1="0" x2="0" y2={tickLength}></line>
           <text x="0" y={tickLength + 16} text-anchor="middle">{year}</text>
         </g>
-      {/each}
+      {/each} -->
 
       {#each fullMinorTickValues as year}
         <g
@@ -198,10 +198,13 @@
       <Milestone
         x={yearToX(year)}
         {height}
-        label={milestoneLabels.get(year) ?? ""}
+        label={year === 1726 && displayYear === 2026
+          ? "1726"
+          : (milestoneLabels.get(year) ?? "")}
         active={currentYear === year}
         mutedInactiveLabel={mutedInactiveMilestoneYears.has(year)}
         expandedInactive={year === 1726 && displayYear === 2026}
+        expandedPathLength={expandedMilestonePathLength}
       />
     {/each}
 
@@ -211,6 +214,7 @@
         {height}
         label="2026"
         expandedInactive={true}
+        expandedPathLength={expandedMilestonePathLength}
       />
       <g class="milestone-comparison" aria-label="300 years between 1726 and 2026">
         <line
@@ -224,7 +228,7 @@
         <text
           x={milestoneComparison300LabelX}
           y={milestoneComparison300LineY - 10}
-          text-anchor="middle">300 years</text
+          text-anchor="middle">Men: 300 years</text
         >
       </g>
       <g class="milestone-comparison" aria-label="110 years between 1916 and 2026">
@@ -239,12 +243,13 @@
         <text
           x={milestoneComparison110LabelX}
           y={milestoneComparison110LineY - 10}
-          text-anchor="middle">110 years</text
+          text-anchor="middle">Women: 110 years</text
         >
       </g>
     {/if}
 
     <UniAreaChart
+      {width}
       {currentYear}
       domainStartYear={timelineDomainStart}
       domainEndYear={timelineDomainEnd}
@@ -253,9 +258,6 @@
       {womenMedicsData}
       {menMedicsData}
     />
-    <!-- <text class="year-counter" x={10} y={timelineY + 45} text-anchor="start" 
-      >HISTORICAL EVENTS:</text
-    > -->
   {/if}
 </svg>
 

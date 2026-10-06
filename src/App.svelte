@@ -10,7 +10,7 @@
   const startYear = 1583;
   const universityEstablishedYear = 1583;
   const endYear = 2026;
-  const stepYears = 50;
+  const stepYears = 100;
   const timelineZoomTriggerYear = 1862;
   const timelineResetTriggerYear = 1914;
   const timelineZoomDomainStart = 1850;

@@ -9,9 +9,9 @@
   export let active = false;
   export let mutedInactiveLabel = false;
   export let expandedInactive = false;
+  export let expandedPathLength = 250;
 
   const collapsedPathLength = 20;
-  const expandedPathLength = 250;
   const inactiveLabelMaxLength = 18;
   $: shortenedLabel =
     expandedInactive || label.length <= inactiveLabelMaxLength
