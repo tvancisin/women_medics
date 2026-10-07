@@ -2670,7 +2670,7 @@
     font-size: 12px;
     font-weight: 500;
     line-height: 1.2;
-    white-space: nowrap;
+    white-space: pre-line;
     pointer-events: none;
     border-radius: 3px;
   }

@@ -27,7 +27,7 @@
 
   const tickLength = 5;
   const mutedInactiveMilestoneYears = new Set([1886, 1889, 1911, 1915]);
-  const expandedMilestonePathLength = 700;
+  let expandedMilestonePathLength = 0;
   const buildTimelineTickValues = (maxYear: number) => {
     const values = [startYear];
     for (let year = 1600; year <= maxYear; year += 50) values.push(year);
@@ -40,6 +40,7 @@
   };
 
   $: currentYearX = yearToX(currentYear);
+  $: expandedMilestonePathLength = height - 100;
   $: yearCounterPanelX = currentYearX;
   $: yearCounterTextX = yearCounterPanelX;
   $: yearsSinceUniversityEstablished = Math.max(

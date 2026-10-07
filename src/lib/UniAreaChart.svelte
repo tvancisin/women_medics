@@ -379,6 +379,12 @@
   {#if menLinePath}
     <path d={menLinePath} class="men-area-top-line" fill="none" />
   {/if}
+  <text class="area-chart-label men-area-chart-label" x={yearToX(1900)} y={yScale(750)}>
+    Men medics
+  </text>
+  <text class="area-chart-label women-area-chart-label" x={yearToX(1950)} y={yScale(100)}>
+    Women medics
+  </text>
 {/if}
 
 <style>
@@ -417,6 +423,21 @@
   .men-area-top-line {
     stroke: rgba(125, 211, 252, 0.85);
     stroke-width: 1;
+  }
+
+  .area-chart-label {
+    font-family: Montserrat;
+    font-size: 12px;
+    pointer-events: none;
+    text-anchor: middle;
+  }
+
+  .men-area-chart-label {
+    fill: rgba(125, 211, 252, 0.85);
+  }
+
+  .women-area-chart-label {
+    fill: rgba(255, 255, 255, 0.85);
   }
 
   .men-missingness-line {

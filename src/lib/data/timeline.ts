@@ -93,7 +93,7 @@ export const timelineImageMarkers: ImageMarkerConfig[] = [
     id: "edinburgh-forty-home",
     year: 1870,
     coordinates: [55.942668948406876, -3.1868325772638566],
-    alt: "15 Buccleuch Place",
+    alt: "15 Buccleuch Place\none of the lady students' residence",
   },
   {
     id: "surgeons-hall",
