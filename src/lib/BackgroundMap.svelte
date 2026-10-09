@@ -10,7 +10,7 @@
     getWomenDoctorBirthplaceFeatures,
     getWomenDoctorCareerLocationFeatures,
     getWomenDoctorsWarLocationFeatures,
-  } from "./map/featureBuilders";
+  } from "./utils/featureBuilders";
 
   const baseUrl = import.meta.env.BASE_URL;
   const publicUrl = (path: string) => `${baseUrl}${path}`;

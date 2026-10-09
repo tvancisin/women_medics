@@ -1,4 +1,4 @@
-import { timelineImageMarkers } from "../data/timeline";
+import { timelineImageMarkers } from "./const";
 
 // Raw data from JSON/CSV loaders is intentionally typed defensively here.
 // These conversion helpers validate coordinates before Mapbox draws anything.

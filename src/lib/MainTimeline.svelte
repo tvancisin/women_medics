@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { historicalEvents } from "./data/timeline";
+  import { historicalEvents } from "./utils/const";
   import DoctorsAreaChart from "./DoctorsAreaChart.svelte";
   import HistoricalEvents from "./HistoricalEvents.svelte";
   import UniAreaChart from "./UniAreaChart.svelte";
