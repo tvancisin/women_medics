@@ -93,7 +93,7 @@ export const timelineImageMarkers: ImageMarkerConfig[] = [
     id: "edinburgh-forty-home",
     year: 1870,
     coordinates: [55.942668948406876, -3.1868325772638566],
-    alt: "15 Buccleuch Place\none of the lady students' residence",
+    alt: "15 Buccleuch Place\nSophia Jex-Blake, leader of the lady students,\nIsabel Thorne, and Matilda Chaplin lived here\n from 1869 to 1872",
   },
   {
     id: "surgeons-hall",
@@ -121,57 +121,57 @@ export const timelineImageMarkers: ImageMarkerConfig[] = [
   },
 ];
 
-  // Add a credit object for each milestone year that needs map or image credits.
+// Add a credit object for each milestone year that needs map or image credits.
 export const creditsByYear = [
-    {
-      year: 1583,
-      map: "Edenburgum Scotiae Metropolis Cologne: G. Braun & F. Hogenberg, ca. 1582",
-      image: "",
-    },
-    {
-      year: 1726,
-      map: "The plan of the city and castle of Edinburgh anno 1742 / by Willm. Edgar, architect.",
-      image: "",
-    },
-    {
-      year: 1809,
-      map: "",
-      image:
-        "Dr James Barry, c. 1820s. Unknown artist. Museum Africa, Johannesburg. Wikimedia Commons. Public domain.",
-    },
-    {
-      year: 1862,
-      map: "",
-      image:
-        "Elizabeth Garrett Anderson. Photograph by Walery, published by Sampson Low & Co. in February 1889",
-    },
-    {
-      year: 1867,
-      map: "Plan of Edinburgh & Leith with Suburbs, from Ordnance and Actual Surveys. Constructed for the Post Office Directory. By John Bartholomew, F.R.G.S. 1867 ",
-      image:
-        "Street elevation from north east showing Mary Erskine School, 1910. Historic Environment Scotland Archives, via Trove.scot, image 2657634.",
-    },
-    {
-      year: 1870,
-      map: "Plan of Edinburgh & Leith with Suburbs, from Ordnance and Actual Surveys. Constructed for the Post Office Directory. By John Bartholomew, F.R.G.S. 1875",
-      image: "Surgeons' Hall, Edinburgh, c. 1870. The National Archives",
-    },
-    {
-      year: 1875,
-      map: "Plan of Edinburgh & Leith with Suburbs, from Ordnance and Actual Surveys. Constructed for the Post Office Directory. By John Bartholomew, F.R.G.S. 1875",
-      image:
-        "Gayfield House, Edinburgh, Hstoric Environment Scotland, Trove.scot, image 1098306",
-    },
-    {
-      year: 1886,
-      map: "Plan of Edinburgh and Leith with Suburbs, from Ordnance and Actual Surveys. Constructed for the Post Office Directory by John Bartholomew. 1888-9",
-      image:
-        "Kim Traynor, “Chisholm House, Surgeons’ Square,” 23 July 2011, Geograph Britain and Ireland, CC BY-SA 2.0.",
-    },
-    {
-      year: 1889,
-      map: "Plan of Edinburgh and Leith with Suburbs, from Ordnance and Actual Surveys. Constructed for the Post Office Directory by John Bartholomew. 1888-9",
-      image:
-        "General view of Minto House, Chambers Street incorporating Free Tron Church, 1880. Historic Environment Scotland / Canmore, via trove.scot",
-    },
-  ];
+  {
+    year: 1583,
+    map: "Edenburgum Scotiae Metropolis Cologne: G. Braun & F. Hogenberg, ca. 1582",
+    image: "",
+  },
+  {
+    year: 1726,
+    map: "The plan of the city and castle of Edinburgh anno 1742 / by Willm. Edgar, architect.",
+    image: "",
+  },
+  {
+    year: 1809,
+    map: "",
+    image:
+      "Dr James Barry, c. 1820s. Unknown artist. Museum Africa, Johannesburg. Wikimedia Commons. Public domain.",
+  },
+  {
+    year: 1862,
+    map: "",
+    image:
+      "Elizabeth Garrett Anderson. Photograph by Walery, published by Sampson Low & Co. in February 1889",
+  },
+  {
+    year: 1867,
+    map: "Plan of Edinburgh & Leith with Suburbs, from Ordnance and Actual Surveys. Constructed for the Post Office Directory. By John Bartholomew, F.R.G.S. 1867 ",
+    image:
+      "Street elevation from north east showing Mary Erskine School, 1910. Historic Environment Scotland Archives, via Trove.scot, image 2657634.",
+  },
+  {
+    year: 1870,
+    map: "Plan of Edinburgh & Leith with Suburbs, from Ordnance and Actual Surveys. Constructed for the Post Office Directory. By John Bartholomew, F.R.G.S. 1875",
+    image: "Surgeons' Hall, Edinburgh, c. 1870. The National Archives",
+  },
+  {
+    year: 1875,
+    map: "Plan of Edinburgh & Leith with Suburbs, from Ordnance and Actual Surveys. Constructed for the Post Office Directory. By John Bartholomew, F.R.G.S. 1875",
+    image:
+      "Gayfield House, Edinburgh, Hstoric Environment Scotland, Trove.scot, image 1098306",
+  },
+  {
+    year: 1886,
+    map: "Plan of Edinburgh and Leith with Suburbs, from Ordnance and Actual Surveys. Constructed for the Post Office Directory by John Bartholomew. 1888-9",
+    image:
+      "Kim Traynor, “Chisholm House, Surgeons’ Square,” 23 July 2011, Geograph Britain and Ireland, CC BY-SA 2.0.",
+  },
+  {
+    year: 1889,
+    map: "Plan of Edinburgh and Leith with Suburbs, from Ordnance and Actual Surveys. Constructed for the Post Office Directory by John Bartholomew. 1888-9",
+    image:
+      "General view of Minto House, Chambers Street incorporating Free Tron Church, 1880. Historic Environment Scotland / Canmore, via trove.scot",
+  },
+];

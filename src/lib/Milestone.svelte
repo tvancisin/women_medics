@@ -28,9 +28,14 @@
   $: labelBackgroundWidth = Math.ceil(labelWidth) + labelPaddingX * 2;
 
   const pathLengthPx = tweened(0, {
-    duration: 400,
+    duration: 500,
     easing: cubicOut,
   });
+  const labelAnchorXPx = tweened(0, {
+    duration: 500,
+    easing: cubicOut,
+  });
+  let hasInitialLabelAnchor = false;
   $: startY = height - 30;
   $: middleY = height - 90;
   $: fullLength = Math.max(0, startY - middleY);
@@ -42,7 +47,14 @@
   $: pathLengthPx.set(targetPathLength);
 
   $: endY = startY - $pathLengthPx;
-  $: labelAnchorX = labelX ?? x;
+  $: targetLabelAnchorX = active ? x : (labelX ?? x);
+  $: if (!hasInitialLabelAnchor) {
+    labelAnchorXPx.set(targetLabelAnchorX, { duration: 0 });
+    hasInitialLabelAnchor = true;
+  } else {
+    labelAnchorXPx.set(targetLabelAnchorX);
+  }
+  $: labelAnchorX = $labelAnchorXPx;
   $: labelRotationX = labelAnchorX + labelBackgroundCenterOffsetY;
   $: bendSegmentLength = Math.min(6, Math.max(0, (startY - endY) / 3));
   $: bendStartY = startY - bendSegmentLength;

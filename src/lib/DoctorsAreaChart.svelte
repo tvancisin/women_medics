@@ -24,7 +24,7 @@
   };
 
   const chartPaddingTop = 80;
-  const chartPaddingBottom = 0;
+  const chartPaddingBottom = 2;
 
   const getRegistrationYear = (doctor: WomenDoctorDatum) => {
     const rawYear = doctor.source_data?.["Year of student registration"];
@@ -128,7 +128,7 @@
 
 <style>
   .doctor-area {
-    fill: rgba(180, 180, 180, 0.12);
+    fill: rgba(0, 0, 0, 0.892);
     stroke: none;
   }
 

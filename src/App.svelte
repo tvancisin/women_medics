@@ -17,6 +17,12 @@
   const timelineZoomDomainStart = 1850;
   const timelineZoomDomainEnd = 1915;
   const timelineZoomDurationMs = 1600;
+  const timelineStretchTriggerYear = 1886;
+  const timelineStretchStartYear = 1886;
+  const timelineStretchEndYear = 1915;
+  const timelineStretchResetYear = 1916;
+  const timelineStretchTargetStartYear = 1850;
+  const timelineStretchTargetEndYear = 1950;
   // Set to false to keep the timeline at its full 1550–2026 range.
   const enableTimelineSpreading = false;
   const margin = { top: 20, right: 40, bottom: 30, left: 40 };
@@ -42,31 +48,27 @@
 
   // Dev-only: set to false or remove this flag and the related blocks below to restore auto-resume.
   const devRequireClickToResume = true;
-  const pauseYears = [
-    1583, 1682, 1726, 1809, 1862, 1867, 1869, 1870, 1875, 1886, 1889, 1911,
-    1915, 1916,
-    // 1919,
+  type Milestone = {
+    id: string;
+    year: number;
+    contentYear: number;
+    label: string;
+  };
+  const milestones: Milestone[] = [
+    { id: "university-founded", year: 1583, contentYear: 1583, label: "University of Edinburgh Founded 1582" },
+    { id: "school-of-medicine", year: 1726, contentYear: 1726, label: "School of Medicine 1726" },
+    { id: "james-barry", year: 1809, contentYear: 1809, label: "Margaret Bulkley/James Barry 1809" },
+    { id: "elizabeth-garrett", year: 1862, contentYear: 1862, label: "Elizabeth Garrett 1862" },
+    { id: "first-classes", year: 1867, contentYear: 1867, label: "First Classes for Women 1867" },
+    { id: "edinburgh-forty", year: 1869, contentYear: 1869, label: "Edinburgh Seven/Forty 1869" },
+    { id: "surgeons-hall-riot", year: 1870, contentYear: 1870, label: "The Riot 1870" },
+    { id: "physiology-students", year: 1875, contentYear: 1875, label: "Physiology Students 1875" },
+    { id: "school-for-women", year: 1886, contentYear: 1886, label: "School of Medicine for Women 1886" },
+    { id: "college-for-women", year: 1889, contentYear: 1889, label: "College of Medicine for Women 1889" },
+    { id: "school-and-college-students", year: 1915, contentYear: 1911, label: "School and College Students 1911" },
+    { id: "career-locations", year: 1915, contentYear: 1915, label: "Career Locations in 1915" },
+    { id: "equal-medical-education", year: 1916, contentYear: 1916, label: "Equal Medical Education 1916" },
   ];
-  const milestoneLabels = new Map<number, string>([
-    [1583, "University of Edinburgh Founded 1582"],
-    [1726, "School of Medicine 1726"],
-    [1809, "Margaret Bulkley/James Barry 1809"],
-    [1862, "Elizabeth Garrett 1862"],
-    [1867, "First Classes for Women 1867"],
-    [1869, "Edinburgh Seven/Forty 1869"],
-    [1870, "The Riot 1870"],
-    [1875, "Physiology Students 1875"],
-    // [1884, "Triple Qualification 1884"],
-    [1886, "School of Medicine for Women 1886"],
-    [1889, "College of Medicine for Women 1889"],
-    // [1889, "Universities Scotland Act 1889"],
-    // [1892, "Women admitted to universities"],
-    [1911, "School and College Students 1911"],
-    [1915, "Career Locations in 1915"],
-    [1916, "Equal Medical Education 1916"],
-    // [1919, "Women Doctors in WWI, 1915-1919"],
-  ]);
-
   const splitMilestoneYears = new Set([
     1809, 1862, 1867, 1870, 1875, 1886, 1889, 1911,
   ]);
@@ -92,12 +94,17 @@
   let animationStartMs = 0;
   let animationFrameId: number | null = null;
   let timelineZoomFrameId: number | null = null;
+  let timelineStretchFrameId: number | null = null;
   let hasZoomedTimeline = false;
   let hasResetTimeline = false;
+  let hasStretchedTimeline = false;
+  let hasResetTimelineStretch = false;
+  let timelineStretchProgress = 0;
   let timelineDomainStart = startYear;
   let timelineDomainEnd = endYear;
   let nextPauseIndex = 0;
   let pausedAtYear: number | null = null;
+  let pausedMilestoneId: string | null = null;
   let pauseStartMs: number | null = null;
   let womenMedicsData: Array<{ year: number; number: number }> = [];
   let menMedicsData: Array<{ year: number; number: number }> = [];
@@ -333,11 +340,73 @@
     timelineZoomFrameId = requestAnimationFrame(step);
   };
 
+  const startTimelineStretch = (targetProgress: number) => {
+    if (timelineStretchFrameId !== null) {
+      cancelAnimationFrame(timelineStretchFrameId);
+    }
+
+    const fromProgress = timelineStretchProgress;
+    const startedAt = performance.now();
+
+    const step = (now: number) => {
+      const progress = Math.min(1, (now - startedAt) / timelineZoomDurationMs);
+      const eased = timelineZoomEase(progress);
+      timelineStretchProgress =
+        fromProgress + (targetProgress - fromProgress) * eased;
+
+      if (progress < 1) {
+        timelineStretchFrameId = requestAnimationFrame(step);
+      } else {
+        timelineStretchProgress = targetProgress;
+        timelineStretchFrameId = null;
+      }
+    };
+
+    timelineStretchFrameId = requestAnimationFrame(step);
+  };
+
   // calculating x position for a given year
   $: yearToX = (year: number) => {
-    const yearProgress = (year - timelineDomainStart) / timelineDomainSpan;
-    return axisStart + yearProgress * maxSpan;
+    const mainTimelineX = (timelineYear: number) => {
+      const yearProgress = (timelineYear - startYear) / (endYear - startYear);
+      return axisStart + yearProgress * maxSpan;
+    };
+    const originalX = mainTimelineX(year);
+    const stretchedStartX = mainTimelineX(timelineStretchTargetStartYear);
+    const stretchedEndX = mainTimelineX(timelineStretchTargetEndYear);
+
+    let stretchedX: number;
+    if (year <= timelineStretchStartYear) {
+      const progress =
+        (year - startYear) / (timelineStretchStartYear - startYear);
+      stretchedX = axisStart + progress * (stretchedStartX - axisStart);
+    } else if (year <= timelineStretchEndYear) {
+      const progress =
+        (year - timelineStretchStartYear) /
+        (timelineStretchEndYear - timelineStretchStartYear);
+      stretchedX =
+        stretchedStartX + progress * (stretchedEndX - stretchedStartX);
+    } else {
+      const progress =
+        (year - timelineStretchEndYear) / (endYear - timelineStretchEndYear);
+      stretchedX = stretchedEndX + progress * (axisRight - stretchedEndX);
+    }
+
+    return originalX + (stretchedX - originalX) * timelineStretchProgress;
   };
+
+  $: if (currentYear >= timelineStretchTriggerYear && !hasStretchedTimeline) {
+    hasStretchedTimeline = true;
+    startTimelineStretch(1);
+  }
+
+  $: if (
+    currentYear >= timelineStretchResetYear &&
+    !hasResetTimelineStretch
+  ) {
+    hasResetTimelineStretch = true;
+    startTimelineStretch(0);
+  }
 
   $: if (
     enableTimelineSpreading &&
@@ -372,15 +441,16 @@
   onMount(() => {
     const loadCsvData = async () => {
       try {
-        const [rawWomenMedicsData, rawMenMedicsData, rawEdinburghSevenData] = (await getCSV([
-          publicUrl("data/women_medics_1914_1966.csv"),
-          publicUrl("data/men_medics_1836_1966.csv"),
-          publicUrl("data/edinburgh_forty.csv"),
-        ])) as [
-          Array<{ year?: string; number?: string }>,
-          Array<Record<string, string>>,
-          Array<Record<string, string>>,
-        ];
+        const [rawWomenMedicsData, rawMenMedicsData, rawEdinburghSevenData] =
+          (await getCSV([
+            publicUrl("data/women_medics_1914_1966.csv"),
+            publicUrl("data/men_medics_1836_1966.csv"),
+            publicUrl("data/edinburgh_forty.csv"),
+          ])) as [
+            Array<{ year?: string; number?: string }>,
+            Array<Record<string, string>>,
+            Array<Record<string, string>>,
+          ];
 
         womenMedicsData = rawWomenMedicsData
           .map((row: { year?: string; number?: string }) => {
@@ -500,9 +570,24 @@
           // whether the button triggered this or the timer fired automatically.
           // Keep timeline speed consistent by discounting time spent paused.
           animationStartMs += pausedMs;
+
+          const nextMilestone = milestones[nextPauseIndex + 1];
+          if (nextMilestone?.year === pausedAtYear) {
+            // Consecutive events at the same timeline year share one visual
+            // milestone stem, so transfer directly without collapsing it.
+            pausedAtYear = nextMilestone.year;
+            pausedMilestoneId = nextMilestone.id;
+            pauseStartMs = Date.now();
+            nextPauseIndex += 1;
+            awaitingResumeClick = false;
+            resumeRequested = false;
+            return;
+          }
+
           // Clear pause state so normal timeline movement can continue.
           pauseStartMs = null;
           pausedAtYear = null;
+          pausedMilestoneId = null;
           nextPauseIndex += 1;
           awaitingResumeClick = false;
           resumeRequested = false;
@@ -518,10 +603,14 @@
       currentYear = Math.min(startYear + yearsElapsed, endYear);
 
       // 4) Enter a new pause when the next milestone is reached.
-      const nextPauseYear = pauseYears[nextPauseIndex];
-      if (nextPauseYear !== undefined && currentYear >= nextPauseYear) {
-        currentYear = nextPauseYear;
-        pausedAtYear = nextPauseYear;
+      const nextPauseMilestone = milestones[nextPauseIndex];
+      if (
+        nextPauseMilestone !== undefined &&
+        currentYear >= nextPauseMilestone.year
+      ) {
+        currentYear = nextPauseMilestone.year;
+        pausedAtYear = nextPauseMilestone.year;
+        pausedMilestoneId = nextPauseMilestone.id;
         pauseStartMs = Date.now();
         awaitingResumeClick = false;
         resumeRequested = false;
@@ -556,6 +645,9 @@
       if (timelineZoomFrameId !== null) {
         cancelAnimationFrame(timelineZoomFrameId);
       }
+      if (timelineStretchFrameId !== null) {
+        cancelAnimationFrame(timelineStretchFrameId);
+      }
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   });
@@ -581,7 +673,10 @@
     {suez}
     {edinburghRoutes}
     {edinburghSevenData}
-    showWomenDoctorCareerLocations={pausedAtYear === 1915}
+    showWomenDoctorBirthplaces={
+      pausedMilestoneId === "school-and-college-students"
+    }
+    showWomenDoctorCareerLocations={pausedMilestoneId === "career-locations"}
   />
   <img
     class="site-logo"
@@ -617,32 +712,34 @@
     {timelineY}
     {axisStart}
     {axisRight}
-    {pauseYears}
-    {milestoneLabels}
+    {milestones}
+    {pausedMilestoneId}
     {womenDoctorsData}
     {womenMedicsData}
     {menMedicsData}
+    {timelineStretchProgress}
     {yearToX}
   />
 
-  {#each pauseYears.filter((year) => milestoneLabels.has(year)) as year (year)}
+  {#each milestones as milestone (milestone.id)}
+    {@const year = milestone.contentYear}
     <div
       class="milestone-card"
       class:milestone-card--university-founded={year === 1583}
       class:milestone-card--edinburgh-forty={year === 1869}
       class:milestone-card--women-doctors-1911={year === 1911}
       class:milestone-card--split={splitMilestoneYears.has(year)}
-      class:is-active={pausedAtYear === year}
+      class:is-active={pausedMilestoneId === milestone.id}
       style:bottom={`${milestoneCardBottomOffset}px`}
-      style:left={`${clampedLeft(yearToX(year), year)}px`}
-      style:width={year === 1583 && pausedAtYear === year
+      style:left={`${clampedLeft(yearToX(milestone.year), year)}px`}
+      style:width={year === 1583 && pausedMilestoneId === milestone.id
         ? `${universityFoundedCardWidth}px`
         : undefined}
-      style:height={year === 1583 && pausedAtYear === year
+      style:height={year === 1583 && pausedMilestoneId === milestone.id
         ? `${universityFoundedCardHeight}px`
         : undefined}
     >
-      <h1 class="milestone-card-heading">{milestoneLabels.get(year) ?? ""}</h1>
+      <h1 class="milestone-card-heading">{milestone.label}</h1>
       {#if year === 1583}
         <div
           class="university-founded-card-image"
@@ -687,9 +784,9 @@
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
               Elizabeth Garrett Anderson came to Edinburgh (most likely by
-              train) in 1862, trying to enroll at the School of Medicine. She
-              also tried to enroll at Universities of Cambridge, Glasgow,
-              Oxford, and St Andrews, but was rejected by all.
+              train) in 1862, trying to enrol at the School of Medicine. She
+              also tried to enrol at Universities of Cambridge, Glasgow, Oxford,
+              and St Andrews, but was rejected by all.
             </div>
           </div>
         </div>
@@ -705,17 +802,19 @@
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
               The very first classes women could attend at the University (
-              before Edinburgh Seven) were David Masson's English Literature
-              classes. A supporter of women's suffrage, Masson started teching
-              women in 1867 at Hopetoun Rooms (67-73 Queen Street).
+              before the 'Edinburgh Seven') were David Masson's English
+              Literature classes. A supporter of women's suffrage, Masson
+              started teaching women in 1867 at Hopetoun Rooms (67-73 Queen
+              Street).
             </div>
           </div>
         </div>
       {:else if year === 1869}
         <p class="edinburgh-forty-intro">
-          The Edinburgh Seven are known to be the first women to matriculate at
-          a University in the UK. What's much less known is that there were
-          actually 40 women who matriculated at the School of Medicine in 1869.
+          The first women to matriculate at a university in the UK are well
+          known as the 'Edinburgh Seven'. What's much less known is that
+          actually 40 women matriculated at the School of Medicine between 1869
+          and 1873.
         </p>
         <div class="edinburgh_forty">
           {#each orderedEdinburghFortyData as d (d.name)}
@@ -744,8 +843,9 @@
           </div>
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
-              A crowd of several hundred gathered as the Edinburgh Seven arrived
-              for their anatomy exam, facing mud, abuse and blocked gates.
+              A crowd of several hundred gathered as seven women medical
+              students arrived for an anatomy exam, facing mud, abuse, and
+              blocked gates.
             </div>
           </div>
         </div>
@@ -760,10 +860,10 @@
           </div>
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
-              After the Edinburgh Seven were refused graduation, there were
+              After the 'Edinburgh Seven' were refused graduation, there were
               still professors who supported women in their pursuit to study
               medicine. One of them was John Gray McKendrick, who started
-              teaching pyhsiology to women at Gayfield House (18 East London
+              teaching physiology to women at Gayfield House (18 East London
               Street) in 1875.
             </div>
           </div>
@@ -779,10 +879,11 @@
           </div>
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
-              Sophia Jex-Blake, the leading figure of the Edinburgh Seven/Forty,
-              established the School of Medicine for Women in 1886, which,
-              unlike the University, allowed women to obtain a full medical
-              education.
+              In 1886 Sophia Jex-Blake, the leading figure of the Edinburgh
+              Seven/Forty, established the School of Medicine for Women where
+              women could obtain a full medical education, being taught in the
+              Extra-Mural School of Medicine because University teaching was
+              closed to them.
             </div>
           </div>
         </div>

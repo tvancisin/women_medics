@@ -6,6 +6,8 @@
   import Milestone from "./Milestone.svelte";
 
   type WomenMedicsDatum = { year: number; number: number };
+  type TimelineMilestone = { id: string; year: number; label: string };
+  type RenderedMilestone = TimelineMilestone & { milestoneIds: string[] };
 
   export let width = 0;
   export let height = 0;
@@ -18,12 +20,13 @@
   export let timelineY: number;
   export let axisStart: number;
   export let axisRight: number;
-  export let pauseYears: number[] = [];
-  export let milestoneLabels: Map<number, string> = new Map();
+  export let milestones: TimelineMilestone[] = [];
+  export let pausedMilestoneId: string | null = null;
   export let womenDoctorsData: unknown = [];
   export let womenMedicsData: WomenMedicsDatum[] = [];
   export let menMedicsData: WomenMedicsDatum[] = [];
   export let yearToX: (year: number) => number;
+  export let timelineStretchProgress = 0;
 
   const tickLength = 5;
   const inactiveMilestoneLabelLeftExtent = 8;
@@ -32,9 +35,15 @@
   const activeMilestoneLabelGap = 6;
   const womenMedicsAreaChartStartYear = 1914;
   const areaChartMilestoneLabelGap = 1;
+  const womenMedicalEducationPeriodStartYear = 1886;
+  const womenMedicalEducationPeriodEndYear = 1915;
+  const womenMedicalEducationPeriodHeight = 70;
+  const womenMedicalEducationPeriodTickYears = [
+    1890, 1895, 1900, 1905, 1910,
+  ];
   const mutedInactiveMilestoneYears = new Set([1886, 1889, 1911, 1915]);
   let expandedMilestonePathLength = 0;
-  let inactiveMilestoneLabelXs = new Map<number, number>();
+  let inactiveMilestoneLabelXs = new Map<string, number>();
   const buildTimelineTickValues = (maxYear: number) => {
     const values = [startYear];
     for (let year = 1600; year <= maxYear; year += 50) values.push(year);
@@ -67,24 +76,36 @@
   $: displayYear = Math.floor(currentYear);
   $: isCurrentYearInTimelineDomain =
     currentYear >= timelineDomainStart && currentYear <= timelineDomainEnd;
-  $: visibleMilestoneYears = pauseYears.filter(
-    (year) => displayYear >= year && milestoneLabels.has(year),
-  );
+  const buildRenderedMilestones = (maximumYear = Number.POSITIVE_INFINITY) => {
+    const milestonesByYear = new Map<number, TimelineMilestone[]>();
+
+    for (const milestone of milestones) {
+      if (maximumYear < milestone.year) continue;
+      const milestonesForYear = milestonesByYear.get(milestone.year) ?? [];
+      milestonesForYear.push(milestone);
+      milestonesByYear.set(milestone.year, milestonesForYear);
+    }
+
+    return Array.from(milestonesByYear.values()).map((milestonesForYear) => {
+      const labelMilestone = milestonesForYear[milestonesForYear.length - 1];
+      return {
+        ...labelMilestone,
+        milestoneIds: milestonesForYear.map((milestone) => milestone.id),
+      } satisfies RenderedMilestone;
+    });
+  };
+  $: timelineMilestones = buildRenderedMilestones();
+  $: visibleMilestones = buildRenderedMilestones(displayYear);
   $: inactiveMilestoneLabelXs = (() => {
-    const labelXs = new Map<number, number>();
+    const labelXs = new Map<string, number>();
     let nextLeft = Number.POSITIVE_INFINITY;
     let isLatestInactiveLabel = true;
-    const currentYearBoundaryX = currentYearX - activeMilestoneLabelGap;
-    const areaChartBoundaryX =
-      currentYear >= womenMedicsAreaChartStartYear
-        ? yearToX(womenMedicsAreaChartStartYear) - areaChartMilestoneLabelGap
-        : Number.POSITIVE_INFINITY;
-    const rightBoundaryX = Math.min(currentYearBoundaryX, areaChartBoundaryX);
+    const rightBoundaryX =
+      yearToX(womenMedicsAreaChartStartYear) - areaChartMilestoneLabelGap;
 
-    for (const year of [...visibleMilestoneYears].reverse()) {
-      if (currentYear === year) continue;
+    for (const milestone of [...timelineMilestones].reverse()) {
 
-      const targetX = yearToX(year);
+      const targetX = yearToX(milestone.year);
       const maximumX = isLatestInactiveLabel
         ? rightBoundaryX - inactiveMilestoneLabelRightExtent
         : nextLeft -
@@ -92,7 +113,7 @@
           inactiveMilestoneLabelRightExtent;
       const labelX = Math.min(targetX, maximumX);
 
-      labelXs.set(year, labelX);
+      labelXs.set(milestone.id, labelX);
       nextLeft = labelX - inactiveMilestoneLabelLeftExtent;
       isLatestInactiveLabel = false;
     }
@@ -135,6 +156,20 @@
       aria-hidden="true"
     ></rect>
 
+    {#if currentYear >= womenMedicalEducationPeriodStartYear}
+      <rect
+        class="women-medical-education-period"
+        x={yearToX(womenMedicalEducationPeriodStartYear)}
+        y={height - womenMedicalEducationPeriodHeight - 2}
+        width={
+          yearToX(womenMedicalEducationPeriodEndYear) -
+          yearToX(womenMedicalEducationPeriodStartYear)
+        }
+        height={womenMedicalEducationPeriodHeight}
+        aria-label="Women’s medical education period, 1886 to 1915"
+      ></rect>
+    {/if}
+
     <g class="timeline-underlay" aria-hidden="true">
       <line
         class="domain"
@@ -145,10 +180,12 @@
       ></line>
 
       {#each fullTickValues as year}
-        <g class="tick" transform={`translate(${yearToX(year)}, ${timelineY})`}>
-          <line x1="0" y1="0" x2="0" y2={tickLength}></line>
-          <text x="0" y={tickLength + 16} text-anchor="middle">{year}</text>
-        </g>
+        {#if !(timelineStretchProgress > 0 && year === 1900)}
+          <g class="tick" transform={`translate(${yearToX(year)}, ${timelineY})`}>
+            <line x1="0" y1="0" x2="0" y2={tickLength}></line>
+            <text x="0" y={tickLength + 16} text-anchor="middle">{year}</text>
+          </g>
+        {/if}
       {/each}
 
       {#each fullMinorTickValues as year}
@@ -199,10 +236,12 @@
     {/if}
 
     {#each tickValues as year}
-      <g class="tick" transform={`translate(${yearToX(year)}, ${timelineY})`}>
-        <line x1="0" y1="0" x2="0" y2={tickLength}></line>
-        <text x="0" y={tickLength + 16} text-anchor="middle">{year}</text>
-      </g>
+      {#if !(timelineStretchProgress > 0 && year === 1900)}
+        <g class="tick" transform={`translate(${yearToX(year)}, ${timelineY})`}>
+          <line x1="0" y1="0" x2="0" y2={tickLength}></line>
+          <text x="0" y={tickLength + 16} text-anchor="middle">{year}</text>
+        </g>
+      {/if}
     {/each}
 
     {#each minorTickValues as year}
@@ -214,6 +253,21 @@
       </g>
     {/each}
 
+    {#if timelineStretchProgress > 0}
+      <g class="timeline-stretch-ticks" opacity={timelineStretchProgress}>
+        {#each womenMedicalEducationPeriodTickYears as year}
+          <g
+            class="tick"
+            class:timeline-stretch-tick--reached={currentYear >= year}
+            transform={`translate(${yearToX(year)}, ${timelineY})`}
+          >
+            <line x1="0" y1="0" x2="0" y2={tickLength}></line>
+            <text x="0" y={tickLength + 16} text-anchor="middle">{year}</text>
+          </g>
+        {/each}
+      </g>
+    {/if}
+
     <!-- <HistoricalEvents
       events={historicalEvents}
       {currentYear}
@@ -223,25 +277,27 @@
       {yearToX}
     /> -->
 
-    <!-- <DoctorsAreaChart
+    <DoctorsAreaChart
       {womenDoctorsData}
       {currentYear}
       {timelineY}
       {yearToX}
       {womenMedicsData}
-    /> -->
+    />
 
-    {#each visibleMilestoneYears as year (year)}
+    {#each visibleMilestones as milestone (milestone.id)}
       <Milestone
-        x={yearToX(year)}
-        labelX={inactiveMilestoneLabelXs.get(year) ?? yearToX(year)}
+        x={yearToX(milestone.year)}
+        labelX={
+          inactiveMilestoneLabelXs.get(milestone.id) ?? yearToX(milestone.year)
+        }
         {height}
-        label={year === 1726 && displayYear === 2026
+        label={milestone.year === 1726 && displayYear === 2026
           ? "1726"
-          : (milestoneLabels.get(year) ?? "")}
-        active={currentYear === year}
-        mutedInactiveLabel={mutedInactiveMilestoneYears.has(year)}
-        expandedInactive={year === 1726 && displayYear === 2026}
+          : milestone.label}
+        active={milestone.milestoneIds.includes(pausedMilestoneId ?? "")}
+        mutedInactiveLabel={mutedInactiveMilestoneYears.has(milestone.year)}
+        expandedInactive={milestone.year === 1726 && displayYear === 2026}
         expandedPathLength={expandedMilestonePathLength}
       />
     {/each}
@@ -325,6 +381,12 @@
     fill: #151c24d7;
   }
 
+  .women-medical-education-period {
+    fill: rgba(180, 180, 180, 0.2);
+    stroke: rgba(180, 180, 180, 0.95);
+    stroke-width: 1px;
+  }
+
   .year-counter {
     fill: #ffffff;
     font-family: Montserrat;
@@ -354,6 +416,15 @@
     fill: #fff;
     font-size: 16px;
     font-family: Montserrat;
+  }
+
+  .timeline-stretch-ticks .tick text {
+    fill: rgba(180, 180, 180, 0.9);
+    font-size: 14px;
+  }
+
+  .timeline-stretch-ticks .tick.timeline-stretch-tick--reached text {
+    fill: #fff;
   }
 
   .milestone-comparison line {

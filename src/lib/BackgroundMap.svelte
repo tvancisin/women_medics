@@ -31,6 +31,7 @@
   export let edinburghRoutes: unknown = null;
   export let edinburghSevenData: unknown = null;
   export let womenDoctorsWarData: unknown = null;
+  export let showWomenDoctorBirthplaces = false;
   export let showWomenDoctorCareerLocations = false;
   export let showWomenDoctorsWarLocations = false;
 
@@ -212,8 +213,6 @@
   const mapOverlay1682FadeDurationMs = 1_000;
   const animatedLineDurationMs = 20_000;
   const studentPathAnimationDurationMs = 6_000;
-  const womenDoctorsBirthplacesYear = 1911;
-  const womenDoctorsFocusYear = 1911;
   const womenDoctors1911PhotoId = "women-doctors-1911-photo";
   const womenDoctors1911PhotoBirthplaceConnections: PhotoBirthplaceConnection[] =
     [
@@ -636,7 +635,7 @@
 
   function handleWomenDoctors1911MapFocusEnd() {
     if (
-      currentYear === womenDoctorsBirthplacesYear &&
+      showWomenDoctorBirthplaces &&
       hasFocusedWomenDoctorsMilestone
     ) {
       hasCompletedWomenDoctors1911Focus = true;
@@ -1462,18 +1461,27 @@
     for (const feature of features) {
       const [longitude, latitude] = feature.geometry.coordinates;
       const label = String(feature.properties?.label ?? "");
-      const markerKey = `${feature.properties?.id ?? ""}-${longitude}-${latitude}`;
+      const markerId = String(feature.properties?.id ?? "");
+      const markerKey = `${markerId}-${longitude}-${latitude}`;
       activeMarkerKeys.add(markerKey);
 
       const existingMarker = timelineLabelMarkers.get(markerKey);
       if (existingMarker) {
-        existingMarker.getElement().textContent = label;
+        const element = existingMarker.getElement();
+        element.classList.toggle(
+          "timeline-image-marker-label--edinburgh-forty-home",
+          markerId === "edinburgh-forty-home",
+        );
+        setTimelineMarkerLabelContent(element, markerId, label);
         continue;
       }
 
       const element = document.createElement("div");
       element.className = "timeline-image-marker-label";
-      element.textContent = label;
+      if (markerId === "edinburgh-forty-home") {
+        element.classList.add("timeline-image-marker-label--edinburgh-forty-home");
+      }
+      setTimelineMarkerLabelContent(element, markerId, label);
 
       const marker = new mapboxgl.Marker({
         element,
@@ -1491,6 +1499,28 @@
         timelineLabelMarkers.delete(markerKey);
       }
     }
+  }
+
+  function setTimelineMarkerLabelContent(
+    element: HTMLDivElement,
+    markerId: string,
+    label: string,
+  ) {
+    if (markerId !== "edinburgh-forty-home") {
+      element.textContent = label;
+      return;
+    }
+
+    const [title, ...detailLines] = label.split("\n");
+    const titleElement = document.createElement("span");
+    titleElement.className = "timeline-image-marker-label__title";
+    titleElement.textContent = title;
+
+    const detailElement = document.createElement("span");
+    detailElement.className = "timeline-image-marker-label__detail";
+    detailElement.textContent = detailLines.join("\n").trim();
+
+    element.replaceChildren(titleElement, detailElement);
   }
 
   function drawTimelineMarkerLayers(year: number) {
@@ -2418,11 +2448,11 @@
     });
   }
 
-  //// 1911
+  //// Women doctors' birthplaces
   // Zoom out to the global overview.
   $: if (
     map &&
-    currentYear >= womenDoctorsFocusYear &&
+    showWomenDoctorBirthplaces &&
     !hasFocusedWomenDoctorsMilestone
   ) {
     hasCompletedWomenDoctors1911Focus = false;
@@ -2460,8 +2490,7 @@
   $: if (
     map &&
     styleReady &&
-    currentYear >= womenDoctorsBirthplacesYear &&
-    currentYear < womenDoctorsCareerLocationsYear &&
+    showWomenDoctorBirthplaces &&
     Array.isArray(womenDoctorsData) &&
     womenDoctorsData.length > 0 &&
     !hasDrawnWomenDoctorBirthplaces
@@ -2473,23 +2502,23 @@
     });
   }
 
-  // Clear 1911 birthplace circles.
-  $: if (map && styleReady && currentYear >= womenDoctorsCareerLocationsYear) {
+  // Clear birthplace circles once their milestone has finished.
+  $: if (map && styleReady && !showWomenDoctorBirthplaces) {
     hasDrawnWomenDoctorBirthplaces = false;
     removeWomenDoctorBirthplaceLayer();
   }
 
-  // Draw the fixed photo-to-birthplace connections only at the 1911 milestone.
+  // Draw the fixed photo-to-birthplace connections for the birthplace milestone.
   $: if (
     map &&
     styleReady &&
-    currentYear === womenDoctorsBirthplacesYear &&
+    showWomenDoctorBirthplaces &&
     hasCompletedWomenDoctors1911Focus
   ) {
     showWomenDoctors1911PhotoBirthplaceConnections();
   }
 
-  $: if (map && styleReady && currentYear !== womenDoctorsBirthplacesYear) {
+  $: if (map && styleReady && !showWomenDoctorBirthplaces) {
     hasCompletedWomenDoctors1911Focus = false;
     hideWomenDoctors1911PhotoBirthplaceConnections();
   }
@@ -2673,6 +2702,16 @@
     white-space: pre-line;
     pointer-events: none;
     border-radius: 3px;
+  }
+
+  :global(.timeline-image-marker-label__title),
+  :global(.timeline-image-marker-label__detail) {
+    display: block;
+  }
+
+  :global(.timeline-image-marker-label__detail) {
+    font-size: 11px;
+    font-style: italic;
   }
 
   :global(.first-classes-featured-label) {
