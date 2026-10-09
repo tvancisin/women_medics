@@ -4,6 +4,7 @@
   import { tweened } from "svelte/motion";
 
   export let x = 0;
+  export let labelX: number | undefined = undefined;
   export let height = 0;
   export let label = "";
   export let active = false;
@@ -41,8 +42,17 @@
   $: pathLengthPx.set(targetPathLength);
 
   $: endY = startY - $pathLengthPx;
+  $: labelAnchorX = labelX ?? x;
+  $: labelRotationX = labelAnchorX + labelBackgroundCenterOffsetY;
+  $: bendSegmentLength = Math.min(6, Math.max(0, (startY - endY) / 3));
+  $: bendStartY = startY - bendSegmentLength;
+  $: bendEndY = endY + bendSegmentLength;
+  $: bendControlOffset = Math.min(4, bendSegmentLength);
 
-  $: pathD = `M ${x} ${startY} L ${x} ${endY}`;
+  $: pathD =
+    active || labelAnchorX === x
+      ? `M ${x} ${startY} L ${x} ${endY}`
+      : `M ${x} ${startY} L ${x} ${bendStartY} C ${x} ${bendStartY - bendControlOffset}, ${labelAnchorX} ${bendEndY + bendControlOffset}, ${labelAnchorX} ${bendEndY} L ${labelAnchorX} ${endY}`;
 
   async function updateLabelWidth() {
     await tick();
@@ -70,11 +80,11 @@
 />
 {#if label && !active}
   <g
-    transform="rotate(-90, {x}, {endY})"
+    transform="rotate(-90, {labelRotationX}, {endY})"
   >
     <rect
       class="event-label-background"
-      x={x + labelBackgroundOffsetX}
+      x={labelRotationX + labelBackgroundOffsetX}
       y={endY - labelBackgroundCenterOffsetY - labelBackgroundHeight / 2}
       width={labelBackgroundWidth}
       height={labelBackgroundHeight}
@@ -86,7 +96,7 @@
       class:inactive={!active}
       class:muted-inactive={mutedInactiveLabel}
       class:expanded-inactive={expandedInactive}
-      x={x + labelTextOffsetX}
+      x={labelRotationX + labelTextOffsetX}
       y={endY + 2}
       text-anchor="start"
     >

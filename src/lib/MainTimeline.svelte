@@ -26,8 +26,15 @@
   export let yearToX: (year: number) => number;
 
   const tickLength = 5;
+  const inactiveMilestoneLabelLeftExtent = 8;
+  const inactiveMilestoneLabelRightExtent = 6;
+  const inactiveMilestoneLabelGap = 2;
+  const activeMilestoneLabelGap = 6;
+  const womenMedicsAreaChartStartYear = 1914;
+  const areaChartMilestoneLabelGap = 1;
   const mutedInactiveMilestoneYears = new Set([1886, 1889, 1911, 1915]);
   let expandedMilestonePathLength = 0;
+  let inactiveMilestoneLabelXs = new Map<number, number>();
   const buildTimelineTickValues = (maxYear: number) => {
     const values = [startYear];
     for (let year = 1600; year <= maxYear; year += 50) values.push(year);
@@ -63,6 +70,35 @@
   $: visibleMilestoneYears = pauseYears.filter(
     (year) => displayYear >= year && milestoneLabels.has(year),
   );
+  $: inactiveMilestoneLabelXs = (() => {
+    const labelXs = new Map<number, number>();
+    let nextLeft = Number.POSITIVE_INFINITY;
+    let isLatestInactiveLabel = true;
+    const currentYearBoundaryX = currentYearX - activeMilestoneLabelGap;
+    const areaChartBoundaryX =
+      currentYear >= womenMedicsAreaChartStartYear
+        ? yearToX(womenMedicsAreaChartStartYear) - areaChartMilestoneLabelGap
+        : Number.POSITIVE_INFINITY;
+    const rightBoundaryX = Math.min(currentYearBoundaryX, areaChartBoundaryX);
+
+    for (const year of [...visibleMilestoneYears].reverse()) {
+      if (currentYear === year) continue;
+
+      const targetX = yearToX(year);
+      const maximumX = isLatestInactiveLabel
+        ? rightBoundaryX - inactiveMilestoneLabelRightExtent
+        : nextLeft -
+          inactiveMilestoneLabelGap -
+          inactiveMilestoneLabelRightExtent;
+      const labelX = Math.min(targetX, maximumX);
+
+      labelXs.set(year, labelX);
+      nextLeft = labelX - inactiveMilestoneLabelLeftExtent;
+      isLatestInactiveLabel = false;
+    }
+
+    return labelXs;
+  })();
   $: milestoneComparison300LineY =
     height - 30 - expandedMilestonePathLength + 20;
   $: milestoneComparison110LineY = milestoneComparison300LineY + 40;
@@ -100,20 +136,20 @@
     ></rect>
 
     <g class="timeline-underlay" aria-hidden="true">
-      <!-- <line
+      <line
         class="domain"
         x1={axisStart}
         y1={timelineY}
         x2={axisRight}
         y2={timelineY}
-      ></line> -->
+      ></line>
 
-      <!-- {#each fullTickValues as year}
+      {#each fullTickValues as year}
         <g class="tick" transform={`translate(${yearToX(year)}, ${timelineY})`}>
           <line x1="0" y1="0" x2="0" y2={tickLength}></line>
           <text x="0" y={tickLength + 16} text-anchor="middle">{year}</text>
         </g>
-      {/each} -->
+      {/each}
 
       {#each fullMinorTickValues as year}
         <g
@@ -198,6 +234,7 @@
     {#each visibleMilestoneYears as year (year)}
       <Milestone
         x={yearToX(year)}
+        labelX={inactiveMilestoneLabelXs.get(year) ?? yearToX(year)}
         {height}
         label={year === 1726 && displayYear === 2026
           ? "1726"
