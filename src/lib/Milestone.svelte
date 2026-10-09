@@ -31,11 +31,11 @@
     duration: 500,
     easing: cubicOut,
   });
-  const labelAnchorXPx = tweened(0, {
+  const labelTextAnchorXPx = tweened(0, {
     duration: 500,
     easing: cubicOut,
   });
-  let hasInitialLabelAnchor = false;
+  let hasInitialLabelTextAnchor = false;
   $: startY = height - 30;
   $: middleY = height - 90;
   $: fullLength = Math.max(0, startY - middleY);
@@ -47,24 +47,23 @@
   $: pathLengthPx.set(targetPathLength);
 
   $: endY = startY - $pathLengthPx;
-  $: targetLabelAnchorX = active ? x : (labelX ?? x);
-  $: if (!hasInitialLabelAnchor) {
-    labelAnchorXPx.set(targetLabelAnchorX, { duration: 0 });
-    hasInitialLabelAnchor = true;
+  $: targetLabelTextAnchorX = labelX ?? x;
+  $: if (!hasInitialLabelTextAnchor) {
+    labelTextAnchorXPx.set(targetLabelTextAnchorX, { duration: 0 });
+    hasInitialLabelTextAnchor = true;
   } else {
-    labelAnchorXPx.set(targetLabelAnchorX);
+    labelTextAnchorXPx.set(targetLabelTextAnchorX);
   }
-  $: labelAnchorX = $labelAnchorXPx;
-  $: labelRotationX = labelAnchorX + labelBackgroundCenterOffsetY;
+  $: labelTextAnchorX = $labelTextAnchorXPx;
+  $: labelRotationX = labelTextAnchorX + labelBackgroundCenterOffsetY;
   $: bendSegmentLength = Math.min(6, Math.max(0, (startY - endY) / 3));
   $: bendStartY = startY - bendSegmentLength;
   $: bendEndY = endY + bendSegmentLength;
   $: bendControlOffset = Math.min(4, bendSegmentLength);
-
   $: pathD =
-    active || labelAnchorX === x
+    active || labelTextAnchorX === x
       ? `M ${x} ${startY} L ${x} ${endY}`
-      : `M ${x} ${startY} L ${x} ${bendStartY} C ${x} ${bendStartY - bendControlOffset}, ${labelAnchorX} ${bendEndY + bendControlOffset}, ${labelAnchorX} ${bendEndY} L ${labelAnchorX} ${endY}`;
+      : `M ${x} ${startY} L ${x} ${bendStartY} C ${x} ${bendStartY - bendControlOffset}, ${labelTextAnchorX} ${bendEndY + bendControlOffset}, ${labelTextAnchorX} ${bendEndY} L ${labelTextAnchorX} ${endY}`;
 
   async function updateLabelWidth() {
     await tick();

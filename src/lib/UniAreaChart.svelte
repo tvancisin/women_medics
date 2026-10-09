@@ -394,7 +394,7 @@
   }
 
   .y-axis-tick line {
-    stroke: rgba(255, 255, 255, 0.25);
+    stroke: rgba(255, 255, 255, 0.15);
     stroke-width: 1;
     stroke-dasharray: 5 4;
   }

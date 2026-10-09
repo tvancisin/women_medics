@@ -208,8 +208,8 @@
         height="30"
         rx="3"
         aria-hidden="true"
-      ></rect> -->
-      <!-- <text
+      ></rect>
+      <text
         class="year-counter-label"
         x={yearCounterTextX}
         y={timelineY + 44}
