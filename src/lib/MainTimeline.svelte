@@ -1,7 +1,7 @@
 <script lang="ts">
   import { historicalEvents } from "./utils/const";
-  import DoctorsAreaChart from "./DoctorsAreaChart.svelte";
   import HistoricalEvents from "./HistoricalEvents.svelte";
+  import DoctorsAreaChart from "./DoctorsAreaChart.svelte";
   import UniAreaChart from "./UniAreaChart.svelte";
   import Milestone from "./Milestone.svelte";
 
@@ -38,9 +38,7 @@
   const womenMedicalEducationPeriodStartYear = 1886;
   const womenMedicalEducationPeriodEndYear = 1915;
   const womenMedicalEducationPeriodHeight = 70;
-  const womenMedicalEducationPeriodTickYears = [
-    1890, 1895, 1900, 1905, 1910,
-  ];
+  const womenMedicalEducationPeriodTickYears = [1890, 1895, 1900, 1905, 1910];
   const mutedInactiveMilestoneYears = new Set([1886, 1889, 1911, 1915]);
   let expandedMilestonePathLength = 0;
   let inactiveMilestoneLabelXs = new Map<string, number>();
@@ -104,7 +102,6 @@
       yearToX(womenMedicsAreaChartStartYear) - areaChartMilestoneLabelGap;
 
     for (const milestone of [...timelineMilestones].reverse()) {
-
       const targetX = yearToX(milestone.year);
       const maximumX = isLatestInactiveLabel
         ? rightBoundaryX - inactiveMilestoneLabelRightExtent
@@ -135,6 +132,10 @@
 <svg {width} {height}>
   {#if width > 0 && height > 0}
     <defs>
+      <linearGradient id="timeline-background-fade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#151c24" stop-opacity="0" />
+        <stop offset="100%" stop-color="#151c24" stop-opacity="0.84" />
+      </linearGradient>
       <marker
         id="milestone-comparison-arrow"
         viewBox="0 0 10 10"
@@ -147,6 +148,16 @@
         <path d="M 0 0 L 10 5 L 0 10 z" class="milestone-comparison-arrow" />
       </marker>
     </defs>
+    <!-- gradient -->
+    <rect
+      x="0"
+      y={height - 55}
+      {width}
+      height="25"
+      fill="url(#timeline-background-fade)"
+      aria-hidden="true"
+    ></rect>
+    <!-- timeline background -->
     <rect
       class="timeline-background"
       x="0"
@@ -156,18 +167,33 @@
       aria-hidden="true"
     ></rect>
 
+    <!-- school/college period -->
     {#if currentYear >= womenMedicalEducationPeriodStartYear}
       <rect
         class="women-medical-education-period"
         x={yearToX(womenMedicalEducationPeriodStartYear)}
         y={height - womenMedicalEducationPeriodHeight - 2}
-        width={
-          yearToX(womenMedicalEducationPeriodEndYear) -
-          yearToX(womenMedicalEducationPeriodStartYear)
-        }
+        width={yearToX(womenMedicalEducationPeriodEndYear) -
+          yearToX(womenMedicalEducationPeriodStartYear)}
         height={womenMedicalEducationPeriodHeight}
-        aria-label="Women’s medical education period, 1886 to 1915"
+        aria-label="Women's medical education period, 1886 to 1915"
       ></rect>
+      <line
+        class="women-medical-education-period-edge"
+        x1={yearToX(womenMedicalEducationPeriodStartYear)}
+        y1={height - womenMedicalEducationPeriodHeight - 2}
+        x2={yearToX(womenMedicalEducationPeriodStartYear)}
+        y2={height - 2}
+        aria-hidden="true"
+      ></line>
+      <line
+        class="women-medical-education-period-edge"
+        x1={yearToX(womenMedicalEducationPeriodEndYear)}
+        y1={height - womenMedicalEducationPeriodHeight - 2}
+        x2={yearToX(womenMedicalEducationPeriodEndYear)}
+        y2={height - 2}
+        aria-hidden="true"
+      ></line>
     {/if}
 
     <g class="timeline-underlay" aria-hidden="true">
@@ -181,7 +207,10 @@
 
       {#each fullTickValues as year}
         {#if !(timelineStretchProgress > 0 && year === 1900)}
-          <g class="tick" transform={`translate(${yearToX(year)}, ${timelineY})`}>
+          <g
+            class="tick"
+            transform={`translate(${yearToX(year)}, ${timelineY})`}
+          >
             <line x1="0" y1="0" x2="0" y2={tickLength}></line>
             <text x="0" y={tickLength + 16} text-anchor="middle">{year}</text>
           </g>
@@ -200,29 +229,6 @@
 
     {#if isCurrentYearInTimelineDomain}
       <circle cx={currentYearX} cy={timelineY} r="5" fill="#fff"></circle>
-      <!-- <rect
-        class="year-counter-background"
-        x={yearCounterPanelX}
-        y={timelineY + 20}
-        width="112"
-        height="30"
-        rx="3"
-        aria-hidden="true"
-      ></rect>
-      <text
-        class="year-counter-label"
-        x={yearCounterTextX}
-        y={timelineY + 44}
-        text-anchor="middle">Since Foundation</text
-      >
-      <text
-        class="year-counter"
-        x={yearCounterTextX}
-        y={timelineY + 33}
-        text-anchor="middle"
-        aria-label={`${yearsSinceUniversityEstablished} years since the University was established`}
-        >{yearsSinceUniversityEstablished} {yearCounterUnit}</text
-      > -->
     {/if}
 
     {#if currentYear >= 1583}
@@ -288,9 +294,8 @@
     {#each visibleMilestones as milestone (milestone.id)}
       <Milestone
         x={yearToX(milestone.year)}
-        labelX={
-          inactiveMilestoneLabelXs.get(milestone.id) ?? yearToX(milestone.year)
-        }
+        labelX={inactiveMilestoneLabelXs.get(milestone.id) ??
+          yearToX(milestone.year)}
         {height}
         label={milestone.year === 1726 && displayYear === 2026
           ? "1726"
@@ -310,7 +315,10 @@
         expandedInactive={true}
         expandedPathLength={expandedMilestonePathLength}
       />
-      <g class="milestone-comparison" aria-label="300 years between 1726 and 2026">
+      <g
+        class="milestone-comparison"
+        aria-label="300 years between 1726 and 2026"
+      >
         <line
           x1={milestoneComparison300StartX}
           y1={milestoneComparison300LineY}
@@ -325,7 +333,10 @@
           text-anchor="middle">Men: 300 years</text
         >
       </g>
-      <g class="milestone-comparison" aria-label="110 years between 1916 and 2026">
+      <g
+        class="milestone-comparison"
+        aria-label="110 years between 1916 and 2026"
+      >
         <line
           x1={milestoneComparison110StartX}
           y1={milestoneComparison110LineY}
@@ -383,6 +394,9 @@
 
   .women-medical-education-period {
     fill: rgba(180, 180, 180, 0.2);
+  }
+
+  .women-medical-education-period-edge {
     stroke: rgba(180, 180, 180, 0.95);
     stroke-width: 1px;
   }
