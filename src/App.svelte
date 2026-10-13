@@ -680,10 +680,9 @@
   />
   <img
     class="site-logo"
-    src={publicUrl("img/logo_adjusted.png")}
+    src={publicUrl("img/efi_logo_white.svg")}
     alt="Edinburgh Futures Institute"
   />
-  <h1 id="data-led-methods">Data-Led Methods and Research Technology</h1>
   <!-- {#if mapCredit || imageCredit}
     <aside class="map-image-credits" aria-label="Map and image credits">
       {#if mapCredit}
@@ -998,8 +997,8 @@
 
   .site-logo {
     position: absolute;
-    top: 0px;
-    left: 0px;
+    top: 2px;
+    left: 2px;
     z-index: 3;
     height: 75px;
     pointer-events: none;
