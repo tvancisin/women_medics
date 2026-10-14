@@ -7,6 +7,9 @@
   export let yearToX: (year: number) => number;
   export let womenMedicsData: WomenMedicsDatum[] = [];
 
+  $: console.log(womenDoctorsData);
+  
+
   type WomenMedicsDatum = {
     year: number;
     number: number;

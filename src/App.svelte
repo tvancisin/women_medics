@@ -56,6 +56,8 @@
   };
   const milestones: Milestone[] = [
     { id: "university-founded", year: 1583, contentYear: 1583, label: "University of Edinburgh Founded 1582" },
+    // Map-only stop: BackgroundMap uses this exact year to show the 1682 overlay.
+    { id: "map-1682", year: 1682, contentYear: 1682, label: "" },
     { id: "school-of-medicine", year: 1726, contentYear: 1726, label: "School of Medicine 1726" },
     { id: "james-barry", year: 1809, contentYear: 1809, label: "Margaret Bulkley/James Barry 1809" },
     { id: "elizabeth-garrett", year: 1862, contentYear: 1862, label: "Elizabeth Garrett 1862" },
@@ -542,7 +544,6 @@
           ? rawWomenDoctors1915
           : null;
 
-        console.log(womenCareers1915Data);
       } catch (error: unknown) {
         console.error("Failed to load timeline JSON data", error);
       }
@@ -729,6 +730,7 @@
       class:milestone-card--women-doctors-1911={year === 1911}
       class:milestone-card--split={splitMilestoneYears.has(year)}
       class:is-active={pausedMilestoneId === milestone.id}
+      style:display={milestone.id === "map-1682" ? "none" : undefined}
       style:bottom={`${milestoneCardBottomOffset}px`}
       style:left={`${clampedLeft(yearToX(milestone.year), year)}px`}
       style:width={year === 1583 && pausedMilestoneId === milestone.id

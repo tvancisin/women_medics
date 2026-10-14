@@ -11,6 +11,7 @@
     getWomenDoctorCareerLocationFeatures,
     getWomenDoctorsWarLocationFeatures,
   } from "./utils/featureBuilders";
+  import { createHistoricalRasterOverlay } from "./utils/rasterOverlay";
 
   const baseUrl = import.meta.env.BASE_URL;
   const publicUrl = (path: string) => `${baseUrl}${path}`;
@@ -49,18 +50,6 @@
   let hasAnimatedRiotRoute = false;
   let hasDrawnEdinburghSeven = false;
   let hasAnimatedEdinburghRoutes = false;
-  let hasDrawnOldMapOverlay = false;
-  let oldMapOverlayFadeTimeout: ReturnType<typeof setTimeout> | null = null;
-  let hasDrawn1682MapOverlay = false;
-  let mapOverlay1682FadeTimeout: ReturnType<typeof setTimeout> | null = null;
-  let hasDrawnFirstClassesMapOverlay = false;
-  let firstClassesMapOverlayFadeTimeout: ReturnType<typeof setTimeout> | null =
-    null;
-  let hasDrawnPhysiologyMapOverlay = false;
-  let physiologyMapOverlayFadeTimeout: ReturnType<typeof setTimeout> | null =
-    null;
-  let hasDrawn1886MapOverlay = false;
-  let mapOverlay1886FadeTimeout: ReturnType<typeof setTimeout> | null = null;
   let hasDrawnWomenDoctorBirthplaces = false;
   let hasDrawnWomenDoctorCareerLocations = false;
   let hasDrawnWomenDoctorsWarLocations = false;
@@ -224,18 +213,11 @@
         lineStyle: "solid",
       },
       {
-        name: "Margarethe Plum",
-        imageAnchor: { x: 44.5, y: 31.5 },
-        birthplace: [9.501785, 56.26392],
-        location_name: "Denmark",
-        lineStyle: "dashed",
-      },
-      {
         name: "Vera Nicolaevna Bolotine",
-        imageAnchor: { x: 35, y: 32.3 },
+        imageAnchor: { x: 35.5, y: 32.3 },
         birthplace: [50.1606382, 53.203772],
         location_name: "Samara, Russia",
-        lineStyle: "dotted",
+        lineStyle: "dashed",
       },
     ];
   const suezRoutesReverseYear = 1911;
@@ -500,18 +482,9 @@
       const endX = mapRect.left + mapPoint.x;
       const endY = mapRect.top + mapPoint.y;
       const pathData =
-        connection.name === "Singcha Hoashoo"
-          ? getSingchaHoashooConnectionPath(startX, startY, endX, endY)
-          : connection.name === "Margarethe Plum"
-            ? getMargarethePlumConnectionPath(startX, startY, endX, endY)
-            : connection.name === "Vera Nicolaevna Bolotine"
-              ? getVeraNicolaevnaBolotineConnectionPath(
-                  startX,
-                  startY,
-                  endX,
-                  endY,
-                )
-          : `M ${startX} ${startY} Q ${(startX + endX) / 2} ${startY} ${endX} ${endY}`;
+        connection.name === "Vera Nicolaevna Bolotine"
+          ? getVeraNicolaevnaBolotineConnectionPath(startX, startY, endX, endY)
+          : getSingchaHoashooConnectionPath(startX, startY, endX, endY);
       const path = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "path",
@@ -520,10 +493,7 @@
         "women-doctors-1911-connection-line",
         `women-doctors-1911-connection-line--${connection.lineStyle}`,
       );
-      path.setAttribute(
-        "d",
-        pathData,
-      );
+      path.setAttribute("d", pathData);
       womenDoctors1911ConnectionOverlay.append(path);
 
       const connectionPoints: Array<[number, number, string]> = [
@@ -551,34 +521,6 @@
     endY: number,
   ) {
     const horizontalY = startY - 20;
-    const horizontalDirection = endX < startX ? -1 : 1;
-    const verticalDirection = endY < horizontalY ? -1 : 1;
-    const bendRadius = Math.min(
-      10,
-      Math.abs(endX - startX) / 2,
-      Math.abs(endY - horizontalY) / 2,
-    );
-    const firstHorizontalX = startX + horizontalDirection * bendRadius;
-    const finalHorizontalX = endX - horizontalDirection * bendRadius;
-    const finalVerticalY = horizontalY + verticalDirection * bendRadius;
-
-    return [
-      `M ${startX} ${startY}`,
-      `V ${horizontalY + bendRadius}`,
-      `Q ${startX} ${horizontalY} ${firstHorizontalX} ${horizontalY}`,
-      `H ${finalHorizontalX}`,
-      `Q ${endX} ${horizontalY} ${endX} ${finalVerticalY}`,
-      `V ${endY}`,
-    ].join(" ");
-  }
-
-  function getMargarethePlumConnectionPath(
-    startX: number,
-    startY: number,
-    endX: number,
-    endY: number,
-  ) {
-    const horizontalY = startY - 30;
     const horizontalDirection = endX < startX ? -1 : 1;
     const verticalDirection = endY < horizontalY ? -1 : 1;
     const bendRadius = Math.min(
@@ -634,380 +576,76 @@
   }
 
   function handleWomenDoctors1911MapFocusEnd() {
-    if (
-      showWomenDoctorBirthplaces &&
-      hasFocusedWomenDoctorsMilestone
-    ) {
+    if (showWomenDoctorBirthplaces && hasFocusedWomenDoctorsMilestone) {
       hasCompletedWomenDoctors1911Focus = true;
     }
   }
 
-  function clear1682MapOverlayFade() {
-    if (mapOverlay1682FadeTimeout === null) return;
+  const mapOverlay1682 = createHistoricalRasterOverlay({
+    getMap: () => map,
+    isStyleReady: () => styleReady,
+    sourceId: mapOverlay1682SourceId,
+    layerId: mapOverlay1682LayerId,
+    tileUrl: `https://api.mapbox.com/v4/tomasvancisin.ljq3nf/{z}/{x}/{y}.png?access_token=${envToken}`,
+    opacity: historicalMapOverlayOpacity,
+    fadeDurationMs: mapOverlay1682FadeDurationMs,
+    onShown: bringForegroundMarkersToFront,
+  });
 
-    clearTimeout(mapOverlay1682FadeTimeout);
-    mapOverlay1682FadeTimeout = null;
-  }
+  const oldMapOverlay = createHistoricalRasterOverlay({
+    getMap: () => map,
+    isStyleReady: () => styleReady,
+    sourceId: oldMapOverlaySourceId,
+    layerId: oldMapOverlayLayerId,
+    tileUrl: `https://api.mapbox.com/v4/tomasvancisin.1popvk/{z}/{x}/{y}.png?access_token=${envToken}`,
+    opacity: historicalMapOverlayOpacity,
+    fadeDurationMs: historicalMapOverlayFadeDurationMs,
+    onShown: bringForegroundMarkersToFront,
+  });
 
-  function remove1682MapOverlay() {
-    clear1682MapOverlayFade();
-    hasDrawn1682MapOverlay = false;
-    removeLayerAndSource(mapOverlay1682SourceId, mapOverlay1682LayerId);
-  }
+  const firstClassesMapOverlay = createHistoricalRasterOverlay({
+    getMap: () => map,
+    isStyleReady: () => styleReady,
+    sourceId: firstClassesMapOverlaySourceId,
+    layerId: firstClassesMapOverlayLayerId,
+    tileUrl: `https://api.mapbox.com/v4/tomasvancisin.rezmqd/{z}/{x}/{y}.png?access_token=${envToken}`,
+    opacity: historicalMapOverlayOpacity,
+    fadeDurationMs: historicalMapOverlayFadeDurationMs,
+    onShown: bringForegroundMarkersToFront,
+  });
 
-  function fadeOut1682MapOverlay() {
-    if (!map || !styleReady || mapOverlay1682FadeTimeout !== null) return;
+  const physiologyMapOverlay = createHistoricalRasterOverlay({
+    getMap: () => map,
+    isStyleReady: () => styleReady,
+    sourceId: physiologyMapOverlaySourceId,
+    layerId: physiologyMapOverlayLayerId,
+    tileUrl: `https://api.mapbox.com/v4/tomasvancisin.sq1kxl/{z}/{x}/{y}.png?access_token=${envToken}`,
+    opacity: historicalMapOverlayOpacity,
+    fadeDurationMs: historicalMapOverlayFadeDurationMs,
+    onShown: () => {
+      bringForegroundMarkersToFront();
+      if (map.getLayer(riotRouteLineLayerId)) {
+        map.moveLayer(riotRouteLineLayerId);
+      }
+      if (
+        currentYear === edinburghSevenRiotYear &&
+        map.getLayer(timelineMarkersCircleLayerId)
+      ) {
+        map.moveLayer(timelineMarkersCircleLayerId);
+      }
+    },
+  });
 
-    if (!map.getLayer(mapOverlay1682LayerId)) {
-      remove1682MapOverlay();
-      return;
-    }
-
-    map.setPaintProperty(mapOverlay1682LayerId, "raster-opacity", 0);
-    mapOverlay1682FadeTimeout = setTimeout(() => {
-      mapOverlay1682FadeTimeout = null;
-      hasDrawn1682MapOverlay = false;
-      removeLayerAndSource(mapOverlay1682SourceId, mapOverlay1682LayerId);
-    }, mapOverlay1682FadeDurationMs);
-  }
-
-  function draw1682MapOverlay() {
-    if (!map || !styleReady) return false;
-
-    clear1682MapOverlayFade();
-
-    if (!map.getSource(mapOverlay1682SourceId)) {
-      map.addSource(mapOverlay1682SourceId, {
-        type: "raster",
-        tiles: [
-          `https://api.mapbox.com/v4/tomasvancisin.ljq3nf/{z}/{x}/{y}.png?access_token=${envToken}`,
-        ],
-        tileSize: 256,
-      });
-    }
-
-    if (!map.getLayer(mapOverlay1682LayerId)) {
-      map.addLayer({
-        id: mapOverlay1682LayerId,
-        type: "raster",
-        source: mapOverlay1682SourceId,
-        paint: {
-          "raster-opacity": historicalMapOverlayOpacity,
-          "raster-opacity-transition": {
-            duration: mapOverlay1682FadeDurationMs,
-          },
-        },
-      });
-    }
-
-    map.setPaintProperty(
-      mapOverlay1682LayerId,
-      "raster-opacity",
-      historicalMapOverlayOpacity,
-    );
-
-    bringForegroundMarkersToFront();
-    return true;
-  }
-
-  function clearOldMapOverlayFade() {
-    if (oldMapOverlayFadeTimeout === null) return;
-
-    clearTimeout(oldMapOverlayFadeTimeout);
-    oldMapOverlayFadeTimeout = null;
-  }
-
-  function removeOldMapOverlay() {
-    clearOldMapOverlayFade();
-    hasDrawnOldMapOverlay = false;
-    removeLayerAndSource(oldMapOverlaySourceId, oldMapOverlayLayerId);
-  }
-
-  function fadeOutOldMapOverlay() {
-    if (!map || !styleReady || oldMapOverlayFadeTimeout !== null) return;
-
-    if (!map.getLayer(oldMapOverlayLayerId)) {
-      removeOldMapOverlay();
-      return;
-    }
-
-    map.setPaintProperty(oldMapOverlayLayerId, "raster-opacity", 0);
-    oldMapOverlayFadeTimeout = setTimeout(() => {
-      oldMapOverlayFadeTimeout = null;
-      hasDrawnOldMapOverlay = false;
-      removeLayerAndSource(oldMapOverlaySourceId, oldMapOverlayLayerId);
-    }, historicalMapOverlayFadeDurationMs);
-  }
-
-  function drawOldMapOverlay() {
-    if (!map || !styleReady) return false;
-
-    clearOldMapOverlayFade();
-
-    if (!map.getSource(oldMapOverlaySourceId)) {
-      map.addSource(oldMapOverlaySourceId, {
-        type: "raster",
-        tiles: [
-          `https://api.mapbox.com/v4/tomasvancisin.1popvk/{z}/{x}/{y}.png?access_token=${envToken}`,
-        ],
-        tileSize: 256,
-      });
-    }
-
-    if (!map.getLayer(oldMapOverlayLayerId)) {
-      map.addLayer({
-        id: oldMapOverlayLayerId,
-        type: "raster",
-        source: oldMapOverlaySourceId,
-        paint: {
-          "raster-opacity": historicalMapOverlayOpacity,
-          "raster-opacity-transition": {
-            duration: historicalMapOverlayFadeDurationMs,
-          },
-        },
-      });
-    }
-
-    map.setPaintProperty(
-      oldMapOverlayLayerId,
-      "raster-opacity",
-      historicalMapOverlayOpacity,
-    );
-
-    bringForegroundMarkersToFront();
-    return true;
-  }
-
-  function clearFirstClassesMapOverlayFade() {
-    if (firstClassesMapOverlayFadeTimeout === null) return;
-
-    clearTimeout(firstClassesMapOverlayFadeTimeout);
-    firstClassesMapOverlayFadeTimeout = null;
-  }
-
-  function removeFirstClassesMapOverlay() {
-    clearFirstClassesMapOverlayFade();
-    hasDrawnFirstClassesMapOverlay = false;
-    removeLayerAndSource(
-      firstClassesMapOverlaySourceId,
-      firstClassesMapOverlayLayerId,
-    );
-  }
-
-  function fadeOutFirstClassesMapOverlay() {
-    if (!map || !styleReady || firstClassesMapOverlayFadeTimeout !== null) {
-      return;
-    }
-
-    if (!map.getLayer(firstClassesMapOverlayLayerId)) {
-      removeFirstClassesMapOverlay();
-      return;
-    }
-
-    map.setPaintProperty(firstClassesMapOverlayLayerId, "raster-opacity", 0);
-    firstClassesMapOverlayFadeTimeout = setTimeout(() => {
-      firstClassesMapOverlayFadeTimeout = null;
-      hasDrawnFirstClassesMapOverlay = false;
-      removeLayerAndSource(
-        firstClassesMapOverlaySourceId,
-        firstClassesMapOverlayLayerId,
-      );
-    }, historicalMapOverlayFadeDurationMs);
-  }
-
-  function drawFirstClassesMapOverlay() {
-    if (!map || !styleReady) return false;
-
-    clearFirstClassesMapOverlayFade();
-
-    if (!map.getSource(firstClassesMapOverlaySourceId)) {
-      map.addSource(firstClassesMapOverlaySourceId, {
-        type: "raster",
-        tiles: [
-          `https://api.mapbox.com/v4/tomasvancisin.rezmqd/{z}/{x}/{y}.png?access_token=${envToken}`,
-        ],
-        tileSize: 256,
-      });
-    }
-
-    if (!map.getLayer(firstClassesMapOverlayLayerId)) {
-      map.addLayer({
-        id: firstClassesMapOverlayLayerId,
-        type: "raster",
-        source: firstClassesMapOverlaySourceId,
-        paint: {
-          "raster-opacity": historicalMapOverlayOpacity,
-          "raster-opacity-transition": {
-            duration: historicalMapOverlayFadeDurationMs,
-          },
-        },
-      });
-    }
-
-    map.setPaintProperty(
-      firstClassesMapOverlayLayerId,
-      "raster-opacity",
-      historicalMapOverlayOpacity,
-    );
-
-    bringForegroundMarkersToFront();
-    return true;
-  }
-
-  function clearPhysiologyMapOverlayFade() {
-    if (physiologyMapOverlayFadeTimeout === null) return;
-
-    clearTimeout(physiologyMapOverlayFadeTimeout);
-    physiologyMapOverlayFadeTimeout = null;
-  }
-
-  function removePhysiologyMapOverlay() {
-    clearPhysiologyMapOverlayFade();
-    hasDrawnPhysiologyMapOverlay = false;
-    removeLayerAndSource(
-      physiologyMapOverlaySourceId,
-      physiologyMapOverlayLayerId,
-    );
-  }
-
-  function fadeOutPhysiologyMapOverlay() {
-    if (!map || !styleReady || physiologyMapOverlayFadeTimeout !== null) {
-      return;
-    }
-
-    if (!map.getLayer(physiologyMapOverlayLayerId)) {
-      removePhysiologyMapOverlay();
-      return;
-    }
-
-    map.setPaintProperty(physiologyMapOverlayLayerId, "raster-opacity", 0);
-    physiologyMapOverlayFadeTimeout = setTimeout(() => {
-      physiologyMapOverlayFadeTimeout = null;
-      hasDrawnPhysiologyMapOverlay = false;
-      removeLayerAndSource(
-        physiologyMapOverlaySourceId,
-        physiologyMapOverlayLayerId,
-      );
-    }, historicalMapOverlayFadeDurationMs);
-  }
-
-  function drawPhysiologyMapOverlay() {
-    if (!map || !styleReady) return false;
-
-    clearPhysiologyMapOverlayFade();
-
-    if (!map.getSource(physiologyMapOverlaySourceId)) {
-      map.addSource(physiologyMapOverlaySourceId, {
-        type: "raster",
-        tiles: [
-          `https://api.mapbox.com/v4/tomasvancisin.sq1kxl/{z}/{x}/{y}.png?access_token=${envToken}`,
-        ],
-        tileSize: 256,
-      });
-    }
-
-    if (!map.getLayer(physiologyMapOverlayLayerId)) {
-      map.addLayer({
-        id: physiologyMapOverlayLayerId,
-        type: "raster",
-        source: physiologyMapOverlaySourceId,
-        paint: {
-          "raster-opacity": historicalMapOverlayOpacity,
-          "raster-opacity-transition": {
-            duration: historicalMapOverlayFadeDurationMs,
-          },
-        },
-      });
-    }
-
-    map.setPaintProperty(
-      physiologyMapOverlayLayerId,
-      "raster-opacity",
-      historicalMapOverlayOpacity,
-    );
-
-    bringForegroundMarkersToFront();
-    // The physiology overlay is used at the 1870 riot milestone; keep its
-    // animated route above the raster tiles instead of obscuring it.
-    if (map.getLayer(riotRouteLineLayerId)) {
-      map.moveLayer(riotRouteLineLayerId);
-    }
-    if (
-      currentYear === edinburghSevenRiotYear &&
-      map.getLayer(timelineMarkersCircleLayerId)
-    ) {
-      map.moveLayer(timelineMarkersCircleLayerId);
-    }
-    return true;
-  }
-
-  function clear1886MapOverlayFade() {
-    if (mapOverlay1886FadeTimeout === null) return;
-
-    clearTimeout(mapOverlay1886FadeTimeout);
-    mapOverlay1886FadeTimeout = null;
-  }
-
-  function remove1886MapOverlay() {
-    clear1886MapOverlayFade();
-    hasDrawn1886MapOverlay = false;
-    removeLayerAndSource(mapOverlay1886SourceId, mapOverlay1886LayerId);
-  }
-
-  function fadeOut1886MapOverlay() {
-    if (!map || !styleReady || mapOverlay1886FadeTimeout !== null) return;
-
-    if (!map.getLayer(mapOverlay1886LayerId)) {
-      remove1886MapOverlay();
-      return;
-    }
-
-    map.setPaintProperty(mapOverlay1886LayerId, "raster-opacity", 0);
-    mapOverlay1886FadeTimeout = setTimeout(() => {
-      mapOverlay1886FadeTimeout = null;
-      hasDrawn1886MapOverlay = false;
-      removeLayerAndSource(mapOverlay1886SourceId, mapOverlay1886LayerId);
-    }, historicalMapOverlayFadeDurationMs);
-  }
-
-  function draw1886MapOverlay() {
-    if (!map || !styleReady) return false;
-
-    clear1886MapOverlayFade();
-
-    if (!map.getSource(mapOverlay1886SourceId)) {
-      map.addSource(mapOverlay1886SourceId, {
-        type: "raster",
-        tiles: [
-          `https://api.mapbox.com/v4/tomasvancisin.dobh64/{z}/{x}/{y}.png?access_token=${envToken}`,
-        ],
-        tileSize: 256,
-      });
-    }
-
-    if (!map.getLayer(mapOverlay1886LayerId)) {
-      map.addLayer({
-        id: mapOverlay1886LayerId,
-        type: "raster",
-        source: mapOverlay1886SourceId,
-        paint: {
-          "raster-opacity": historicalMapOverlayOpacity,
-          "raster-opacity-transition": {
-            duration: historicalMapOverlayFadeDurationMs,
-          },
-        },
-      });
-    }
-
-    map.setPaintProperty(
-      mapOverlay1886LayerId,
-      "raster-opacity",
-      historicalMapOverlayOpacity,
-    );
-
-    bringForegroundMarkersToFront();
-    return true;
-  }
+  const mapOverlay1886 = createHistoricalRasterOverlay({
+    getMap: () => map,
+    isStyleReady: () => styleReady,
+    sourceId: mapOverlay1886SourceId,
+    layerId: mapOverlay1886LayerId,
+    tileUrl: `https://api.mapbox.com/v4/tomasvancisin.dobh64/{z}/{x}/{y}.png?access_token=${envToken}`,
+    opacity: historicalMapOverlayOpacity,
+    fadeDurationMs: historicalMapOverlayFadeDurationMs,
+    onShown: bringForegroundMarkersToFront,
+  });
 
   function cancelPathAnimation(layerId: string) {
     const frame = pathAnimationFrames.get(layerId);
@@ -1479,7 +1117,9 @@
       const element = document.createElement("div");
       element.className = "timeline-image-marker-label";
       if (markerId === "edinburgh-forty-home") {
-        element.classList.add("timeline-image-marker-label--edinburgh-forty-home");
+        element.classList.add(
+          "timeline-image-marker-label--edinburgh-forty-home",
+        );
       }
       setTimelineMarkerLabelContent(element, markerId, label);
 
@@ -1615,7 +1255,8 @@
       const label = `${name}\n${connection.location_name}`;
       activeMarkerKeys.add(markerKey);
 
-      const existingMarker = womenDoctors1911FeaturedLabelMarkers.get(markerKey);
+      const existingMarker =
+        womenDoctors1911FeaturedLabelMarkers.get(markerKey);
       if (existingMarker) {
         existingMarker.getElement().textContent = label;
       } else {
@@ -1707,9 +1348,8 @@
       const markerKey = `${name}-${longitude}-${latitude}`;
       activeMarkerKeys.add(markerKey);
 
-      const existingMarker = womenDoctorsCareerFeaturedLabelMarkers.get(
-        markerKey,
-      );
+      const existingMarker =
+        womenDoctorsCareerFeaturedLabelMarkers.get(markerKey);
       if (existingMarker) {
         existingMarker.getElement().textContent = label;
       } else {
@@ -2044,11 +1684,11 @@
     map &&
     styleReady &&
     currentYear === mapOverlay1682Year &&
-    (!hasDrawn1682MapOverlay ||
-      mapOverlay1682FadeTimeout !== null ||
-      !map.getLayer(mapOverlay1682LayerId))
+    (!mapOverlay1682.isShown() ||
+      mapOverlay1682.isFading() ||
+      !mapOverlay1682.hasLayer())
   ) {
-    hasDrawn1682MapOverlay = draw1682MapOverlay();
+    mapOverlay1682.show();
     map.flyTo({
       center: [-3.192, 55.948],
       zoom: 12,
@@ -2062,9 +1702,9 @@
     map &&
     styleReady &&
     currentYear > mapOverlay1682Year &&
-    (hasDrawn1682MapOverlay || map.getLayer(mapOverlay1682LayerId))
+    mapOverlay1682.isPresent()
   ) {
-    fadeOut1682MapOverlay();
+    mapOverlay1682.fadeOut();
   }
 
   //// 1726
@@ -2074,11 +1714,11 @@
     styleReady &&
     currentYear >= oldMapOverlayStartYear &&
     currentYear <= oldMapOverlayEndYear &&
-    (!hasDrawnOldMapOverlay ||
-      oldMapOverlayFadeTimeout !== null ||
-      !map.getLayer(oldMapOverlayLayerId))
+    (!oldMapOverlay.isShown() ||
+      oldMapOverlay.isFading() ||
+      !oldMapOverlay.hasLayer())
   ) {
-    hasDrawnOldMapOverlay = drawOldMapOverlay();
+    oldMapOverlay.show();
     map.flyTo({
       center: [-3.192, 55.948],
       zoom: 15,
@@ -2092,9 +1732,9 @@
     map &&
     styleReady &&
     currentYear > oldMapOverlayEndYear &&
-    (hasDrawnOldMapOverlay || map.getLayer(oldMapOverlayLayerId))
+    oldMapOverlay.isPresent()
   ) {
-    fadeOutOldMapOverlay();
+    oldMapOverlay.fadeOut();
   }
 
   //// 1809
@@ -2164,11 +1804,11 @@
     map &&
     styleReady &&
     currentYear === firstClassesMapOverlayYear &&
-    (!hasDrawnFirstClassesMapOverlay ||
-      firstClassesMapOverlayFadeTimeout !== null ||
-      !map.getLayer(firstClassesMapOverlayLayerId))
+    (!firstClassesMapOverlay.isShown() ||
+      firstClassesMapOverlay.isFading() ||
+      !firstClassesMapOverlay.hasLayer())
   ) {
-    hasDrawnFirstClassesMapOverlay = drawFirstClassesMapOverlay();
+    firstClassesMapOverlay.show();
   }
 
   // Fade out the first-classes map.
@@ -2176,10 +1816,9 @@
     map &&
     styleReady &&
     currentYear > firstClassesMapOverlayYear &&
-    (hasDrawnFirstClassesMapOverlay ||
-      map.getLayer(firstClassesMapOverlayLayerId))
+    firstClassesMapOverlay.isPresent()
   ) {
-    fadeOutFirstClassesMapOverlay();
+    firstClassesMapOverlay.fadeOut();
   }
 
   // Draw circles.
@@ -2279,7 +1918,7 @@
   $: if (map && styleReady && currentYear == edinburghSevenRiotYear) {
     map.flyTo({
       center: [-3.185, 55.9443],
-      zoom: 15.5,
+      zoom: 14,
       duration: 2000,
       essential: true,
     });
@@ -2318,11 +1957,11 @@
     styleReady &&
     currentYear >= physiologyMapOverlayStartYear &&
     currentYear <= physiologyMapOverlayEndYear &&
-    (!hasDrawnPhysiologyMapOverlay ||
-      physiologyMapOverlayFadeTimeout !== null ||
-      !map.getLayer(physiologyMapOverlayLayerId))
+    (!physiologyMapOverlay.isShown() ||
+      physiologyMapOverlay.isFading() ||
+      !physiologyMapOverlay.hasLayer())
   ) {
-    hasDrawnPhysiologyMapOverlay = drawPhysiologyMapOverlay();
+    physiologyMapOverlay.show();
   }
 
   // Fade out the physiology map after 1875.
@@ -2330,9 +1969,9 @@
     map &&
     styleReady &&
     currentYear > physiologyMapOverlayEndYear &&
-    (hasDrawnPhysiologyMapOverlay || map.getLayer(physiologyMapOverlayLayerId))
+    physiologyMapOverlay.isPresent()
   ) {
-    fadeOutPhysiologyMapOverlay();
+    physiologyMapOverlay.fadeOut();
   }
 
   // Show the physiology students.
@@ -2390,11 +2029,11 @@
     map &&
     styleReady &&
     currentYear === mapOverlay1886Year &&
-    (!hasDrawn1886MapOverlay ||
-      mapOverlay1886FadeTimeout !== null ||
-      !map.getLayer(mapOverlay1886LayerId))
+    (!mapOverlay1886.isShown() ||
+      mapOverlay1886.isFading() ||
+      !mapOverlay1886.hasLayer())
   ) {
-    hasDrawn1886MapOverlay = draw1886MapOverlay();
+    mapOverlay1886.show();
     map.flyTo({
       center: [-3.182, 55.947],
       zoom: 15,
@@ -2425,9 +2064,9 @@
     map &&
     styleReady &&
     currentYear > mapOverlay1886EndYear &&
-    (hasDrawn1886MapOverlay || map.getLayer(mapOverlay1886LayerId))
+    mapOverlay1886.isPresent()
   ) {
-    fadeOut1886MapOverlay();
+    mapOverlay1886.fadeOut();
   }
 
   //// 1889
@@ -2645,11 +2284,11 @@
       map.off("moveend", handleWomenDoctors1911MapFocusEnd);
       map.off("resize", updateWomenDoctors1911PhotoBirthplaceConnections);
       hideWomenDoctors1911PhotoBirthplaceConnections();
-      clear1682MapOverlayFade();
-      clearOldMapOverlayFade();
-      clearFirstClassesMapOverlayFade();
-      clearPhysiologyMapOverlayFade();
-      clear1886MapOverlayFade();
+      mapOverlay1682.remove();
+      oldMapOverlay.remove();
+      firstClassesMapOverlay.remove();
+      physiologyMapOverlay.remove();
+      mapOverlay1886.remove();
       for (const frame of pathAnimationFrames.values()) {
         cancelAnimationFrame(frame);
       }
@@ -2861,5 +2500,4 @@
     pointer-events: none;
     border-radius: 3px;
   }
-
 </style>
