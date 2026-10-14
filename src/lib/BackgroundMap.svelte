@@ -373,7 +373,7 @@
     });
 
     // Lower values draw faster; each route segment gets the same visual time.
-    const framesPerSegment = 5;
+    const framesPerSegment = 4;
     let frame = 0;
 
     const step = () => {
@@ -1640,7 +1640,7 @@
     map.flyTo({
       center: [-5.2883, 53.55],
       zoom: 6.2,
-      duration: 3000,
+      duration: 1000,
       essential: true,
     });
   }
@@ -1654,7 +1654,7 @@
     });
     map.flyTo({
       center: [-1.1883, 53.55],
-      duration: 2000,
+      duration: 1000,
       essential: true,
     });
   }

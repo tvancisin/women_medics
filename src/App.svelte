@@ -11,7 +11,7 @@
   const startYear = 1582;
   const universityEstablishedYear = 1582;
   const endYear = 2026;
-  const stepYears = 100;
+
   const timelineZoomTriggerYear = 1862;
   const timelineResetTriggerYear = 1914;
   const timelineZoomDomainStart = 1850;
@@ -55,29 +55,142 @@
     label: string;
   };
   const milestones: Milestone[] = [
-    { id: "university-founded", year: 1583, contentYear: 1583, label: "University of Edinburgh Founded 1582" },
+    {
+      id: "university-founded",
+      year: 1583,
+      contentYear: 1583,
+      label: "University of Edinburgh Founded 1582",
+    },
     // Map-only stop: BackgroundMap uses this exact year to show the 1682 overlay.
     { id: "map-1682", year: 1682, contentYear: 1682, label: "" },
-    { id: "school-of-medicine", year: 1726, contentYear: 1726, label: "School of Medicine 1726" },
-    { id: "james-barry", year: 1809, contentYear: 1809, label: "Margaret Bulkley/James Barry 1809" },
-    { id: "elizabeth-garrett", year: 1862, contentYear: 1862, label: "Elizabeth Garrett 1862" },
-    { id: "first-classes", year: 1867, contentYear: 1867, label: "First Classes for Women 1867" },
-    { id: "edinburgh-forty", year: 1869, contentYear: 1869, label: "Edinburgh Seven/Forty 1869" },
-    { id: "surgeons-hall-riot", year: 1870, contentYear: 1870, label: "The Riot 1870" },
-    { id: "physiology-students", year: 1875, contentYear: 1875, label: "Physiology Students 1875" },
-    { id: "school-for-women", year: 1886, contentYear: 1886, label: "School of Medicine for Women 1886" },
-    { id: "college-for-women", year: 1889, contentYear: 1889, label: "College of Medicine for Women 1889" },
-    { id: "school-and-college-students", year: 1915, contentYear: 1911, label: "School and College Students 1911" },
-    { id: "career-locations", year: 1915, contentYear: 1915, label: "Career Locations in 1915" },
-    { id: "equal-medical-education", year: 1916, contentYear: 1916, label: "Equal Medical Education 1916" },
+    {
+      id: "school-of-medicine",
+      year: 1726,
+      contentYear: 1726,
+      label: "School of Medicine 1726",
+    },
+    {
+      id: "james-barry",
+      year: 1809,
+      contentYear: 1809,
+      label: "Margaret Bulkley/James Barry 1809",
+    },
+    {
+      id: "elizabeth-garrett",
+      year: 1862,
+      contentYear: 1862,
+      label: "Elizabeth Garrett 1862",
+    },
+    {
+      id: "first-classes",
+      year: 1867,
+      contentYear: 1867,
+      label: "First Classes for Women 1867",
+    },
+    {
+      id: "edinburgh-forty",
+      year: 1869,
+      contentYear: 1869,
+      label: "Edinburgh Seven/Forty 1869",
+    },
+    {
+      id: "surgeons-hall-riot",
+      year: 1870,
+      contentYear: 1870,
+      label: "The Riot 1870",
+    },
+    {
+      id: "physiology-students",
+      year: 1875,
+      contentYear: 1875,
+      label: "Physiology Students 1875",
+    },
+    {
+      id: "school-for-women",
+      year: 1886,
+      contentYear: 1886,
+      label: "School of Medicine for Women 1886",
+    },
+    {
+      id: "college-for-women",
+      year: 1889,
+      contentYear: 1889,
+      label: "College of Medicine for Women 1889",
+    },
+    {
+      id: "school-and-college-students",
+      year: 1915,
+      contentYear: 1911,
+      label: "School and College Students 1911",
+    },
+    {
+      id: "career-locations",
+      year: 1915,
+      contentYear: 1915,
+      label: "Career Locations in 1915",
+    },
+    {
+      id: "equal-medical-education",
+      year: 1916,
+      contentYear: 1916,
+      label: "Equal Medical Education 1916",
+    },
   ];
+
+  type MilestonePlayback = {
+    pauseMs?: number;
+    yearsPerSecondToNext?: number;
+  };
+
+  // Playback controls. A milestone's speed applies after its pause, until the
+  // next milestone; omitted values use the defaults below.
+  const timelinePlayback: {
+    defaultYearsPerSecond: number;
+    defaultPauseMs: number;
+    milestones: Record<string, MilestonePlayback>;
+  } = {
+    defaultYearsPerSecond: 10,
+    defaultPauseMs: 1_000,
+    milestones: {
+      "university-founded": { pauseMs: 4_000, yearsPerSecondToNext: 50 },
+      "map-1682": {
+        pauseMs: 4_000,
+        yearsPerSecondToNext: 50,
+      },
+      "school-of-medicine": {
+        pauseMs: 4_000,
+        yearsPerSecondToNext: 50,
+      },
+      "james-barry": {
+        pauseMs: 8_000,
+        yearsPerSecondToNext: 50,
+      },
+      "elizabeth-garrett": {
+        pauseMs: 8_000,
+        yearsPerSecondToNext: 50,
+      },
+      "first-classes": {
+        pauseMs: 8_000,
+        yearsPerSecondToNext: 50,
+      },
+      "edinburgh-forty": {},
+      "surgeons-hall-riot": {},
+      "physiology-students": {},
+      "school-for-women": {},
+      "college-for-women": {},
+      "school-and-college-students": {},
+      "career-locations": {},
+      "equal-medical-education": {},
+    },
+  };
+
+  const getMilestonePlayback = (milestoneId: string | null) =>
+    milestoneId ? (timelinePlayback.milestones[milestoneId] ?? {}) : {};
+
   const splitMilestoneYears = new Set([
     1809, 1862, 1867, 1870, 1875, 1886, 1889, 1911,
   ]);
   // const womenDoctorsWarMilestoneYear = 1919;
-
-  // Point multiple years at the same path, or leave a year out to show no image.
-  const pauseDurationMs = 500;
 
   let height = 0;
   let width = 0;
@@ -93,7 +206,8 @@
   let womenDoctorsData: unknown = null;
   let womenCareers1915Data: unknown = null;
   let currentYear = startYear;
-  let animationStartMs = 0;
+  let lastYearUpdateMs = 0;
+  let activeYearsPerSecond = timelinePlayback.defaultYearsPerSecond;
   let animationFrameId: number | null = null;
   let timelineZoomFrameId: number | null = null;
   let timelineStretchFrameId: number | null = null;
@@ -402,10 +516,7 @@
     startTimelineStretch(1);
   }
 
-  $: if (
-    currentYear >= timelineStretchResetYear &&
-    !hasResetTimelineStretch
-  ) {
+  $: if (currentYear >= timelineStretchResetYear && !hasResetTimelineStretch) {
     hasResetTimelineStretch = true;
     startTimelineStretch(0);
   }
@@ -543,7 +654,6 @@
         womenCareers1915Data = Array.isArray(rawWomenDoctors1915)
           ? rawWomenDoctors1915
           : null;
-
       } catch (error: unknown) {
         console.error("Failed to load timeline JSON data", error);
       }
@@ -554,36 +664,42 @@
 
     // Runs once per animation frame and updates timeline state from wall-clock time.
     const updateYearFromClock = () => {
+      const now = Date.now();
       // 1) Pause branch: when a milestone pause is active, keep the year frozen.
       if (pauseStartMs !== null && pausedAtYear !== null) {
-        const pausedMs = Date.now() - pauseStartMs;
+        const pausedMs = now - pauseStartMs;
         currentYear = pausedAtYear;
+        lastYearUpdateMs = now;
 
-        // 2) After pauseDurationMs, resume progression and trigger path shrink for that milestone.
-        if (pausedMs >= pauseDurationMs) {
-          // Dev-only: this gate keeps the existing timed pause, but requires a click before resuming.
+        // 2) After this milestone's configured pause, resume progression.
+        if (
+          pausedMs >=
+          (getMilestonePlayback(pausedMilestoneId).pauseMs ??
+            timelinePlayback.defaultPauseMs)
+        ) {
           if (devRequireClickToResume && !resumeRequested) {
             awaitingResumeClick = true;
             return;
           }
 
           // Trigger path shrink for the milestone we're leaving — works
-          // whether the button triggered this or the timer fired automatically.
-          // Keep timeline speed consistent by discounting time spent paused.
-          animationStartMs += pausedMs;
-
           const nextMilestone = milestones[nextPauseIndex + 1];
           if (nextMilestone?.year === pausedAtYear) {
             // Consecutive events at the same timeline year share one visual
             // milestone stem, so transfer directly without collapsing it.
             pausedAtYear = nextMilestone.year;
             pausedMilestoneId = nextMilestone.id;
-            pauseStartMs = Date.now();
+            pauseStartMs = now;
             nextPauseIndex += 1;
             awaitingResumeClick = false;
             resumeRequested = false;
             return;
           }
+
+          // Apply the completed milestone's speed to the next timeline segment.
+          activeYearsPerSecond =
+            getMilestonePlayback(pausedMilestoneId).yearsPerSecondToNext ??
+            timelinePlayback.defaultYearsPerSecond;
 
           // Clear pause state so normal timeline movement can continue.
           pauseStartMs = null;
@@ -598,10 +714,14 @@
         return;
       }
 
-      // 3) Normal progression branch: map elapsed wall-clock time to timeline year.
-      const elapsedSeconds = (Date.now() - animationStartMs) / 500;
-      const yearsElapsed = elapsedSeconds * stepYears;
-      currentYear = Math.min(startYear + yearsElapsed, endYear);
+      // 3) Advance from the prior frame so each milestone can control the
+      // speed of the following timeline segment.
+      const elapsedSeconds = (now - lastYearUpdateMs) / 1_000;
+      currentYear = Math.min(
+        currentYear + elapsedSeconds * activeYearsPerSecond,
+        endYear,
+      );
+      lastYearUpdateMs = now;
 
       // 4) Enter a new pause when the next milestone is reached.
       const nextPauseMilestone = milestones[nextPauseIndex];
@@ -612,14 +732,14 @@
         currentYear = nextPauseMilestone.year;
         pausedAtYear = nextPauseMilestone.year;
         pausedMilestoneId = nextPauseMilestone.id;
-        pauseStartMs = Date.now();
+        pauseStartMs = now;
         awaitingResumeClick = false;
         resumeRequested = false;
       }
     };
 
-    // Anchor animation time so progression starts from "now".
-    animationStartMs = Date.now();
+    // Anchor the first timeline update to the current wall-clock time.
+    lastYearUpdateMs = Date.now();
 
     // Frame loop: update state, then queue the next frame until we reach endYear.
     const animate = () => {
@@ -674,9 +794,8 @@
     {suez}
     {edinburghRoutes}
     {edinburghSevenData}
-    showWomenDoctorBirthplaces={
-      pausedMilestoneId === "school-and-college-students"
-    }
+    showWomenDoctorBirthplaces={pausedMilestoneId ===
+      "school-and-college-students"}
     showWomenDoctorCareerLocations={pausedMilestoneId === "career-locations"}
   />
   <img
