@@ -1,5 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { cubicOut } from "svelte/easing";
+  import { tweened } from "svelte/motion";
   import { getCSV, getJson } from "./lib/utils/loaders";
   import { creditsByYear } from "./lib/utils/const";
   import BackgroundMap from "./lib/BackgroundMap.svelte";
@@ -12,6 +14,12 @@
   const universityEstablishedYear = 1582;
   const endYear = 2026;
 
+  // TODO
+  // - look up some timeline visualizations
+  // - get in touch with threadinburgh!!!
+  // - see if Tess' data can be added for 1926
+  // - finish up timers/pauses for all milestones
+
   const timelineZoomTriggerYear = 1862;
   const timelineResetTriggerYear = 1914;
   const timelineZoomDomainStart = 1850;
@@ -19,8 +27,8 @@
   const timelineZoomDurationMs = 1600;
   const timelineStretchTriggerYear = 1886;
   const timelineStretchStartYear = 1886;
-  const timelineStretchEndYear = 1915;
-  const timelineStretchResetYear = 1916;
+  const timelineStretchEndYear = 1911;
+  const timelineStretchResetYear = 1912;
   const timelineStretchTargetStartYear = 1850;
   const timelineStretchTargetEndYear = 1950;
   // Set to false to keep the timeline at its full 1550–2026 range.
@@ -31,6 +39,13 @@
   const milestoneCardWidth = 400;
   const universityFoundedImageAspectRatio = 7272 / 5461;
   const milestoneCardBottomOffset = 95;
+  const activeMilestoneStemTipBottomOffset = 90;
+  const milestoneCardStemGap =
+    milestoneCardBottomOffset - activeMilestoneStemTipBottomOffset;
+  const equalMedicalEducationCardBottomOffset = tweened(
+    milestoneCardBottomOffset,
+    { duration: 500, easing: cubicOut },
+  );
   const milestoneCardTopClearance = 80;
   // Heading (22px), its vertical margins (13px), and the card's 5px top/bottom padding.
   const universityFoundedCardChromeHeight = 45;
@@ -53,6 +68,7 @@
     year: number;
     contentYear: number;
     label: string;
+    renderOnTimeline?: boolean;
   };
   const milestones: Milestone[] = [
     {
@@ -61,8 +77,14 @@
       contentYear: 1583,
       label: "University of Edinburgh Founded 1582",
     },
-    // Map-only stop: BackgroundMap uses this exact year to show the 1682 overlay.
-    { id: "map-1682", year: 1682, contentYear: 1682, label: "" },
+    // Pause for the map overlay without drawing a timeline milestone stem.
+    {
+      id: "map-1682",
+      year: 1682,
+      contentYear: 1682,
+      label: "",
+      renderOnTimeline: false,
+    },
     {
       id: "school-of-medicine",
       year: 1726,
@@ -119,13 +141,13 @@
     },
     {
       id: "school-and-college-students",
-      year: 1915,
+      year: 1911,
       contentYear: 1911,
       label: "School and College Students 1911",
     },
     {
       id: "career-locations",
-      year: 1915,
+      year: 1911,
       contentYear: 1915,
       label: "Career Locations in 1915",
     },
@@ -152,25 +174,25 @@
     defaultYearsPerSecond: 10,
     defaultPauseMs: 1_000,
     milestones: {
-      "university-founded": { pauseMs: 4_000, yearsPerSecondToNext: 50 },
+      "university-founded": { pauseMs: 1_000, yearsPerSecondToNext: 50 },
       "map-1682": {
-        pauseMs: 4_000,
+        pauseMs: 1_000,
         yearsPerSecondToNext: 50,
       },
       "school-of-medicine": {
-        pauseMs: 4_000,
+        pauseMs: 1_000,
         yearsPerSecondToNext: 50,
       },
       "james-barry": {
-        pauseMs: 8_000,
+        pauseMs: 1_000,
         yearsPerSecondToNext: 50,
       },
       "elizabeth-garrett": {
-        pauseMs: 8_000,
+        pauseMs: 1_000,
         yearsPerSecondToNext: 50,
       },
       "first-classes": {
-        pauseMs: 8_000,
+        pauseMs: 1_000,
         yearsPerSecondToNext: 50,
       },
       "edinburgh-forty": {},
@@ -222,6 +244,12 @@
   let pausedAtYear: number | null = null;
   let pausedMilestoneId: string | null = null;
   let pauseStartMs: number | null = null;
+
+  $: equalMedicalEducationCardBottomOffset.set(
+    pausedMilestoneId === "equal-medical-education"
+      ? height / 2 + milestoneCardStemGap
+      : milestoneCardBottomOffset,
+  );
   let womenMedicsData: Array<{ year: number; number: number }> = [];
   let menMedicsData: Array<{ year: number; number: number }> = [];
   $: activeCredits = creditsByYear.find(
@@ -850,7 +878,11 @@
       class:milestone-card--split={splitMilestoneYears.has(year)}
       class:is-active={pausedMilestoneId === milestone.id}
       style:display={milestone.id === "map-1682" ? "none" : undefined}
-      style:bottom={`${milestoneCardBottomOffset}px`}
+      style:bottom={`${
+        milestone.year === 1916
+          ? $equalMedicalEducationCardBottomOffset
+          : milestoneCardBottomOffset
+      }px`}
       style:left={`${clampedLeft(yearToX(milestone.year), year)}px`}
       style:width={year === 1583 && pausedMilestoneId === milestone.id
         ? `${universityFoundedCardWidth}px`
@@ -1072,8 +1104,9 @@
         <div class="milestone-card-text-only">
           <div class="milestone-card-title">
             After decades of separate medical education, wartime pressure and
-            campaigning led the University to admit women to its medical classes
-            alongside men.
+            campaigning led the University to admit women to its medical
+            classes, but even then, for several years, women were often taught
+            separately from men.
           </div>
         </div>
         <!-- 1919 milestone temporarily disabled.

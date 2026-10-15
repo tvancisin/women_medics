@@ -6,7 +6,12 @@
   import Milestone from "./Milestone.svelte";
 
   type WomenMedicsDatum = { year: number; number: number };
-  type TimelineMilestone = { id: string; year: number; label: string };
+  type TimelineMilestone = {
+    id: string;
+    year: number;
+    label: string;
+    renderOnTimeline?: boolean;
+  };
   type RenderedMilestone = TimelineMilestone & { milestoneIds: string[] };
 
   export let width = 0;
@@ -36,9 +41,9 @@
   const womenMedicsAreaChartStartYear = 1914;
   const areaChartMilestoneLabelGap = 1;
   const womenMedicalEducationPeriodStartYear = 1886;
-  const womenMedicalEducationPeriodEndYear = 1915;
+  const womenMedicalEducationPeriodEndYear = 1911;
   const womenMedicalEducationPeriodHeight = 70;
-  const womenMedicalEducationPeriodTickYears = [1890, 1895, 1900, 1905, 1910];
+  const womenMedicalEducationPeriodTickYears = [1888, 1893, 1898, 1903, 1908];
   const mutedInactiveMilestoneYears = new Set([1886, 1889, 1911, 1915]);
   let expandedMilestonePathLength = 0;
   let inactiveMilestoneLabelXs = new Map<string, number>();
@@ -78,7 +83,8 @@
     const milestonesByYear = new Map<number, TimelineMilestone[]>();
 
     for (const milestone of milestones) {
-      if (maximumYear < milestone.year) continue;
+      if (maximumYear < milestone.year || milestone.renderOnTimeline === false)
+        continue;
       const milestonesForYear = milestonesByYear.get(milestone.year) ?? [];
       milestonesForYear.push(milestone);
       milestonesByYear.set(milestone.year, milestonesForYear);
@@ -108,7 +114,8 @@
         : nextLeft -
           inactiveMilestoneLabelGap -
           inactiveMilestoneLabelRightExtent;
-      const labelX = Math.min(targetX, maximumX);
+      const labelX =
+        milestone.year === 1916 ? targetX : Math.min(targetX, maximumX);
 
       labelXs.set(milestone.id, labelX);
       nextLeft = labelX - inactiveMilestoneLabelLeftExtent;
@@ -123,6 +130,11 @@
   $: milestoneComparison300StartX = yearToX(1726) + 5;
   $: milestoneComparison110StartX = yearToX(1916) + 5;
   $: milestoneComparisonEndX = yearToX(2026) - 5;
+  $: milestoneComparison1916LineY = height / 2 + 20;
+  $: milestoneComparison1916StartX = yearToX(1726) + 5;
+  $: milestoneComparison1916EndX = yearToX(1916) - 5;
+  $: milestoneComparison1916LabelX =
+    (milestoneComparison1916StartX + milestoneComparison1916EndX) / 2;
   $: milestoneComparison300LabelX =
     (milestoneComparison300StartX + milestoneComparisonEndX) / 2;
   $: milestoneComparison110LabelX =
@@ -168,7 +180,8 @@
     ></rect>
 
     <!-- school/college period -->
-    {#if currentYear >= womenMedicalEducationPeriodStartYear}
+    {#if currentYear >= womenMedicalEducationPeriodStartYear &&
+      currentYear <= womenMedicalEducationPeriodEndYear}
       <rect
         class="women-medical-education-period"
         x={yearToX(womenMedicalEducationPeriodStartYear)}
@@ -176,7 +189,7 @@
         width={yearToX(womenMedicalEducationPeriodEndYear) -
           yearToX(womenMedicalEducationPeriodStartYear)}
         height={womenMedicalEducationPeriodHeight}
-        aria-label="Women's medical education period, 1886 to 1915"
+        aria-label="Women's medical education period, 1886 to 1911"
       ></rect>
       <line
         class="women-medical-education-period-edge"
@@ -291,21 +304,53 @@
       {womenMedicsData}
     />
 
+    <UniAreaChart
+      {width}
+      {currentYear}
+      domainStartYear={timelineDomainStart}
+      domainEndYear={timelineDomainEnd}
+      {timelineY}
+      {yearToX}
+      {womenMedicsData}
+      {menMedicsData}
+    />
+
     {#each visibleMilestones as milestone (milestone.id)}
       <Milestone
         x={yearToX(milestone.year)}
         labelX={inactiveMilestoneLabelXs.get(milestone.id) ??
           yearToX(milestone.year)}
         {height}
-        label={milestone.year === 1726 && displayYear === 2026
-          ? "1726"
-          : milestone.label}
+        label={milestone.label}
         active={milestone.milestoneIds.includes(pausedMilestoneId ?? "")}
         mutedInactiveLabel={mutedInactiveMilestoneYears.has(milestone.year)}
-        expandedInactive={milestone.year === 1726 && displayYear === 2026}
+        activePathLength={milestone.year === 1916
+          ? Math.max(0, timelineY - height / 2)
+          : undefined}
         expandedPathLength={expandedMilestonePathLength}
       />
     {/each}
+
+    {#if displayYear === 1916}
+      <g
+        class="milestone-comparison"
+        aria-label="110 years between 1726 and 1916"
+      >
+        <line
+          x1={milestoneComparison1916StartX}
+          y1={milestoneComparison1916LineY}
+          x2={milestoneComparison1916EndX}
+          y2={milestoneComparison1916LineY}
+          marker-start="url(#milestone-comparison-arrow)"
+          marker-end="url(#milestone-comparison-arrow)"
+        />
+        <text
+          x={milestoneComparison1916LabelX}
+          y={milestoneComparison1916LineY - 10}
+          text-anchor="middle">110 years</text
+        >
+      </g>
+    {/if}
 
     {#if displayYear === 2026}
       <Milestone
@@ -353,16 +398,6 @@
       </g>
     {/if}
 
-    <UniAreaChart
-      {width}
-      {currentYear}
-      domainStartYear={timelineDomainStart}
-      domainEndYear={timelineDomainEnd}
-      {timelineY}
-      {yearToX}
-      {womenMedicsData}
-      {menMedicsData}
-    />
   {/if}
 </svg>
 
@@ -393,7 +428,7 @@
   }
 
   .women-medical-education-period {
-    fill: rgba(180, 180, 180, 0.2);
+    fill: rgba(5, 5, 5);
   }
 
   .women-medical-education-period-edge {
@@ -434,7 +469,8 @@
 
   .timeline-stretch-ticks .tick text {
     fill: rgba(180, 180, 180, 0.9);
-    font-size: 14px;
+    font-size: 13px;
+    font-style: italic;
   }
 
   .timeline-stretch-ticks .tick.timeline-stretch-tick--reached text {

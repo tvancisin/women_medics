@@ -222,7 +222,7 @@
     ];
   const suezRoutesReverseYear = 1911;
   const suezRoutesForwardYear = 1912;
-  const womenDoctorsCareerLocationsYear = 1915;
+  const womenDoctorsCareerLocationsYear = 1911;
   const womenDoctorsWarYears = [1915, 1916, 1917, 1918, 1919];
   const foregroundMarkerLayerIds = [
     firstClassesLayerId,
@@ -1689,12 +1689,12 @@
       !mapOverlay1682.hasLayer())
   ) {
     mapOverlay1682.show();
-    map.flyTo({
-      center: [-3.192, 55.948],
-      zoom: 12,
-      duration: 1000,
-      essential: true,
-    });
+    // map.flyTo({
+    //   center: [-3.192, 55.948],
+    //   zoom: 12,
+    //   duration: 1000,
+    //   essential: true,
+    // });
   }
 
   // Fade the map away gradually once the timeline resumes.
@@ -1721,7 +1721,7 @@
     oldMapOverlay.show();
     map.flyTo({
       center: [-3.192, 55.948],
-      zoom: 15,
+      zoom: 14.5,
       duration: 1000,
       essential: true,
     });
@@ -2162,7 +2162,7 @@
     hideWomenDoctors1911PhotoBirthplaceConnections();
   }
 
-  //// 1915
+  //// 1911
   // Draw career location circles.
   $: if (
     map &&
@@ -2251,7 +2251,7 @@
 
     map = new mapboxgl.Map({
       container: mapContainer,
-      center: [-3.25, 55.95],
+      center: [-3.22, 55.95],
       zoom: 12,
       logoPosition: "top-right",
       // style: "mapbox://styles/mapbox/dark-v12",

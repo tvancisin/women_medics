@@ -11,6 +11,7 @@
   export let mutedInactiveLabel = false;
   export let expandedInactive = false;
   export let expandedPathLength = 250;
+  export let activePathLength: number | undefined = undefined;
 
   const collapsedPathLength = 20;
   const inactiveLabelMaxLength = 18;
@@ -42,7 +43,9 @@
   $: inactivePathLength = expandedInactive
     ? expandedPathLength
     : Math.min(fullLength, collapsedPathLength);
-  $: targetPathLength = active ? fullLength : inactivePathLength;
+  $: targetPathLength = active
+    ? (activePathLength ?? fullLength)
+    : inactivePathLength;
 
   $: pathLengthPx.set(targetPathLength);
 

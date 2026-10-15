@@ -7,9 +7,6 @@
   export let yearToX: (year: number) => number;
   export let womenMedicsData: WomenMedicsDatum[] = [];
 
-  $: console.log(womenDoctorsData);
-  
-
   type WomenMedicsDatum = {
     year: number;
     number: number;
@@ -62,25 +59,24 @@
     (doctorYearCount) => doctorYearCount.year <= currentYear,
   );
 
-  $: maxY = d3.max(womenMedicsData, (d: WomenMedicsDatum) => d.number) ?? 0;
+  $: chartScaleMaxY =
+    d3.max(womenMedicsData, (d: WomenMedicsDatum) => d.number) ?? 0;
 
   $: doctorCountYScale = d3
     .scaleLinear()
-    .domain([0, maxY > 0 ? maxY : 1])
+    .domain([0, chartScaleMaxY > 0 ? chartScaleMaxY : 1])
     .range([timelineY - chartPaddingBottom, chartPaddingTop * 4]);
 
   $: doctorAreaPath = d3
     .area<DoctorYearCount>()
     .x((d) => yearToX(d.year))
     .y0(timelineY - chartPaddingBottom)
-    .y1((d) => doctorCountYScale(d.count))
-    .curve(d3.curveMonotoneX)(visibleDoctorYearCounts);
+    .y1((d) => doctorCountYScale(d.count))(visibleDoctorYearCounts);
 
   $: doctorLinePath = d3
     .line<DoctorYearCount>()
     .x((d) => yearToX(d.year))
-    .y((d) => doctorCountYScale(d.count))
-    .curve(d3.curveMonotoneX)(visibleDoctorYearCounts);
+    .y((d) => doctorCountYScale(d.count))(visibleDoctorYearCounts);
 
   const interpolateValueAtYear = (year: number): number | null => {
     if (doctorYearCounts.length === 0) return null;
