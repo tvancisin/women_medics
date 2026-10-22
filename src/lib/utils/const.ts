@@ -93,7 +93,7 @@ export const timelineImageMarkers: ImageMarkerConfig[] = [
     id: "edinburgh-forty-home",
     year: 1870,
     coordinates: [55.942668948406876, -3.1868325772638566],
-    alt: "15 Buccleuch Place\nSophia Jex-Blake, leader of the lady students,\nIsabel Thorne, and Matilda Chaplin lived here\n from 1869 to 1872",
+    alt: "15 Buccleuch Place\nSophia Jex-Blake, Isabel Thorne, \nand Matilda Chaplin lived here\n from 1869 to 1872",
   },
   {
     id: "surgeons-hall",

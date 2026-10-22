@@ -49,6 +49,8 @@
   const milestoneCardTopClearance = 65;
   // Heading (22px), its vertical margins (13px), and the card's 5px top/bottom padding.
   const universityFoundedCardChromeHeight = 45;
+  // The 1583 map credit occupies one line plus its vertical margins.
+  const universityFoundedMapCreditHeight = 28;
 
   // Anchor cards differently depending on whether the milestone is left or right of center.
   const card_left = [1726, 1809];
@@ -220,6 +222,20 @@
   const splitMilestoneYears = new Set([
     1809, 1862, 1867, 1870, 1875, 1886, 1889, 1911,
   ]);
+  const universityFoundedMapCredit =
+    creditsByYear.find((credits) => credits.year === 1583)?.map ?? "";
+  const schoolOfMedicineMapCredit =
+    creditsByYear.find((credits) => credits.year === 1726)?.map ?? "";
+  const firstClassesMapCredit =
+    creditsByYear.find((credits) => credits.year === 1867)?.map ?? "";
+  const surgeonsHallRiotMapCredit =
+    creditsByYear.find((credits) => credits.year === 1870)?.map ?? "";
+  const physiologyStudentsMapCredit =
+    creditsByYear.find((credits) => credits.year === 1875)?.map ?? "";
+  const schoolForWomenMapCredit =
+    creditsByYear.find((credits) => credits.year === 1886)?.map ?? "";
+  const collegeForWomenMapCredit =
+    creditsByYear.find((credits) => credits.year === 1889)?.map ?? "";
   // const womenDoctorsWarMilestoneYear = 1919;
 
   let height = 0;
@@ -439,10 +455,10 @@
   $: universityFoundedPreferredWidth =
     Math.max(
       0,
-      universityFoundedAvailableHeight - universityFoundedCardChromeHeight,
-    ) *
-      universityFoundedImageAspectRatio +
-    10;
+      universityFoundedAvailableHeight -
+        universityFoundedCardChromeHeight -
+        universityFoundedMapCreditHeight,
+    ) * universityFoundedImageAspectRatio;
   $: universityFoundedCardWidth = Math.min(
     universityFoundedPreferredWidth,
     Math.max(0, width - margin.left),
@@ -451,8 +467,9 @@
     universityFoundedAvailableHeight,
     Math.max(
       0,
-      (universityFoundedCardWidth - 10) / universityFoundedImageAspectRatio +
-        universityFoundedCardChromeHeight,
+      universityFoundedCardWidth / universityFoundedImageAspectRatio +
+        universityFoundedCardChromeHeight +
+        universityFoundedMapCreditHeight,
     ),
   );
 
@@ -878,6 +895,14 @@
     {yearToX}
   />
 
+  {#if currentYear === 1682}
+    <h2 class="timeline-year-heading">
+      Edinburgh and Leith in 1682
+      <br />
+      John Adair's map of Midlothian, from around 1682
+    </h2>
+  {/if}
+
   {#each milestones as milestone (milestone.id)}
     {@const year = milestone.contentYear}
     <div
@@ -907,6 +932,7 @@
           class="university-founded-card-image"
           style:background-image={universityFoundedBackgroundImage}
         ></div>
+        <p class="milestone-map-credit">{universityFoundedMapCredit}</p>
       {:else if year === 1726}
         <div class="milestone-card-text-only">
           <div class="milestone-card-title">
@@ -914,6 +940,11 @@
             of Edinburgh was roughly 40,000 people. The education took place at
             the Old College (currently School of Law) as well as at the Old
             Surgeon's Hall.
+          </div>
+          <div class="milestone-map-section">
+            <p class="milestone-map-credit">
+              Map: {schoolOfMedicineMapCredit}
+            </p>
           </div>
         </div>
       {:else if year === 1809}
@@ -969,6 +1000,9 @@
               started teaching women in 1867 at Hopetoun Rooms (67-73 Queen
               Street).
             </div>
+            <div class="milestone-map-section">
+              <p class="milestone-map-credit">Map: {firstClassesMapCredit}</p>
+            </div>
           </div>
         </div>
       {:else if year === 1869}
@@ -1009,6 +1043,11 @@
               students arrived for an anatomy exam, facing mud, abuse, and
               blocked gates.
             </div>
+            <div class="milestone-map-section">
+              <p class="milestone-map-credit">
+                Map: {surgeonsHallRiotMapCredit}
+              </p>
+            </div>
           </div>
         </div>
       {:else if year === 1875}
@@ -1027,6 +1066,11 @@
               medicine. One of them was John Gray McKendrick, who started
               teaching physiology to women at Gayfield House (18 East London
               Street) in 1875.
+            </div>
+            <div class="milestone-map-section">
+              <p class="milestone-map-credit">
+                Map: {physiologyStudentsMapCredit}
+              </p>
             </div>
           </div>
         </div>
@@ -1047,6 +1091,11 @@
               Extra-Mural School of Medicine because University teaching was
               closed to them.
             </div>
+            <div class="milestone-map-section">
+              <p class="milestone-map-credit">
+                Map: {schoolForWomenMapCredit}
+              </p>
+            </div>
           </div>
         </div>
       {:else if year === 1889}
@@ -1065,6 +1114,11 @@
               leading members included John Inglis, the father of Elsie Inglis.
               Elsie Inglis went on to become a leader in the suffrage movement
               and found the Scottish Women's Hospital.
+            </div>
+            <div class="milestone-map-section">
+              <p class="milestone-map-credit">
+                Map: {collegeForWomenMapCredit}
+              </p>
             </div>
           </div>
         </div>
@@ -1190,6 +1244,27 @@
     padding: 5px;
   }
 
+  .timeline-year-heading {
+    position: absolute;
+    left: 50%;
+    bottom: 60px;
+    z-index: 2;
+    width: max-content;
+    max-width: calc(100vw - 32px);
+    margin: 0;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: rgb(150, 150, 150);
+    font-family: Montserrat;
+    font-size: 12px;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.25;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
   .map-image-credits {
     position: absolute;
     top: 0;
@@ -1308,13 +1383,32 @@
   }
 
   .university-founded-card-image {
-    width: 100%;
+    width: calc(100% + 10px);
     min-height: 0;
     flex: 1 1 0;
+    margin: 0 -5px;
     background-color: #000;
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
+  }
+
+  .milestone-map-credit {
+    flex: 0 0 auto;
+    margin: 8px 5px 5px;
+    color: rgb(150, 150, 150);
+    font-size: 12px;
+    font-style: italic;
+    line-height: 1.25;
+  }
+
+  .milestone-map-section {
+    margin-top: 16px;
+    border-top: 1px solid rgba(150, 150, 150, 0.5);
+  }
+
+  .milestone-map-section .milestone-map-credit {
+    margin: 8px 0 0;
   }
 
   .milestone-card--split .milestone-card-split-layout {
@@ -1343,6 +1437,8 @@
 
   .milestone-card--split .milestone-card-split-text {
     flex: 0 0 auto;
+    flex-direction: column;
+    align-items: stretch;
     padding: 20px;
     padding-top: 5px;
     text-align: left;
