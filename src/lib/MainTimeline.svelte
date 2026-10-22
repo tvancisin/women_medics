@@ -27,6 +27,7 @@
   export let axisRight: number;
   export let milestones: TimelineMilestone[] = [];
   export let pausedMilestoneId: string | null = null;
+  export let activeMilestoneStemTipBottomOffset = 90;
   export let womenDoctorsData: unknown = [];
   export let womenMedicsData: WomenMedicsDatum[] = [];
   export let menMedicsData: WomenMedicsDatum[] = [];
@@ -44,6 +45,15 @@
   const womenMedicalEducationPeriodEndYear = 1911;
   const womenMedicalEducationPeriodHeight = 70;
   const womenMedicalEducationPeriodTickYears = [1888, 1893, 1898, 1903, 1908];
+  const womenMedicalEducationPeriodMinorTickYears = Array.from(
+    {
+      length:
+        womenMedicalEducationPeriodEndYear -
+        womenMedicalEducationPeriodStartYear -
+        1,
+    },
+    (_, index) => womenMedicalEducationPeriodStartYear + index + 1,
+  ).filter((year) => !womenMedicalEducationPeriodTickYears.includes(year));
   const mutedInactiveMilestoneYears = new Set([1886, 1889, 1911, 1915]);
   let expandedMilestonePathLength = 0;
   let inactiveMilestoneLabelXs = new Map<string, number>();
@@ -144,10 +154,6 @@
 <svg {width} {height}>
   {#if width > 0 && height > 0}
     <defs>
-      <linearGradient id="timeline-background-fade" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#151c24" stop-opacity="0" />
-        <stop offset="100%" stop-color="#151c24" stop-opacity="0.84" />
-      </linearGradient>
       <marker
         id="milestone-comparison-arrow"
         viewBox="0 0 10 10"
@@ -166,7 +172,7 @@
       y={height - 55}
       {width}
       height="25"
-      fill="url(#timeline-background-fade)"
+      fill="rgba(0, 0, 0, 0.2)"
       aria-hidden="true"
     ></rect>
     <!-- timeline background -->
@@ -180,12 +186,11 @@
     ></rect>
 
     <!-- school/college period -->
-    {#if currentYear >= womenMedicalEducationPeriodStartYear &&
-      currentYear <= womenMedicalEducationPeriodEndYear}
+    {#if currentYear >= womenMedicalEducationPeriodStartYear && currentYear <= womenMedicalEducationPeriodEndYear}
       <rect
         class="women-medical-education-period"
         x={yearToX(womenMedicalEducationPeriodStartYear)}
-        y={height - womenMedicalEducationPeriodHeight - 2}
+        y={height - womenMedicalEducationPeriodHeight + 8}
         width={yearToX(womenMedicalEducationPeriodEndYear) -
           yearToX(womenMedicalEducationPeriodStartYear)}
         height={womenMedicalEducationPeriodHeight}
@@ -194,7 +199,7 @@
       <line
         class="women-medical-education-period-edge"
         x1={yearToX(womenMedicalEducationPeriodStartYear)}
-        y1={height - womenMedicalEducationPeriodHeight - 2}
+        y1={height - womenMedicalEducationPeriodHeight + 8}
         x2={yearToX(womenMedicalEducationPeriodStartYear)}
         y2={height - 2}
         aria-hidden="true"
@@ -202,7 +207,7 @@
       <line
         class="women-medical-education-period-edge"
         x1={yearToX(womenMedicalEducationPeriodEndYear)}
-        y1={height - womenMedicalEducationPeriodHeight - 2}
+        y1={height - womenMedicalEducationPeriodHeight + 8}
         x2={yearToX(womenMedicalEducationPeriodEndYear)}
         y2={height - 2}
         aria-hidden="true"
@@ -210,13 +215,13 @@
     {/if}
 
     <g class="timeline-underlay" aria-hidden="true">
-      <line
+      <!-- <line
         class="domain"
         x1={axisStart}
         y1={timelineY}
         x2={axisRight}
         y2={timelineY}
-      ></line>
+      ></line> -->
 
       {#each fullTickValues as year}
         {#if !(timelineStretchProgress > 0 && year === 1900)}
@@ -274,6 +279,14 @@
 
     {#if timelineStretchProgress > 0}
       <g class="timeline-stretch-ticks" opacity={timelineStretchProgress}>
+        {#each womenMedicalEducationPeriodMinorTickYears as year}
+          <g
+            class="minor-tick"
+            transform={`translate(${yearToX(year)}, ${timelineY})`}
+          >
+            <line x1="0" y1="0" x2="0" y2={tickLength}></line>
+          </g>
+        {/each}
         {#each womenMedicalEducationPeriodTickYears as year}
           <g
             class="tick"
@@ -323,6 +336,7 @@
         {height}
         label={milestone.label}
         active={milestone.milestoneIds.includes(pausedMilestoneId ?? "")}
+        {activeMilestoneStemTipBottomOffset}
         mutedInactiveLabel={mutedInactiveMilestoneYears.has(milestone.year)}
         activePathLength={milestone.year === 1916
           ? Math.max(0, timelineY - height / 2)
@@ -347,7 +361,7 @@
         <text
           x={milestoneComparison1916LabelX}
           y={milestoneComparison1916LineY - 10}
-          text-anchor="middle">110 years</text
+          text-anchor="middle">190 years</text
         >
       </g>
     {/if}
@@ -397,7 +411,6 @@
         >
       </g>
     {/if}
-
   {/if}
 </svg>
 
@@ -428,7 +441,7 @@
   }
 
   .women-medical-education-period {
-    fill: rgba(5, 5, 5);
+    fill: rgba(60, 60, 60, 0.795);
   }
 
   .women-medical-education-period-edge {
@@ -469,8 +482,8 @@
 
   .timeline-stretch-ticks .tick text {
     fill: rgba(180, 180, 180, 0.9);
-    font-size: 13px;
-    font-style: italic;
+    font-size: 12px;
+    font-weight: 600;
   }
 
   .timeline-stretch-ticks .tick.timeline-stretch-tick--reached text {

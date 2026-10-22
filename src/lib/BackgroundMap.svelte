@@ -1123,11 +1123,16 @@
       }
       setTimelineMarkerLabelContent(element, markerId, label);
 
-      const marker = new mapboxgl.Marker({
-        element,
-        anchor: "left",
-        offset: [8, 0],
-      })
+      const markerOptions =
+        markerId === "edinburgh-forty-home"
+          ? { anchor: "top" as const, offset: [0, 8] as [number, number] }
+          : markerId === "surgeons-hall"
+            ? {
+                anchor: "bottom" as const,
+                offset: [0, -8] as [number, number],
+              }
+            : { anchor: "left" as const, offset: [8, 0] as [number, number] };
+      const marker = new mapboxgl.Marker({ element, ...markerOptions })
         .setLngLat([longitude, latitude])
         .addTo(map);
       timelineLabelMarkers.set(markerKey, marker);

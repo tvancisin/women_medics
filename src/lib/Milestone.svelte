@@ -8,6 +8,7 @@
   export let height = 0;
   export let label = "";
   export let active = false;
+  export let activeMilestoneStemTipBottomOffset = 90;
   export let mutedInactiveLabel = false;
   export let expandedInactive = false;
   export let expandedPathLength = 250;
@@ -38,7 +39,7 @@
   });
   let hasInitialLabelTextAnchor = false;
   $: startY = height - 30;
-  $: middleY = height - 90;
+  $: middleY = height - activeMilestoneStemTipBottomOffset;
   $: fullLength = Math.max(0, startY - middleY);
   $: inactivePathLength = expandedInactive
     ? expandedPathLength

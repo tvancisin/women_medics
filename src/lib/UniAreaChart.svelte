@@ -166,7 +166,7 @@
     .y((d) => yScale(d.number))(womenTrailingMissingnessData);
 
   $: showWomenTrailingMissingness =
-    currentYear >= 2026 &&
+    currentYear >= (sortedData.at(-1)?.year ?? Infinity) &&
     womenTrailingMissingnessData.length === 2 &&
     womenTrailingMissingnessPath;
 
@@ -244,7 +244,10 @@
   $: currentValue = interpolateValueAtYear(currentYear);
   $: markerX = yearToX(currentYear);
   $: markerY = currentValue === null ? timelineY : yScale(currentValue);
-  $: markerLabel = currentValue === null ? "" : `${Math.round(currentValue)}`;
+  $: markerLabel =
+    currentValue === null
+      ? ""
+      : `${Math.round(currentValue)} women medics`;
   $: currentYearIsVisible =
     currentYear >= domainStartYear && currentYear <= domainEndYear;
 </script>

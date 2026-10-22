@@ -38,22 +38,30 @@
   // keeping the detail div inside screen
   const milestoneCardWidth = 400;
   const universityFoundedImageAspectRatio = 7272 / 5461;
-  const milestoneCardBottomOffset = 95;
-  const activeMilestoneStemTipBottomOffset = 90;
+  const milestoneCardBottomOffset = 65;
+  const activeMilestoneStemTipBottomOffset = 60;
   const milestoneCardStemGap =
     milestoneCardBottomOffset - activeMilestoneStemTipBottomOffset;
   const equalMedicalEducationCardBottomOffset = tweened(
     milestoneCardBottomOffset,
     { duration: 500, easing: cubicOut },
   );
-  const milestoneCardTopClearance = 80;
+  const milestoneCardTopClearance = 65;
   // Heading (22px), its vertical margins (13px), and the card's 5px top/bottom padding.
   const universityFoundedCardChromeHeight = 45;
 
   // Anchor cards differently depending on whether the milestone is left or right of center.
   const card_left = [1726, 1809];
-  const clampedLeft = (x: number, year: number) => {
+  const card_middle = [1911];
+  const clampedLeft = (x: number, year: number, timelineYear = year) => {
     // return x < width / 2 ? x + 10 : x - milestoneCardWidth - 10;
+    if (card_middle.includes(timelineYear)) {
+      const cardWidth =
+        year === 1911
+          ? Math.min(500, Math.max(0, width - 32))
+          : milestoneCardWidth;
+      return x - cardWidth / 2;
+    }
     if (card_left.includes(year)) {
       return x - milestoneCardWidth;
     } else {
@@ -75,7 +83,7 @@
       id: "university-founded",
       year: 1583,
       contentYear: 1583,
-      label: "University of Edinburgh Founded 1582",
+      label: "University Foundation 1582",
     },
     // Pause for the map overlay without drawing a timeline milestone stem.
     {
@@ -831,6 +839,7 @@
     src={publicUrl("img/efi_logo_white.svg")}
     alt="Edinburgh Futures Institute"
   />
+  <h1 class="page-title">Women's Medical Education in Edinburgh</h1>
   <!-- {#if mapCredit || imageCredit}
     <aside class="map-image-credits" aria-label="Map and image credits">
       {#if mapCredit}
@@ -844,7 +853,7 @@
   <!-- Dev-only: remove this button block with the click-to-resume behavior. -->
   {#if devRequireClickToResume && awaitingResumeClick}
     <button class="resume-button" type="button" on:click={handleResumeClick}>
-      Continue
+      >
     </button>
   {/if}
   <MainTimeline
@@ -861,6 +870,7 @@
     {axisRight}
     {milestones}
     {pausedMilestoneId}
+    {activeMilestoneStemTipBottomOffset}
     {womenDoctorsData}
     {womenMedicsData}
     {menMedicsData}
@@ -883,7 +893,7 @@
           ? $equalMedicalEducationCardBottomOffset
           : milestoneCardBottomOffset
       }px`}
-      style:left={`${clampedLeft(yearToX(milestone.year), year)}px`}
+      style:left={`${clampedLeft(yearToX(milestone.year), year, milestone.year)}px`}
       style:width={year === 1583 && pausedMilestoneId === milestone.id
         ? `${universityFoundedCardWidth}px`
         : undefined}
@@ -1070,9 +1080,10 @@
           </div>
           <div class="milestone-card-split-half milestone-card-split-text">
             <div class="milestone-card-title">
-              By 1911, 360 women have studied medicine at the School of Medicine
-              and College of Medicine for Women. [Picture taken from outside the
-              now Edinburgh Futures Institute]
+              By 1911, 300 women have qualified as doctors from the Edinburgh's
+              School of Medicine and College of Medicine for Women. [Picture
+              taken from outside the now Edinburgh Futures Institute, then the
+              Edinburgh Royal Infirmary]
             </div>
           </div>
         </div>
@@ -1154,23 +1165,29 @@
     top: 2px;
     left: 2px;
     z-index: 3;
-    height: 75px;
+    height: 60px;
     pointer-events: none;
   }
 
-  #data-led-methods {
+  .page-title {
+    background-color: rgba(0, 0, 0, 0.5);
     position: absolute;
-    top: 36px;
-    left: 66px;
+    top: 0px;
+    left: 50%;
     z-index: 3;
+    width: max-content;
+    max-width: calc(100vw - 160px);
     margin: 0;
-    padding: 0.5rem 1rem;
-    color: #ffffffdc;
-    font-family: "Jost";
-    font-size: 14px;
-    font-weight: 375;
-    letter-spacing: 0.02em;
+    color: #fff;
+    font-family: Montserrat;
+    font-size: clamp(16px, 2vw, 22px);
+    font-weight: 400;
+    line-height: 1.2;
+    text-align: center;
+    transform: translateX(-50%);
     pointer-events: none;
+    border-radius: 0 0 5px 5px;
+    padding: 5px;
   }
 
   .map-image-credits {
@@ -1209,7 +1226,6 @@
     justify-content: center;
     color: rgb(150, 150, 150);
     font-size: 10px;
-    font-weight: 600;
     border-radius: 5px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
     background-color: #151c24;
@@ -1226,7 +1242,7 @@
   .milestone-card.is-active {
     width: 400px;
     height: auto;
-    max-height: calc(100vh - 95px - 80px);
+    max-height: calc(100vh - 65px - 65px);
     pointer-events: auto;
     flex-direction: column;
     align-items: stretch;
@@ -1235,7 +1251,7 @@
 
   .milestone-card--edinburgh-forty.is-active {
     width: min(500px, calc(100vw - 32px));
-    height: calc(100vh - 95px - 80px);
+    height: calc(100vh - 65px - 65px);
     container-type: size;
   }
 
@@ -1245,9 +1261,9 @@
 
   .milestone-card-heading {
     flex: 0 0 auto;
-    margin: 10px 10px 5px;
+    /* margin: 10px 10px 5px; */
     color: #fff;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 400;
     line-height: 1.1;
     text-align: center;
@@ -1257,7 +1273,7 @@
     flex: 0 0 auto;
     margin: 0 16px 8px;
     color: rgb(150, 150, 150);
-    font-size: clamp(8px, 1.2vh, 12px);
+    font-size: 14px;
     line-height: 1.25;
   }
 
@@ -1269,7 +1285,7 @@
     width: 100%;
     flex: 1 1 auto;
     box-sizing: border-box;
-    padding: 0 30px 30px;
+    padding: 0 20px 20px;
     text-align: left;
   }
 
@@ -1282,7 +1298,7 @@
 
   .milestone-card--university-founded.is-active {
     width: min(90vw, 800px);
-    height: calc(100vh - 95px - 80px);
+    height: calc(100vh - 65px - 65px);
     flex-direction: column;
     padding: 5px;
   }
@@ -1333,8 +1349,7 @@
   }
 
   .milestone-card-title {
-    font-size: 12px;
-    line-height: 1.25;
+    font-size: 14px;
     text-align: left;
   }
 
@@ -1469,8 +1484,8 @@
   /* Dev-only: remove this style block with the Continue button markup. */
   .resume-button {
     position: absolute;
-    top: 35px;
-    right: 16px;
+    top: 5px;
+    right: 110px;
     z-index: 10;
     padding: 0.5rem 0.75rem;
     border: 1px solid rgba(255, 255, 255, 0.4);
@@ -1478,5 +1493,6 @@
     color: #fff;
     font: inherit;
     cursor: pointer;
+    border-radius: 3px;
   }
 </style>
